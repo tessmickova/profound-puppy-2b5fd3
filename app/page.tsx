@@ -4,7 +4,7 @@ import Shell from '@/components/names/Shell'
 import WorldMap from '@/components/names/WorldMap'
 import NameCard from '@/components/names/NameCard'
 import { JMENA, KONTINENTY, ZEME } from '@/lib/names/data'
-import { serad } from '@/lib/names/logic'
+import { jeOriginal, jeTrendy, serad } from '@/lib/names/logic'
 
 export const metadata: Metadata = {
   title: 'Svět jmen — nejlíbivější jména pro zvířata i děti podle zemí',
@@ -15,6 +15,8 @@ export const metadata: Metadata = {
 export default function Domov() {
   const topZvirata = serad(JMENA.filter(j => !['kluk', 'holka'].includes(j.kategorie)), 'popularita').slice(0, 6)
   const topDeti = serad(JMENA.filter(j => ['kluk', 'holka'].includes(j.kategorie)), 'popularita').slice(0, 6)
+  const trendy = serad(JMENA.filter(jeTrendy), 'popularita').slice(0, 6)
+  const originaly = serad(JMENA.filter(jeOriginal), 'popularita').slice(0, 6)
 
   return (
     <Shell>
@@ -63,6 +65,28 @@ export default function Domov() {
         </div>
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {topZvirata.map((j, i) => <NameCard key={j.id} jmeno={j} poradi={i + 1} />)}
+        </div>
+      </section>
+
+      <section className="mb-14">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="[font-family:var(--font-syne)] text-2xl font-bold">📈 Populární trendy právě teď</h2>
+          <Link href="/zvirata" className="text-sm text-[#8a7f71] underline decoration-dotted hover:text-[#2b2723]">filtrovat trendy →</Link>
+        </div>
+        <p className="mb-4 max-w-2xl text-sm text-[#6b6156]">Moderní jména, která právě letí nahoru — u zvířat i dětí je poznáte podle štítku 📈.</p>
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          {trendy.map((j, i) => <NameCard key={j.id} jmeno={j} poradi={i + 1} />)}
+        </div>
+      </section>
+
+      <section className="mb-14">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="[font-family:var(--font-syne)] text-2xl font-bold">💎 Originální a pěkná</h2>
+          <Link href="/deti" className="text-sm text-[#8a7f71] underline decoration-dotted hover:text-[#2b2723]">objevit další →</Link>
+        </div>
+        <p className="mb-4 max-w-2xl text-sm text-[#6b6156]">Skryté poklady — jména, která nepotkáte na každém hřišti ani v každém parku, a přesto krásně znějí.</p>
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          {originaly.map((j, i) => <NameCard key={j.id} jmeno={j} poradi={i + 1} />)}
         </div>
       </section>
 

@@ -1,6 +1,42 @@
+'use client'
+
 import { KATEGORIE_INFO } from '@/lib/names/types'
 import type { Jmeno } from '@/lib/names/types'
 import { zemePodleKodu } from '@/lib/names/data'
+import { jeHit, jeOriginal, jeTrendy } from '@/lib/names/logic'
+import { useOblibene } from '@/lib/names/oblibene'
+
+export function Stitky({ jmeno }: { jmeno: Jmeno }) {
+  return (
+    <>
+      {jeHit(jmeno) && (
+        <span className="rounded-full bg-[#fdeaea] px-2 py-0.5 text-[11px] font-semibold text-[#b3403a]" title="Dlouhodobě nejoblíbenější jména">🔥 hit</span>
+      )}
+      {jeTrendy(jmeno) && (
+        <span className="rounded-full bg-[#e7f0fb] px-2 py-0.5 text-[11px] font-semibold text-[#3563a8]" title="Moderní jméno, které právě letí">📈 trendy</span>
+      )}
+      {jeOriginal(jmeno) && (
+        <span className="rounded-full bg-[#f2ecfa] px-2 py-0.5 text-[11px] font-semibold text-[#6d4fa1]" title="Méně obvyklé, ale krásné — skrytý poklad">💎 originál</span>
+      )}
+    </>
+  )
+}
+
+export function Srdicko({ id, velke }: { id: string; velke?: boolean }) {
+  const { je, prepni } = useOblibene()
+  const oblibene = je(id)
+  return (
+    <button
+      type="button"
+      onClick={() => prepni(id)}
+      aria-label={oblibene ? 'Odebrat z oblíbených' : 'Přidat do oblíbených'}
+      title={oblibene ? 'Odebrat z oblíbených' : 'Přidat do oblíbených'}
+      className={`${velke ? 'text-2xl' : 'text-lg'} leading-none transition-transform hover:scale-125 ${oblibene ? '' : 'opacity-45 hover:opacity-100'}`}
+    >
+      {oblibene ? '❤️' : '🤍'}
+    </button>
+  )
+}
 
 export default function NameCard({ jmeno, poradi }: { jmeno: Jmeno; poradi?: number }) {
   const zeme = zemePodleKodu(jmeno.zeme)
@@ -12,9 +48,15 @@ export default function NameCard({ jmeno, poradi }: { jmeno: Jmeno; poradi?: num
           {poradi != null && <span className="mr-1 text-sm font-semibold text-[#c4b8a7]">{poradi}.</span>}
           {jmeno.jmeno}
         </h3>
-        <span className="whitespace-nowrap text-sm" title={`${kat.nazev} · ${zeme?.nazev ?? ''}`}>
-          {kat.emoji} {zeme?.vlajka}
-        </span>
+        <div className="flex items-center gap-1.5">
+          <span className="whitespace-nowrap text-sm" title={`${kat.nazev} · ${zeme?.nazev ?? ''}`}>
+            {kat.emoji} {zeme?.vlajka}
+          </span>
+          <Srdicko id={jmeno.id} />
+        </div>
+      </div>
+      <div className="flex flex-wrap gap-1.5 empty:hidden">
+        <Stitky jmeno={jmeno} />
       </div>
       <p className="text-sm text-[#6b6156]">{jmeno.vyznam}</p>
       <div className="mt-auto flex flex-wrap items-center gap-1.5 text-[11px]">

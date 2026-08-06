@@ -8,9 +8,10 @@ import { useSearchParams } from 'next/navigation'
 import { JMENA, ZEME } from '@/lib/names/data'
 import { PLEMENA_KOCEK, PLEMENA_PSU, VSECHNA_PLEMENA } from '@/lib/names/breeds'
 import {
-  filtruj, jmenaProPlemeno, kolator, PRAZDNY_FILTR, RAZENI_MOZNOSTI, serad,
-  ZPUSOBY_ZIVOTA,
+  filtruj, jeHit, jeOriginal, jeTrendy, jmenaProPlemeno, kolator, PRAZDNY_FILTR,
+  RAZENI_MOZNOSTI, serad, ZPUSOBY_ZIVOTA,
 } from '@/lib/names/logic'
+import { useOblibene } from '@/lib/names/oblibene'
 import type { Filtr, Razeni } from '@/lib/names/logic'
 import { KATEGORIE_INFO, VSECHNY_STYLY } from '@/lib/names/types'
 import type { Energie, Kategorie, Velikost } from '@/lib/names/types'
@@ -61,6 +62,8 @@ export default function ZvirataFinder() {
   const [razeni, setRazeni] = useState<Razeni | 'doporucene'>('popularita')
   const [plemeno, setPlemeno] = useState<string>('')
   const [zivot, setZivot] = useState<string>('')
+  const [rychle, setRychle] = useState<string[]>([])
+  const { ids: oblibena } = useOblibene()
 
   const vybranePlemeno = VSECHNA_PLEMENA.find(p => p.nazev === plemeno)
   const vybranyZivot = ZPUSOBY_ZIVOTA.find(z => z.id === zivot)
@@ -81,9 +84,13 @@ export default function ZvirataFinder() {
       f.velikosti = vybranyZivot.velikosti
     }
     kandidati = filtruj(kandidati, f)
+    if (rychle.includes('srdce')) kandidati = kandidati.filter(j => oblibena.includes(j.id))
+    if (rychle.includes('hit')) kandidati = kandidati.filter(jeHit)
+    if (rychle.includes('trendy')) kandidati = kandidati.filter(jeTrendy)
+    if (rychle.includes('original')) kandidati = kandidati.filter(jeOriginal)
     if (razeni === 'doporucene') return kandidati // pořadí z jmenaProPlemeno
     return serad(kandidati, razeni)
-  }, [zakladni, filtr, razeni, vybranePlemeno, vybranyZivot])
+  }, [zakladni, filtr, razeni, vybranePlemeno, vybranyZivot, rychle, oblibena])
 
   const dostupnaPismena = useMemo(() => {
     const set = new Set(zakladni.map(j => j.jmeno[0].toUpperCase()))
@@ -102,7 +109,7 @@ export default function ZvirataFinder() {
     return [...mapa.entries()]
   }, [vysledky, abecedne])
 
-  const reset = () => { setFiltr(PRAZDNY_FILTR); setPlemeno(''); setZivot(''); setRazeni('popularita') }
+  const reset = () => { setFiltr(PRAZDNY_FILTR); setPlemeno(''); setZivot(''); setRychle([]); setRazeni('popularita') }
 
   return (
     <div className="grid gap-8 lg:grid-cols-[300px,1fr]">
@@ -121,6 +128,13 @@ export default function ZvirataFinder() {
           placeholder="Hledat jméno či význam…"
           className="w-full rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-4 py-2 text-sm outline-none focus:border-[#2b2723]"
         />
+
+        <Sekce nazev="Rychlé výběry">
+          <Chip aktivni={rychle.includes('srdce')} onClick={() => setRychle(prepni(rychle, 'srdce'))} title="Jen jména, která jste si označili srdíčkem">❤️ oblíbená</Chip>
+          <Chip aktivni={rychle.includes('hit')} onClick={() => setRychle(prepni(rychle, 'hit'))} title="Dlouhodobě nejoblíbenější jména">🔥 hity</Chip>
+          <Chip aktivni={rychle.includes('trendy')} onClick={() => setRychle(prepni(rychle, 'trendy'))} title="Moderní jména, která právě letí">📈 trendy</Chip>
+          <Chip aktivni={rychle.includes('original')} onClick={() => setRychle(prepni(rychle, 'original'))} title="Méně obvyklá, ale krásná — skryté poklady">💎 originální</Chip>
+        </Sekce>
 
         <Sekce nazev="Kdo dostane jméno">
           {ZVIRECI_KATEGORIE.map(k => (

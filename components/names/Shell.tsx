@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useOblibene } from '@/lib/names/oblibene'
 
 const POLOZKY = [
   { href: '/', nazev: 'Mapa světa', emoji: '🗺️' },
@@ -11,6 +12,7 @@ const POLOZKY = [
 
 export default function Shell({ children }: { children: React.ReactNode }) {
   const cesta = usePathname()
+  const { pocet } = useOblibene()
   return (
     <div className="min-h-screen bg-[#faf6ef] text-[#2b2723]">
       <header className="sticky top-0 z-40 border-b border-[#e8dfd2] bg-[#faf6ef]/90 backdrop-blur">
@@ -37,6 +39,17 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                 </Link>
               )
             })}
+            <Link
+              href="/oblibene"
+              className={`rounded-full px-3 py-1.5 font-medium transition-colors ${
+                cesta.startsWith('/oblibene')
+                  ? 'bg-[#d97757] text-white'
+                  : 'text-[#6b6156] hover:bg-[#efe7da] hover:text-[#2b2723]'
+              }`}
+              title="Vaše oblíbená jména"
+            >
+              ❤️{pocet > 0 && <span className="ml-1 font-semibold">{pocet}</span>}
+            </Link>
           </nav>
         </div>
       </header>

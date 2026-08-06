@@ -5,6 +5,17 @@ import type { Plemeno } from './types'
 
 export const kolator = new Intl.Collator('cs')
 
+// ── štítky: hity, trendy a originální krásky ─────────────────────────────────
+
+/** 🔥 Hit — dlouhodobě nejoblíbenější jména. */
+export const jeHit = (j: Jmeno) => j.popularita >= 88
+
+/** 📈 Trendy — moderní jména, která právě letí nahoru. */
+export const jeTrendy = (j: Jmeno) => j.styly.includes('moderní')
+
+/** 💎 Originál — méně obvyklá, ale krásná jména (skryté poklady). */
+export const jeOriginal = (j: Jmeno) => j.popularita <= 80
+
 // ── řazení ───────────────────────────────────────────────────────────────────
 
 export type Razeni = 'abecedne' | 'abecedne-z' | 'popularita' | 'nejkratsi' | 'nejdelsi' | 'slabiky'

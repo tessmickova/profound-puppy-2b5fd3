@@ -48,7 +48,7 @@ export default function WorldMap() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1.6fr,1fr]">
-      <div className="rounded-3xl border border-[#e8dfd2] bg-white p-4 shadow-sm">
+      <div className="self-start rounded-3xl border border-[#e8dfd2] bg-white p-4 shadow-sm">
         <svg viewBox="0 0 960 500" role="img" aria-label="Mapa kontinentů" className="h-auto w-full select-none">
           <rect x="0" y="0" width="960" height="500" rx="24" fill="#eef4f8" />
           {KONTINENTY.map(k => {

@@ -7,12 +7,14 @@ import { useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { JMENA, ZEME, zemePodleKodu } from '@/lib/names/data'
 import {
-  filtruj, kolator, najdiNejlepsiShody, PRAZDNY_FILTR, RAZENI_MOZNOSTI, serad,
+  filtruj, jeHit, jeOriginal, jeTrendy, kolator, najdiNejlepsiShody,
+  PRAZDNY_FILTR, RAZENI_MOZNOSTI, serad,
 } from '@/lib/names/logic'
+import { useOblibene } from '@/lib/names/oblibene'
 import type { Filtr, Razeni, Shoda } from '@/lib/names/logic'
 import { KATEGORIE_INFO, MESICE_NAZVY, VSECHNY_STYLY } from '@/lib/names/types'
 import type { Energie, Kategorie, Styl } from '@/lib/names/types'
-import NameCard from './NameCard'
+import NameCard, { Srdicko, Stitky } from './NameCard'
 
 const ENERGIE: Energie[] = ['klidná', 'vyvážená', 'živá']
 
@@ -45,10 +47,16 @@ function ShodaKarta({ shoda, poradi }: { shoda: Shoda; poradi: number }) {
           {shoda.jmeno.jmeno}
           <span className="ml-2 text-base">{zeme?.vlajka}</span>
         </h3>
-        <div className="text-right">
-          <span className="[font-family:var(--font-syne)] text-2xl font-extrabold text-[#d97757]">{shoda.skore}</span>
-          <span className="text-xs text-[#8a7f71]"> /100</span>
+        <div className="flex items-center gap-2">
+          <div className="text-right">
+            <span className="[font-family:var(--font-syne)] text-2xl font-extrabold text-[#d97757]">{shoda.skore}</span>
+            <span className="text-xs text-[#8a7f71]"> /100</span>
+          </div>
+          <Srdicko id={shoda.jmeno.id} velke />
         </div>
+      </div>
+      <div className="mt-1.5 flex flex-wrap gap-1.5 empty:hidden">
+        <Stitky jmeno={shoda.jmeno} />
       </div>
       <div className="mt-1 h-2 overflow-hidden rounded-full bg-[#f3ecdf]">
         <div className="h-full rounded-full bg-gradient-to-r from-[#e7a15c] to-[#d97757]" style={{ width: `${shoda.skore}%` }} />
@@ -76,6 +84,8 @@ export default function DetiFinder() {
     zeme: params.get('zeme') ? [params.get('zeme')!] : [],
   }))
   const [razeni, setRazeni] = useState<Razeni>('popularita')
+  const [rychle, setRychle] = useState<string[]>([])
+  const { ids: oblibena } = useOblibene()
 
   // ── nejlepší shoda ──
   const [pohlavi, setPohlavi] = useState<'kluk' | 'holka'>('holka')
@@ -88,8 +98,13 @@ export default function DetiFinder() {
 
   const vysledky = useMemo(() => {
     const f: Filtr = { ...filtr, kategorie: filtr.kategorie.length ? filtr.kategorie : (['kluk', 'holka'] as Kategorie[]) }
-    return serad(filtruj(detska, f), razeni)
-  }, [detska, filtr, razeni])
+    let kandidati = filtruj(detska, f)
+    if (rychle.includes('srdce')) kandidati = kandidati.filter(j => oblibena.includes(j.id))
+    if (rychle.includes('hit')) kandidati = kandidati.filter(jeHit)
+    if (rychle.includes('trendy')) kandidati = kandidati.filter(jeTrendy)
+    if (rychle.includes('original')) kandidati = kandidati.filter(jeOriginal)
+    return serad(kandidati, razeni)
+  }, [detska, filtr, razeni, rychle, oblibena])
 
   const dostupnaPismena = useMemo(() => {
     const set = new Set(detska.map(j => j.jmeno[0].toUpperCase()))
@@ -135,7 +150,7 @@ export default function DetiFinder() {
           <aside className="space-y-5 self-start rounded-3xl border border-[#e8dfd2] bg-white p-5 shadow-sm lg:sticky lg:top-20">
             <div className="flex items-center justify-between">
               <h2 className="[font-family:var(--font-syne)] text-lg font-bold">Filtr</h2>
-              <button onClick={() => setFiltr(PRAZDNY_FILTR)} className="text-xs text-[#8a7f71] underline decoration-dotted hover:text-[#2b2723]">
+              <button onClick={() => { setFiltr(PRAZDNY_FILTR); setRychle([]) }} className="text-xs text-[#8a7f71] underline decoration-dotted hover:text-[#2b2723]">
                 Vymazat vše
               </button>
             </div>
@@ -147,6 +162,16 @@ export default function DetiFinder() {
               placeholder="Hledat jméno či význam…"
               className="w-full rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-4 py-2 text-sm outline-none focus:border-[#2b2723]"
             />
+
+            <div>
+              <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-[#8a7f71]">Rychlé výběry</p>
+              <div className="flex flex-wrap gap-1.5">
+                <Chip aktivni={rychle.includes('srdce')} onClick={() => setRychle(prepni(rychle, 'srdce'))}>❤️ oblíbená</Chip>
+                <Chip aktivni={rychle.includes('hit')} onClick={() => setRychle(prepni(rychle, 'hit'))}>🔥 hity</Chip>
+                <Chip aktivni={rychle.includes('trendy')} onClick={() => setRychle(prepni(rychle, 'trendy'))}>📈 trendy</Chip>
+                <Chip aktivni={rychle.includes('original')} onClick={() => setRychle(prepni(rychle, 'original'))}>💎 originální</Chip>
+              </div>
+            </div>
 
             <div>
               <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-[#8a7f71]">Pro koho</p>
