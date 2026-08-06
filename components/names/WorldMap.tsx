@@ -29,6 +29,7 @@ const POZICE_ZEMI: Record<string, [number, number]> = {
   cz: [497, 122], sk: [520, 138], de: [478, 104], fr: [447, 133],
   it: [493, 156], es: [430, 155], gb: [441, 88],  se: [507, 68],
   jp: [872, 140], eg: [552, 225], us: [180, 140], br: [288, 360], au: [838, 392],
+  gr: [524, 168], pl: [513, 100], ca: [160, 78],  in: [700, 212], ar: [268, 428], nz: [905, 458],
 }
 
 const POPISKY: Record<KontinentId, [number, number]> = {

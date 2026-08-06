@@ -26,6 +26,12 @@ export const ZEME: Zeme[] = [
   { kod: 'us', nazev: 'USA',            vlajka: '🇺🇸', kontinent: 'severni-amerika', poznamka: 'Přátelská jména, která zná celý svět.' },
   { kod: 'br', nazev: 'Brazílie',       vlajka: '🇧🇷', kontinent: 'jizni-amerika',   poznamka: 'Sladká jména — med, popcorn i karamel.' },
   { kod: 'au', nazev: 'Austrálie',      vlajka: '🇦🇺', kontinent: 'australie',       poznamka: 'Pohodová jména z buše i od moře.' },
+  { kod: 'gr', nazev: 'Řecko',          vlajka: '🇬🇷', kontinent: 'evropa',          poznamka: 'Bohové Olympu, filozofové a jména psaná mýty.' },
+  { kod: 'pl', nazev: 'Polsko',         vlajka: '🇵🇱', kontinent: 'evropa',          poznamka: 'Srdečná jména od Baltu po Tatry — a slavní psi z večerníčků.' },
+  { kod: 'ca', nazev: 'Kanada',         vlajka: '🇨🇦', kontinent: 'severni-amerika', poznamka: 'Zimní jména — sníh, javor a polární záře.' },
+  { kod: 'in', nazev: 'Indie',          vlajka: '🇮🇳', kontinent: 'asie',            poznamka: 'Jména vonící kořením — král, perla i měsíční svit.' },
+  { kod: 'ar', nazev: 'Argentina',      vlajka: '🇦🇷', kontinent: 'jizni-amerika',   poznamka: 'Tango, pampy a jména se šarmem gaučů.' },
+  { kod: 'nz', nazev: 'Nový Zéland',    vlajka: '🇳🇿', kontinent: 'australie',       poznamka: 'Maorská jména plná moře, kapradin a ptačího zpěvu.' },
 ]
 
 export const zemePodleKodu = (kod: string) => ZEME.find(z => z.kod === kod)
@@ -867,6 +873,417 @@ pridej('au', 'papousek', [
 pridej('au', 'krecek', [
   ['Timtam', 'čokoládová sušenka — národní poklad', 80, ['hravé'], 'živá'],
   ['Digger', 'kopáč tunelů v hoblinách', 75, ['hravé'], 'živá'],
+])
+
+// ══ ŘECKO ════════════════════════════════════════════════════════════════════
+
+pridej('gr', 'kluk', [
+  ['Alexandros', 'obránce lidí — jméno velkého krále', 89, ['královské', 'tradiční'], 'živá', [2]],
+  ['Georgios',   'rolník — nejřečtější ze všech jmen', 88, ['tradiční'], 'vyvážená', [4]],
+  ['Dimitris',   'zasvěcený bohyni úrody', 86, ['tradiční'], 'vyvážená', [10]],
+  ['Nikos',      'vítěz — krátké a sebevědomé', 85, ['tradiční'], 'živá', [12]],
+  ['Ilias',      'můj Bůh je Hospodin — sluneční prorok', 83, ['tradiční'], 'klidná', [7]],
+  ['Stavros',    'kříž — pevný bod rodiny', 80, ['tradiční'], 'klidná', [9]],
+])
+pridej('gr', 'holka', [
+  ['Eleni',    'zářivá — světlo Řecka', 90, ['tradiční', 'elegantní'], 'vyvážená', [5]],
+  ['Maria',    'milovaná — středomořská stálice', 89, ['tradiční'], 'klidná', [8]],
+  ['Athina',   'bohyně moudrosti — jméno hlavního města', 87, ['mytologické', 'královské'], 'vyvážená', [3]],
+  ['Zoi',      'život — tři písmena, celý svět', 85, ['moderní'], 'živá', [1]],
+  ['Kalliopi', 'krásnohlasá múza epické poezie', 81, ['mytologické', 'elegantní'], 'klidná', [6]],
+  ['Despina',  'paní domu — noblesa v každém kroku', 79, ['tradiční', 'elegantní'], 'vyvážená', [11]],
+])
+pridej('gr', 'pes', [
+  ['Zeus',     'vládce Olympu — hromy na povel', 92, ['mytologické', 'královské'], 'živá', 'velké'],
+  ['Apollo',   'bůh slunce a hudby — zlatá srst povinná', 89, ['mytologické'], 'vyvážená', 'velké'],
+  ['Hermes',   'posel bohů — nejrychlejší z parku', 85, ['mytologické', 'sportovní'], 'živá', 'střední'],
+  ['Odysseus', 'lstivý mořeplavec — vždy najde cestu domů', 82, ['mytologické'], 'klidná', 'velké'],
+  ['Aris',     'bůh boje s měkkým srdcem', 80, ['mytologické'], 'živá', 'střední'],
+])
+pridej('gr', 'fenka', [
+  ['Athena',  'bohyně moudrosti — chytřejší než vy', 90, ['mytologické', 'královské'], 'vyvážená', 'velké'],
+  ['Hera',    'královna bohů — vládne domácnosti', 86, ['mytologické', 'královské'], 'klidná', 'velké'],
+  ['Artemis', 'bohyně lovu — les je její', 85, ['mytologické', 'sportovní'], 'živá', 'střední'],
+  ['Iris',    'bohyně duhy — barevná duše', 82, ['mytologické', 'přírodní'], 'vyvážená', 'malé'],
+  ['Gaia',    'matka země — klid sám', 80, ['mytologické', 'přírodní'], 'klidná', 'střední'],
+])
+pridej('gr', 'kocour', [
+  ['Platon',   'filozof podřimující na slunci', 84, ['mytologické', 'elegantní'], 'klidná'],
+  ['Sokrates', 'vím, že nic nevím — ale nažrat chci', 82, ['mytologické', 'hravé'], 'klidná'],
+  ['Feta',     'bílý jako sýr z Egeje', 80, ['hravé'], 'vyvážená'],
+  ['Ikaros',   'letí výš, než by měl — typicky kočičí', 78, ['mytologické', 'hravé'], 'živá'],
+])
+pridej('gr', 'kocka', [
+  ['Afrodita', 'bohyně krásy — a je si toho vědoma', 86, ['mytologické', 'elegantní'], 'klidná'],
+  ['Melina',   'medová — sladkost sama', 82, ['tradiční', 'hravé'], 'vyvážená'],
+  ['Olympia',  'z hory bohů — výš než ostatní', 79, ['mytologické', 'královské'], 'vyvážená'],
+  ['Kleio',    'múza dějin — pamatuje si každou křivdu', 77, ['mytologické'], 'klidná'],
+])
+pridej('gr', 'kun', [
+  ['Pegas',     'okřídlený kůň — skáče, jako by létal', 92, ['mytologické'], 'živá'],
+  ['Bukefalos', 'věrný kůň Alexandra Velikého', 84, ['mytologické', 'královské'], 'vyvážená'],
+])
+pridej('gr', 'kralik', [
+  ['Zorbas', 'tančí sirtaki mezi záhony', 78, ['hravé'], 'živá'],
+  ['Pita',   'kulaťoučký jako placka', 75, ['hravé'], 'klidná'],
+])
+pridej('gr', 'papousek', [
+  ['Sirtaki', 'tančí na bidýlku', 77, ['hravé'], 'živá'],
+  ['Homer',   'básník — recituje celé eposy', 75, ['mytologické', 'hravé'], 'živá'],
+])
+pridej('gr', 'krecek', [
+  ['Gyros',   'točí se v kolečku jako na grilu', 79, ['hravé'], 'živá'],
+  ['Baklava', 'sladký a vrstevnatý', 74, ['hravé'], 'vyvážená'],
+])
+
+// ══ POLSKO ═══════════════════════════════════════════════════════════════════
+
+pridej('pl', 'kluk', [
+  ['Antoni',     'neocenitelný — polská jednička', 91, ['tradiční'], 'vyvážená', [6]],
+  ['Aleksander', 'obránce lidí — velkolepé i domácké', 88, ['královské', 'tradiční'], 'vyvážená', [2]],
+  ['Franciszek', 'svobodný — vřelé jméno s úsměvem', 85, ['tradiční'], 'klidná', [10]],
+  ['Stanisław',  'ať upevní slávu — stará šlechta', 83, ['tradiční', 'královské'], 'klidná', [11]],
+  ['Wojtek',     'útěcha vojska — i slavný medvěd od Monte Cassina', 82, ['tradiční', 'hravé'], 'živá', [4]],
+  ['Marcel',     'malý bojovník s galantním šarmem', 80, ['moderní'], 'vyvážená', [1]],
+])
+pridej('pl', 'holka', [
+  ['Zuzanna', 'lilie — polská královna jmen', 90, ['tradiční', 'elegantní'], 'vyvážená', [8]],
+  ['Zofia',   'moudrost — babiččino jméno v plné slávě', 89, ['tradiční'], 'klidná', [5]],
+  ['Hanna',   'milostiplná — hladí už při vyslovení', 87, ['tradiční'], 'klidná', [7]],
+  ['Maja',    'májová víla', 86, ['přírodní', 'moderní'], 'živá', [5]],
+  ['Lena',    'zářivá — krátké a světové', 85, ['moderní'], 'vyvážená', [3]],
+  ['Wanda',   'kněžna z pověsti o Krakovu', 79, ['mytologické', 'tradiční'], 'vyvážená', [6]],
+])
+pridej('pl', 'pes', [
+  ['Burek',  'polský Alík — dobrák od kosti', 88, ['tradiční'], 'vyvážená', 'střední'],
+  ['Reksio', 'zvědavé štěně z legendárního večerníčku', 87, ['hravé', 'tradiční'], 'živá', 'malé'],
+  ['Azor',   'klasika polských dvorků', 84, ['tradiční'], 'vyvážená', 'velké'],
+  ['Szarik', 'chlupatý hrdina ze seriálu Čtyři z tanku a pes', 83, ['tradiční', 'hravé'], 'živá', 'velké'],
+  ['Fafik',  'šibal, co ukradne i srdce', 78, ['hravé'], 'živá', 'malé'],
+])
+pridej('pl', 'fenka', [
+  ['Saba',  'věrná společnice z románu V pouští a pralesem', 84, ['tradiční'], 'klidná', 'velké'],
+  ['Perła', 'perla — vzácnost na tlapkách', 81, ['elegantní'], 'vyvážená', 'střední'],
+  ['Mika',  'jemná duše s jiskrou', 80, ['moderní'], 'živá', 'malé'],
+  ['Figa',  'fík — sladká drzost', 78, ['hravé'], 'živá', 'malé'],
+  ['Zośka', 'domácká parádnice', 76, ['tradiční', 'hravé'], 'vyvážená', 'střední'],
+])
+pridej('pl', 'kocour', [
+  ['Filemon', 'bílé koťátko z pohádek — popleta k pomazlení', 86, ['hravé', 'tradiční'], 'klidná'],
+  ['Mruczek', 'polský Mourek — přede jako mlýnek', 84, ['tradiční'], 'klidná'],
+  ['Bonifacy','rozvážný starší parťák Filemona', 82, ['tradiční', 'hravé'], 'klidná'],
+  ['Klakier', 'tleská ocasem každé večeři', 74, ['hravé'], 'živá'],
+])
+pridej('pl', 'kocka', [
+  ['Kicia', 'kočičí něha po polsku', 82, ['tradiční', 'hravé'], 'klidná'],
+  ['Pusia', 'mazlík na plný úvazek', 80, ['hravé'], 'klidná'],
+  ['Mania', 'energie, co nejde vypnout', 78, ['hravé'], 'živá'],
+  ['Wisła', 'královna polských řek', 75, ['přírodní'], 'vyvážená'],
+])
+pridej('pl', 'kun', [
+  ['Kasztanka', 'legendární klisna maršála Piłsudského', 84, ['tradiční', 'královské'], 'vyvážená'],
+  ['Wicher',    'vichr — hříva ve větru', 80, ['přírodní', 'sportovní'], 'živá'],
+])
+pridej('pl', 'kralik', [
+  ['Marchewka', 'mrkvička — jméno rovnou od záhonu', 78, ['hravé'], 'živá'],
+  ['Pysia',     'čumáček k zulíbání', 74, ['hravé'], 'klidná'],
+])
+pridej('pl', 'papousek', [
+  ['Gadula', 'mluvka, co nezavře zobák', 77, ['hravé'], 'živá'],
+  ['Kesza',  'barevný švihák', 74, ['hravé'], 'živá'],
+])
+pridej('pl', 'krecek', [
+  ['Pączek',   'kobliha — kulaťoučký mls', 79, ['hravé'], 'vyvážená'],
+  ['Orzeszek', 'oříšek v tvářích', 75, ['hravé'], 'živá'],
+])
+
+// ══ KANADA ═══════════════════════════════════════════════════════════════════
+
+pridej('ca', 'kluk', [
+  ['Hudson',   'podle slavného zálivu — objevitel', 85, ['moderní', 'přírodní'], 'vyvážená', [9]],
+  ['Jasper',   'drahokam i národní park ve Skalistých horách', 84, ['přírodní', 'moderní'], 'klidná', [10]],
+  ['Nathan',   'dar od Boha — spolehlivý parťák', 83, ['tradiční'], 'vyvážená', [12]],
+  ['Maverick', 'svéhlavý dobrodruh', 81, ['moderní', 'sportovní'], 'živá', [7]],
+  ['Emmett',   'pravdomluvný — silný a tichý', 80, ['moderní'], 'klidná', [4]],
+  ['Rory',     'rudý král — zrzavé štěstí', 79, ['tradiční', 'hravé'], 'živá', [3]],
+])
+pridej('ca', 'holka', [
+  ['Nova',    'nová hvězda — i Nové Skotsko', 86, ['moderní', 'přírodní'], 'živá', [11]],
+  ['Violet',  'fialka — křehká a nezlomná', 85, ['přírodní', 'elegantní'], 'klidná', [3]],
+  ['Autumn',  'podzim — jméno barvy javorů', 84, ['přírodní'], 'klidná', [9, 10]],
+  ['Maple',   'javor — sladká jako sirup', 82, ['přírodní', 'hravé'], 'vyvážená', [10]],
+  ['Juniper', 'jalovec — voní lesem', 80, ['přírodní', 'moderní'], 'vyvážená', [6]],
+  ['Wren',    'střízlík — malý ptáček, velký hlas', 79, ['přírodní', 'moderní'], 'živá', [5]],
+])
+pridej('ca', 'pes', [
+  ['Yukon',   'zlatokopecká řeka severu — dobrodruh', 88, ['přírodní'], 'živá', 'velké'],
+  ['Bear',    'medvěd — velké srdce v kožichu', 86, ['přírodní'], 'klidná', 'velké'],
+  ['Koda',    'přítel — medvídek z Medvědích bratrů', 85, ['hravé', 'přírodní'], 'vyvážená', 'střední'],
+  ['Moose',   'los — největší parťák lesa', 84, ['přírodní', 'hravé'], 'klidná', 'velké'],
+  ['Chinook', 'teplý vítr z hor i kanadské tažné plemeno', 82, ['přírodní', 'tradiční'], 'živá', 'velké'],
+])
+pridej('ca', 'fenka', [
+  ['Juno',    'římská královna nebes — i oceněný film', 86, ['mytologické', 'moderní'], 'vyvážená', 'střední'],
+  ['Aspen',   'osika — hory a prašan', 85, ['přírodní', 'sportovní'], 'živá', 'střední'],
+  ['Tundra',  'severská pláň — nekonečná výdrž', 84, ['přírodní'], 'živá', 'velké'],
+  ['Winter',  'zima — bílá a tichá', 83, ['přírodní', 'elegantní'], 'klidná', 'velké'],
+  ['Neve',    'sníh — hebkost vloček', 80, ['přírodní', 'elegantní'], 'klidná', 'malé'],
+])
+pridej('ca', 'kocour', [
+  ['Puck',   'hokejový puk — po bytě jen sviští', 82, ['sportovní', 'hravé'], 'živá'],
+  ['Frost',  'mráz — chladná elegance, teplý klín', 81, ['přírodní', 'elegantní'], 'klidná'],
+  ['Grizzly','medvěd v kočičím vydání', 80, ['přírodní', 'hravé'], 'vyvážená'],
+  ['Timbit', 'koblížek z kanadské kavárny', 79, ['hravé'], 'klidná'],
+])
+pridej('ca', 'kocka', [
+  ['Nanuk', 'lední medvěd v inuitských příbězích', 83, ['mytologické', 'přírodní'], 'vyvážená'],
+  ['Sable', 'sobolí kožíšek', 80, ['přírodní', 'elegantní'], 'klidná'],
+  ['Ivory', 'slonovinově bílá', 78, ['elegantní'], 'klidná'],
+  ['Willa', 'odhodlaná ochránkyně gauče', 76, ['moderní'], 'vyvážená'],
+])
+pridej('ca', 'kun', [
+  ['Blizzard', 'sněhová bouře v plném trysku', 82, ['přírodní', 'sportovní'], 'živá'],
+  ['Cedar',    'cedr — klidná síla lesa', 75, ['přírodní'], 'klidná'],
+])
+pridej('ca', 'kralik', [
+  ['Snowball', 'sněhová koule s ušima', 82, ['hravé', 'přírodní'], 'živá'],
+  ['Thumper',  'Dupík z Bambiho — dupe pro radost', 84, ['hravé'], 'živá'],
+])
+pridej('ca', 'papousek', [
+  ['Piper', 'pískálek od jezera', 78, ['hravé', 'přírodní'], 'živá'],
+  ['Huron', 'jméno velkého jezera', 73, ['přírodní'], 'vyvážená'],
+])
+pridej('ca', 'krecek', [
+  ['Poutine', 'národní pochoutka — hranolky se sýrem', 78, ['hravé'], 'vyvážená'],
+  ['Nugget',  'zlatý valounek', 76, ['hravé'], 'živá'],
+])
+
+// ══ INDIE ════════════════════════════════════════════════════════════════════
+
+pridej('in', 'kluk', [
+  ['Aarav',  'klidný a moudrý — indická jednička', 89, ['moderní'], 'klidná', [1]],
+  ['Arjun',  'zářivý lučištník z Mahábháraty', 88, ['mytologické', 'tradiční'], 'živá', [5]],
+  ['Vihaan', 'úsvit — začátek nového dne', 86, ['moderní', 'přírodní'], 'vyvážená', [3]],
+  ['Rohan',  'vzestupný — stoupá výš', 84, ['tradiční'], 'vyvážená', [8]],
+  ['Dev',    'božský — tři písmena požehnání', 82, ['mytologické'], 'klidná', [10]],
+  ['Kiran',  'paprsek světla', 80, ['přírodní'], 'vyvážená', [6]],
+])
+pridej('in', 'holka', [
+  ['Aanya',  'nevyčerpatelná laskavost', 87, ['moderní'], 'vyvážená', [2]],
+  ['Diya',   'lampička — světlo svátku Diwali', 86, ['tradiční', 'přírodní'], 'klidná', [10, 11]],
+  ['Priya',  'milovaná — něha v každé slabice', 85, ['tradiční'], 'klidná', [7]],
+  ['Asha',   'naděje — jméno, které drží', 83, ['tradiční'], 'vyvážená', [4]],
+  ['Meera',  'oddaná básnířka — hudba sama', 82, ['tradiční', 'elegantní'], 'klidná', [9]],
+  ['Indira', 'měsíční krása — jméno první premiérky', 79, ['královské', 'tradiční'], 'vyvážená', [11]],
+])
+pridej('in', 'pes', [
+  ['Raja',  'král — vládne dvorku i srdci', 87, ['královské', 'tradiční'], 'vyvážená', 'velké'],
+  ['Sheru', 'lvíček — klasika indických ulic', 85, ['tradiční', 'hravé'], 'živá', 'střední'],
+  ['Moti',  'perla — tradiční jméno věrných psů', 84, ['tradiční'], 'klidná', 'střední'],
+  ['Shera', 'tygří síla', 81, ['přírodní'], 'živá', 'velké'],
+  ['Badal', 'mrak — tichý pozorovatel', 78, ['přírodní'], 'klidná', 'velké'],
+])
+pridej('in', 'fenka', [
+  ['Rani',    'královna — a všichni to vědí', 86, ['královské', 'tradiční'], 'vyvážená', 'střední'],
+  ['Chandni', 'měsíční svit na srsti', 82, ['přírodní', 'elegantní'], 'klidná', 'střední'],
+  ['Laila',   'noc — tmavá kráska', 81, ['tradiční', 'elegantní'], 'klidná', 'velké'],
+  ['Gauri',   'zářivá bohyně — jemnost sama', 79, ['mytologické'], 'vyvážená', 'malé'],
+  ['Mithi',   'sladká — mls na čtyřech tlapkách', 77, ['hravé'], 'živá', 'malé'],
+])
+pridej('in', 'kocour', [
+  ['Billu',  'lidový kočičí hrdina', 82, ['tradiční', 'hravé'], 'vyvážená'],
+  ['Kaju',   'kešu oříšek — křupavá dobrota', 80, ['hravé'], 'klidná'],
+  ['Chotu',  'prcek s velkými plány', 78, ['hravé'], 'živá'],
+  ['Bindas', 'bezstarostný frajer', 75, ['hravé', 'moderní'], 'živá'],
+])
+pridej('in', 'kocka', [
+  ['Chai',   'čaj s mlékem — hřeje na klíně', 82, ['hravé'], 'klidná'],
+  ['Mausi',  'kočička — něžné oslovení', 80, ['tradiční'], 'klidná'],
+  ['Kali',   'mocná bohyně — černá jako noc', 79, ['mytologické'], 'živá'],
+  ['Meethi', 'sladká jako laddu', 76, ['hravé'], 'vyvážená'],
+])
+pridej('in', 'kun', [
+  ['Chetak', 'legendární věrný kůň mahárány Pratápa', 88, ['mytologické', 'královské'], 'živá'],
+  ['Toofan', 'bouře napříč plání', 80, ['přírodní', 'sportovní'], 'živá'],
+])
+pridej('in', 'kralik', [
+  ['Gajar', 'mrkev po hindsku', 76, ['hravé'], 'živá'],
+  ['Sufi',  'tichý mystik s dlouhýma ušima', 74, ['tradiční'], 'klidná'],
+])
+pridej('in', 'papousek', [
+  ['Mitthu', 'nejklasičtější jméno indických papoušků', 84, ['tradiční', 'hravé'], 'živá'],
+  ['Hira',   'diamant v peří', 76, ['elegantní'], 'vyvážená'],
+])
+pridej('in', 'krecek', [
+  ['Laddu',  'kulatá sladkost — jako on', 80, ['hravé'], 'vyvážená'],
+  ['Chintu', 'drobeček plný rošťáren', 75, ['hravé'], 'živá'],
+])
+
+// ══ ARGENTINA ════════════════════════════════════════════════════════════════
+
+pridej('ar', 'kluk', [
+  ['Mateo',    'dar od Boha — vládne žebříčkům', 89, ['tradiční'], 'vyvážená', [9]],
+  ['Thiago',   'následovník — fotbalové jméno', 87, ['moderní', 'sportovní'], 'živá', [7]],
+  ['Benjamín', 'syn štěstí — benjamínek rodiny', 85, ['tradiční'], 'klidná', [3]],
+  ['Santino',  'svatouš s jiskrou v oku', 83, ['moderní'], 'živá', [11]],
+  ['Bautista', 'křtitel — jméno se zvonem', 82, ['tradiční'], 'vyvážená', [6]],
+  ['Felipe',   'milovník koní — gaučo od kolébky', 80, ['tradiční'], 'vyvážená', [5]],
+])
+pridej('ar', 'holka', [
+  ['Catalina', 'čistá — perla Buenos Aires', 88, ['tradiční', 'elegantní'], 'vyvážená', [11]],
+  ['Isabella', 'zasvěcená Bohu — jižní grácie', 86, ['elegantní', 'královské'], 'klidná', [7]],
+  ['Delfina',  'delfínka — typicky argentinský půvab', 85, ['elegantní', 'přírodní'], 'vyvážená', [4]],
+  ['Alma',     'duše — jméno jako vydechnutí', 84, ['moderní', 'elegantní'], 'klidná', [8]],
+  ['Josefina', 'ať Bůh přidá — noblesa pamp', 82, ['tradiční'], 'vyvážená', [3]],
+  ['Milagros', 'zázraky — a dělá je denně', 80, ['tradiční'], 'živá', [12]],
+])
+pridej('ar', 'pes', [
+  ['Tango',    'tanec Buenos Aires — vášeň na čtyřech nohách', 86, ['hravé', 'elegantní'], 'živá', 'střední'],
+  ['Firulais', 'legendární jméno všech jihoamerických voříšků', 84, ['tradiční', 'hravé'], 'vyvážená', 'střední'],
+  ['Gaucho',   'jezdec pamp — věrný a otužilý', 83, ['tradiční'], 'vyvážená', 'velké'],
+  ['Che',      'kamaráde! — oslovení, ze kterého je jméno', 81, ['hravé', 'moderní'], 'živá', 'malé'],
+  ['Cacho',    'domácký dobrák', 76, ['tradiční'], 'klidná', 'velké'],
+])
+pridej('ar', 'fenka', [
+  ['Dulce',   'sladká jako dulce de leche', 84, ['hravé'], 'klidná', 'malé'],
+  ['Pampa',   'nekonečná rovina — běžkyně', 82, ['přírodní', 'sportovní'], 'živá', 'velké'],
+  ['Morocha', 'tmavovláska z milongy', 79, ['tradiční', 'elegantní'], 'vyvážená', 'střední'],
+  ['Milonga', 'píseň předměstí — tančí při chůzi', 78, ['hravé', 'elegantní'], 'vyvážená', 'střední'],
+  ['Fiesta',  'oslava každého příchodu domů', 77, ['hravé'], 'živá', 'malé'],
+])
+pridej('ar', 'kocour', [
+  ['Mate',   'hořký čaj z dýňky — národní rituál', 84, ['tradiční', 'hravé'], 'klidná'],
+  ['Gardel', 'král tanga — zpívá za úplňku', 82, ['tradiční', 'elegantní'], 'vyvážená'],
+  ['Tito',   'lidový šarmér', 79, ['hravé'], 'živá'],
+  ['Bigote', 'knírač — vousky na parádu', 77, ['hravé'], 'klidná'],
+])
+pridej('ar', 'kocka', [
+  ['Perlita',  'perlička Río de la Plata', 81, ['elegantní'], 'klidná'],
+  ['Chiquita', 'drobečka s temperamentem', 79, ['hravé'], 'živá'],
+  ['Mimosa',   'mazlivá květinka', 78, ['přírodní', 'hravé'], 'klidná'],
+  ['Manteca',  'máslová — rozpouští se na slunci', 76, ['hravé'], 'klidná'],
+])
+pridej('ar', 'kun', [
+  ['Mancha',  'slavný kůň, který došel z pamp až do New Yorku', 86, ['tradiční', 'sportovní'], 'vyvážená'],
+  ['Criollo', 'houževnaté plemeno gaučů', 78, ['tradiční'], 'vyvážená'],
+])
+pridej('ar', 'kralik', [
+  ['Alfajor',  'sušenková sladkost s karamelem', 78, ['hravé'], 'klidná'],
+  ['Pochoclo', 'popcorn — skáče z pánve', 75, ['hravé'], 'živá'],
+])
+pridej('ar', 'papousek', [
+  ['Charly', 'rockér argentinských balkonů', 76, ['moderní', 'hravé'], 'živá'],
+  ['Pepe',   'upovídaný soused', 74, ['hravé'], 'živá'],
+])
+pridej('ar', 'krecek', [
+  ['Ñoqui',  'noková kulička', 76, ['hravé'], 'vyvážená'],
+  ['Turrón', 'nugátová dobrota', 73, ['hravé'], 'klidná'],
+])
+
+// ══ NOVÝ ZÉLAND ══════════════════════════════════════════════════════════════
+
+pridej('nz', 'kluk', [
+  ['Oliver', 'olivovník — jednička i na Zélandu', 89, ['tradiční'], 'vyvážená', [7]],
+  ['Tane',   'maorský bůh lesů a ptáků', 85, ['mytologické', 'přírodní'], 'klidná', [9]],
+  ['Nikau',  'jediná novozélandská palma — jižní elegance', 82, ['přírodní'], 'vyvážená', [1]],
+  ['Kauri',  'obří posvátný strom', 81, ['přírodní'], 'klidná', [6]],
+  ['Beau',   'krasavec — krátké a švihácké', 80, ['moderní'], 'živá', [2]],
+  ['Ryder',  'jezdec vln', 79, ['moderní', 'sportovní'], 'živá', [12]],
+])
+pridej('nz', 'holka', [
+  ['Isla',   'ostrov — jméno jako příboj', 89, ['přírodní'], 'klidná', [8]],
+  ['Aroha',  'láska — nejkrásnější maorské slovo', 88, ['tradiční', 'elegantní'], 'klidná', [2]],
+  ['Maia',   'odvážná — jasná hvězda Plejád', 85, ['mytologické', 'moderní'], 'živá', [5]],
+  ['Amaia',  'konec i začátek — melodie sama', 83, ['moderní'], 'vyvážená', [4]],
+  ['Kiri',   'kůra stromu — i slavná operní pěvkyně', 81, ['přírodní', 'elegantní'], 'vyvážená', [3]],
+  ['Tui',    'zpěvný pták s bílým límečkem', 79, ['přírodní', 'hravé'], 'živá', [10]],
+])
+pridej('nz', 'pes', [
+  ['Koru',  'spirála mladé kapradiny — nový začátek', 83, ['přírodní'], 'vyvážená', 'střední'],
+  ['Chase', 'honič ovcí i míčků', 82, ['sportovní', 'hravé'], 'živá', 'střední'],
+  ['Tama',  'syn — maorská klasika', 80, ['tradiční'], 'vyvážená', 'střední'],
+  ['Hemi',  'maorský James — pohodář', 78, ['tradiční'], 'klidná', 'velké'],
+  ['Rimu',  'jehličnan deštných lesů', 76, ['přírodní'], 'klidná', 'velké'],
+])
+pridej('nz', 'fenka', [
+  ['Moana', 'oceán — dcera vln', 88, ['přírodní', 'mytologické'], 'živá', 'střední'],
+  ['Kea',   'nejchytřejší papoušek světa — horská rošťanda', 84, ['přírodní', 'hravé'], 'živá', 'střední'],
+  ['Hina',  'měsíční bohyně Polynésie', 80, ['mytologické', 'elegantní'], 'klidná', 'malé'],
+  ['Awa',   'řeka — plyne klidně', 78, ['přírodní'], 'klidná', 'střední'],
+  ['Pipi',  'mušlička z pláže', 76, ['hravé'], 'živá', 'malé'],
+])
+pridej('nz', 'kocour', [
+  ['Mittens', 'wellingtonský kocour, kterého zná celá země', 88, ['hravé'], 'vyvážená'],
+  ['Rangi',   'nebeský otec z maorských mýtů', 80, ['mytologické'], 'klidná'],
+  ['Smudge',  'šmouha na gauči', 78, ['hravé'], 'klidná'],
+  ['Kahu',    'jestřáb — pozorovatel z výšky', 76, ['přírodní'], 'vyvážená'],
+])
+pridej('nz', 'kocka', [
+  ['Marama', 'měsíc nad zátokou', 79, ['mytologické', 'přírodní'], 'klidná'],
+  ['Tia',    'jiskřička', 78, ['moderní'], 'živá'],
+  ['Pixie',  'skřítek s drápky', 77, ['hravé'], 'živá'],
+  ['Zena',   'bojovnice — princezna gauče', 76, ['hravé'], 'vyvážená'],
+])
+pridej('nz', 'kun', [
+  ['Aotea', 'bílý oblak — jako název země Aotearoa', 80, ['přírodní', 'mytologické'], 'vyvážená'],
+  ['Blaze', 'lysina i plamen', 77, ['sportovní'], 'živá'],
+])
+pridej('nz', 'kralik', [
+  ['Manuka', 'keř nejslavnějšího medu', 80, ['přírodní', 'hravé'], 'klidná'],
+  ['Flopsy', 'ouška do všech stran', 77, ['hravé'], 'živá'],
+])
+pridej('nz', 'papousek', [
+  ['Kaka',  'hlučný lesní papoušek — místní originál', 78, ['přírodní', 'hravé'], 'živá'],
+  ['Tiki',  'talisman pro štěstí', 76, ['mytologické', 'hravé'], 'vyvážená'],
+])
+pridej('nz', 'krecek', [
+  ['Pavlova', 'národní dezert — sladký spor s Austrálií', 77, ['hravé'], 'klidná'],
+  ['Kumara',  'sladká brambora', 74, ['hravé', 'přírodní'], 'vyvážená'],
+])
+
+// ══ ROZŠÍŘENÍ — slavní psi, historie a zimní jména ═══════════════════════════
+
+pridej('us', 'pes', [
+  ['Balto',  'husky, který v roce 1925 dovezl sérum do Nome', 91, ['tradiční', 'sportovní'], 'živá', 'velké'],
+  ['Togo',   'skutečný hrdina séroběhu — uběhl nejdelší úsek', 89, ['tradiční', 'sportovní'], 'živá', 'střední'],
+  ['Snoopy', 'nejslavnější bígl světa — snílek na boudě', 90, ['hravé'], 'vyvážená', 'střední'],
+  ['Scooby', 'strašpytel s velkým srdcem — doga z animáku', 88, ['hravé'], 'klidná', 'velké'],
+  ['Marley', 'nezvladatelný labrador z knihy i filmu', 85, ['hravé'], 'živá', 'velké'],
+  ['Shadow', 'moudrý zlatý retrívr z Cesty domů', 83, ['tradiční'], 'klidná', 'velké'],
+  ['Denali', 'nejvyšší hora severu — pes velkých výšek', 81, ['přírodní'], 'vyvážená', 'velké'],
+])
+pridej('us', 'fenka', [
+  ['Lassie', 'nejvěrnější kolie filmové historie', 90, ['tradiční'], 'vyvážená', 'střední'],
+  ['Aurora', 'polární záře — světlo severní oblohy', 84, ['přírodní', 'elegantní'], 'klidná', 'velké'],
+])
+pridej('gb', 'pes', [
+  ['Bobby', 'skotský teriér, který 14 let hlídal hrob svého pána', 85, ['tradiční'], 'klidná', 'malé'],
+  ['Pongo', 'tatínek 101 dalmatinů', 83, ['hravé'], 'vyvážená', 'velké'],
+])
+pridej('gb', 'fenka', [
+  ['Lady',  'dáma z filmu Lady a Tramp', 86, ['elegantní', 'tradiční'], 'klidná', 'malé'],
+  ['Honey', 'medová srst zlatých retrívrů', 84, ['hravé', 'přírodní'], 'vyvážená', 'velké'],
+])
+pridej('de', 'pes', [
+  ['Blitz', 'blesk — povel rychlejší než zvuk', 82, ['sportovní'], 'živá', 'velké'],
+])
+pridej('se', 'pes', [
+  ['Odin', 'vládce severských bohů — jedno oko, vševědoucí', 87, ['mytologické', 'královské'], 'vyvážená', 'velké'],
+])
+pridej('se', 'fenka', [
+  ['Ylva', 'vlčice — divoká krev severu', 82, ['mytologické', 'přírodní'], 'živá', 'velké'],
+])
+pridej('jp', 'pes', [
+  ['Shiro', 'bílý — sněhová srst', 81, ['přírodní', 'tradiční'], 'klidná', 'střední'],
+])
+pridej('cz', 'kun', [
+  ['Bělka', 'bílá klisnička z pohádek', 76, ['tradiční', 'přírodní'], 'klidná'],
+])
+pridej('gb', 'kun', [
+  ['Copenhagen', 'kůň vévody z Wellingtonu — veterán od Waterloo', 80, ['tradiční', 'královské'], 'vyvážená'],
+])
+pridej('us', 'kun', [
+  ['Comanche', 'legendární kavaleristický kůň, který přežil Little Bighorn', 82, ['tradiční'], 'vyvážená'],
 ])
 
 export const JMENA: Jmeno[] = vsechna

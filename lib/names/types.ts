@@ -62,6 +62,8 @@ export interface Plemeno {
   /** kód země původu plemene */
   puvod: string
   popis: string
+  /** ručně vybraná jména na míru plemeni (historie, film, mytologie…) — v pořadí doporučení */
+  doporucena?: string[]
 }
 
 export const KATEGORIE_INFO: Record<Kategorie, { nazev: string; mnozne: string; emoji: string }> = {

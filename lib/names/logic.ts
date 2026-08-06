@@ -79,17 +79,22 @@ export function filtruj(jmena: Jmeno[], f: Filtr): Jmeno[] {
   })
 }
 
-/** Jména vhodná pro dané plemeno: velikost (u psů), energie, styl a bonus za zemi původu. */
+/** Jména vhodná pro dané plemeno: nejdřív ručně doporučená (historie, film,
+ *  zima…), pak podle velikosti, energie, stylu a země původu plemene. */
 export function jmenaProPlemeno(jmena: Jmeno[], plemeno: Plemeno): Jmeno[] {
+  const doporucena = new Map((plemeno.doporucena ?? []).map((n, i) => [n.toLowerCase(), i]))
   const kandidati = jmena.filter(j => {
     if (plemeno.druh === 'pes' && j.kategorie !== 'pes' && j.kategorie !== 'fenka') return false
     if (plemeno.druh === 'kocka' && j.kategorie !== 'kocour' && j.kategorie !== 'kocka') return false
-    if (plemeno.velikost && j.velikost && j.velikost !== plemeno.velikost) return false
+    if (plemeno.velikost && j.velikost && j.velikost !== plemeno.velikost
+        && !doporucena.has(j.jmeno.toLowerCase())) return false
     return true
   })
   const skore = (j: Jmeno) => {
     let s = j.popularita
-    if (j.zeme === plemeno.puvod) s += 25            // jméno z domoviny plemene
+    const kurator = doporucena.get(j.jmeno.toLowerCase())
+    if (kurator !== undefined) s += 500 - kurator * 5 // kurátorský výběr drží pořadí na špici
+    if (j.zeme === plemeno.puvod) s += 25             // jméno z domoviny plemene
     if (j.energie === plemeno.energie) s += 15
     s += j.styly.filter(st => plemeno.styly.includes(st)).length * 10
     return s
