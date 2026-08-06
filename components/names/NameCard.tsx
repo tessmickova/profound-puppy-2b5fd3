@@ -1,6 +1,6 @@
 'use client'
 
-import { KATEGORIE_INFO } from '@/lib/names/types'
+import { KATEGORIE_INFO, POHLAVI_INFO } from '@/lib/names/types'
 import type { Jmeno } from '@/lib/names/types'
 import { jeMezinarodni, zemePodleKodu } from '@/lib/names/data'
 import { dobreSeVola, jeHit, jeOriginal, jeTrendy, povelKolize } from '@/lib/names/logic'
@@ -27,6 +27,9 @@ export function Stitky({ jmeno }: { jmeno: Jmeno }) {
       )}
       {jmeno.unisex && (
         <span className="rounded-full bg-[#eef2e4] px-2 py-0.5 text-[11px] font-semibold text-[#5f7233]" title="Používá se pro kluky i holčičky">⚪ unisex</span>
+      )}
+      {jmeno.pohlavi === 'unisex' && (
+        <span className="rounded-full bg-[#eef2e4] px-2 py-0.5 text-[11px] font-semibold text-[#5f7233]" title="Hodí se samci i samičce">⚥ pro obě pohlaví</span>
       )}
       {jeMezinarodni(jmeno) && (
         <span className="rounded-full bg-[#e4f0f4] px-2 py-0.5 text-[11px] font-semibold text-[#2f6f84]" title="Používá se ve více zemích — funguje i v zahraničí">🌍 mezinárodní</span>
@@ -65,8 +68,17 @@ export default function NameCard({ jmeno, poradi }: { jmeno: Jmeno; poradi?: num
           {jmeno.jmeno}
         </h3>
         <div className="flex items-center gap-1.5">
-          <span className="whitespace-nowrap text-sm" title={`${kat.nazev} · ${zeme?.nazev ?? ''}`}>
-            {kat.emoji} {zeme?.vlajka}
+          <span
+            className="whitespace-nowrap text-sm"
+            title={`${kat.nazev}${jmeno.pohlavi ? ` · ${POHLAVI_INFO[jmeno.pohlavi].nazev}` : ''} · ${zeme?.nazev ?? ''}`}
+          >
+            {kat.emoji}
+            {jmeno.pohlavi && jmeno.pohlavi !== 'unisex' && (
+              <span className={jmeno.pohlavi === 'samec' ? 'text-[#4a5c7d]' : 'text-[#8a4a63]'}>
+                {POHLAVI_INFO[jmeno.pohlavi].znak}
+              </span>
+            )}
+            {' '}{zeme?.vlajka}
           </span>
           <Srdicko id={jmeno.id} />
         </div>

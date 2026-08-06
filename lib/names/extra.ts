@@ -40,3 +40,37 @@ export const SVATKY_CZ: Record<string, string> = {
 
 /** Jména používaná pro kluky i holčičky. */
 export const UNISEX = new Set(['kai', 'billie', 'rory', 'wren', 'maia', 'nova'])
+
+// ── pohlaví zvířecích jmen ───────────────────────────────────────────────────
+// Psi a kocouři jsou samci, fenky a kočky samice — u koní, králíků, papoušků
+// a křečků je pohlaví u jména vypsané zde. Co není v seznamu, bereme jako samce.
+
+export const SAMICE_ZVIRE = new Set([
+  // koně
+  'ryzka', 'hviezda', 'etoile', 'furia', 'estrela', 'kasztanka', 'belka',
+  // králíci
+  'mrkvicka', 'mohre', 'carota', 'pita', 'marchewka', 'pysia', 'cenoura', 'flopsy',
+  // papoušci
+  'lora', 'kiki', 'polly', 'kajsa', 'zuzu', 'sissa', 'kesza', 'hira',
+  // křečci
+  'krupka', 'biscotte', 'nocciola', 'bolita', 'kurumi', 'pacoca', 'baklava', 'pavlova',
+])
+
+/** Zvířecí jména, která stejně dobře sednou samci i samičce. */
+export const UNISEX_ZVIRE = new Set([
+  // koně
+  'norr', 'kaze', 'hikari', 'dakota', 'waler', 'blizzard', 'cedar', 'criollo', 'aotea', 'blaze',
+  // králíci
+  'clover', 'skutt', 'morot', 'mochi', 'usagi', 'fulful', 'biscuit', 'gumnut',
+  'snowball', 'gajar', 'sufi', 'manuka',
+  // papoušci
+  'pirko', 'coco', 'verde', 'pip', 'piko', 'aozora', 'sunny', 'echo', 'zabele',
+  'kiwi', 'skippy', 'sirtaki', 'gadula', 'piper', 'kaka', 'tiki',
+  // křečci
+  'krumel', 'nibbles', 'plutten', 'chibi', 'simsim', 'tamr', 'peanut', 'timtam',
+  'poutine', 'nugget', 'laddu', 'kumara',
+  // psi, fenky, kocouři a kočky, kde jméno funguje pro obě pohlaví
+  'shadow', 'skye', 'maru', 'kuro', 'shiro', 'yuki', 'sora', 'momo', 'tama', 'fuku',
+  'koru', 'chase', 'bluey', 'ziggy', 'smokey', 'misty', 'pepper', 'oreo', 'rio',
+  'winter', 'frost', 'aspen', 'nala', 'loki', 'mel', 'kea',
+])

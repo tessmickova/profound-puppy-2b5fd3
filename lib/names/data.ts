@@ -1,8 +1,8 @@
 // Kurátorovaný katalog nejlíbivějších jmen podle zemí — zvířata i děti.
 // Popularita je redakční skóre líbivosti 0–100 (kombinace tamních žebříčků a zvuku jména).
 
-import type { Energie, Jmeno, Kategorie, Kontinent, Styl, Velikost, Zeme } from './types'
-import { DOMACKY, SVATKY_CZ, UNISEX } from './extra'
+import type { Energie, Jmeno, Kategorie, Kontinent, PohlaviZvirete, Styl, Velikost, Zeme } from './types'
+import { DOMACKY, SAMICE_ZVIRE, SVATKY_CZ, UNISEX, UNISEX_ZVIRE } from './extra'
 
 export const KONTINENTY: Kontinent[] = [
   { id: 'evropa',          nazev: 'Evropa',              popis: 'Tradice svátků, jmeniny a klasika, která nestárne.' },
@@ -61,6 +61,19 @@ type RadekDite = [string, string, number, Styl[], Energie, number[]?]
 let poradi = 0
 const vsechna: Jmeno[] = []
 
+const SAMCI_KATEGORIE: Kategorie[] = ['pes', 'kocour']
+const SAMICI_KATEGORIE: Kategorie[] = ['fenka', 'kocka']
+
+function pohlaviZvirete(jmeno: string, kategorie: Kategorie): PohlaviZvirete | undefined {
+  if (kategorie === 'kluk' || kategorie === 'holka') return undefined
+  const k = klic(jmeno)
+  if (UNISEX_ZVIRE.has(k)) return 'unisex'
+  if (SAMICE_ZVIRE.has(k)) return 'samice'
+  if (SAMCI_KATEGORIE.includes(kategorie)) return 'samec'
+  if (SAMICI_KATEGORIE.includes(kategorie)) return 'samice'
+  return 'samec'
+}
+
 function pridej(zeme: string, kategorie: Kategorie, radky: (RadekZvire | RadekDite)[]) {
   const jePes = kategorie === 'pes' || kategorie === 'fenka'
   const jeDite = kategorie === 'kluk' || kategorie === 'holka'
@@ -77,6 +90,7 @@ function pridej(zeme: string, kategorie: Kategorie, radky: (RadekZvire | RadekDi
       domacky: jeDite ? DOMACKY[k] : undefined,
       svatek: jeDite && zeme === 'cz' ? SVATKY_CZ[k] : undefined,
       unisex: jeDite && UNISEX.has(k) ? true : undefined,
+      pohlavi: pohlaviZvirete(jmeno, kategorie),
     })
   }
 }

@@ -14,8 +14,8 @@ export default function DetiStranka() {
     <Shell>
       <h1 className="mb-2 [font-family:var(--font-syne)] text-3xl font-extrabold">Jména pro děti</h1>
       <p className="mb-8 max-w-2xl text-[#6b6156]">
-        Procházejte jména podle zemí a stylů, nebo zadejte příjmení a měsíc narození —
-        a my vybereme jen ty nejlepší shody, které ladí zvukem i rytmem.
+        Procházejte jména podle zemí a stylů, nebo zadejte příjmení, jména rodičů
+        a sourozence — a my vybereme jen ty nejlepší shody, které ladí s celou rodinou.
       </p>
       <Suspense>
         <DetiFinder />

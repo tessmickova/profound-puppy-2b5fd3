@@ -1,6 +1,6 @@
 // Filtrování, řazení a hledání nejlepších shod (příjmení, měsíc narození, styl).
 
-import type { Energie, Jmeno, Kategorie, Styl, Velikost } from './types'
+import type { Energie, Jmeno, Kategorie, PohlaviZvirete, Styl, Velikost } from './types'
 import type { Plemeno } from './types'
 
 export const kolator = new Intl.Collator('cs')
@@ -112,6 +112,8 @@ export interface Filtr {
   styly: Styl[]
   energie: Energie[]
   velikosti: Velikost[]
+  /** u zvířat: pro samce, samičku, nebo obojí */
+  pohlavi: PohlaviZvirete[]
   pismeno: string | null
   konciNa: string | null
   maxDelka: number | null
@@ -120,12 +122,19 @@ export interface Filtr {
 }
 
 export const PRAZDNY_FILTR: Filtr = {
-  kategorie: [], zeme: [], styly: [], energie: [], velikosti: [],
+  kategorie: [], zeme: [], styly: [], energie: [], velikosti: [], pohlavi: [],
   pismeno: null, konciNa: null, maxDelka: null, maxSlabiky: null, hledat: '',
 }
 
 const bezDiakritiky = (s: string) =>
   s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+
+/** Filtr pohlaví u zvířat — unisex jména se ukazují u samců i samiček. */
+export function sedneNaPohlavi(j: Jmeno, vybrana: PohlaviZvirete[]): boolean {
+  if (!vybrana.length || !j.pohlavi) return true
+  if (j.pohlavi === 'unisex') return true
+  return vybrana.includes(j.pohlavi)
+}
 
 export function filtruj(jmena: Jmeno[], f: Filtr): Jmeno[] {
   const hledat = bezDiakritiky(f.hledat.trim())
@@ -135,6 +144,7 @@ export function filtruj(jmena: Jmeno[], f: Filtr): Jmeno[] {
     if (f.styly.length && !f.styly.some(s => j.styly.includes(s))) return false
     if (f.energie.length && !f.energie.includes(j.energie)) return false
     if (f.velikosti.length && j.velikost && !f.velikosti.includes(j.velikost)) return false
+    if (f.pohlavi?.length && !sedneNaPohlavi(j, f.pohlavi)) return false
     if (f.pismeno && bezDiakritiky(j.jmeno[0]) !== bezDiakritiky(f.pismeno)) return false
     if (f.konciNa && bezDiakritiky(j.jmeno[j.jmeno.length - 1]) !== bezDiakritiky(f.konciNa)) return false
     if (f.maxDelka && j.delka > f.maxDelka) return false
@@ -199,15 +209,18 @@ export interface VstupShody {
   mesic: number | null       // 1–12, null = nezadáno
   styly: Styl[]
   zeme: string[]
-  /** jména rodičů — jméno dítěte má ladit s celou rodinou */
+  /** jména rodičů a sourozence — jméno dítěte má ladit s celou rodinou */
   maminka?: string
   tatinek?: string
+  sourozenec?: string
 }
 
 export interface Shoda {
   jmeno: Jmeno
   skore: number              // 0–100
   duvody: string[]
+  /** štítek „ladí s oběma rodiči / s celou rodinou", když jsou zadaní členové rodiny */
+  rodinnyStitek?: { text: string; popis: string } | null
 }
 
 const SAMOHLASKY = 'aáeéěiíoóuúůyý'
@@ -312,71 +325,109 @@ function jePodobaJmena(a: string, b: string): boolean {
   return spolecne >= 4
 }
 
-/** Jak jméno dítěte ladí se jmény rodičů (0–100) — styl, původ, rytmus, podoba. */
-export function rodinnaHarmonie(
-  j: Jmeno, maminka: string, tatinek: string, jmena: Jmeno[],
-): { body: number; duvody: string[] } {
+export interface ClenProShodu {
+  jmeno: string
+  /** 'maminka' | 'tatínek' | 'sourozenec' — kdo to v rodině je */
+  kdo: string
+  /** druhý pád pro věty: „jméno maminky" */
+  koho: string
+}
+
+export interface RodinnaShoda {
+  body: number
+  duvody: string[]
+  /** členové rodiny, se kterými jméno prokazatelně ladí */
+  ladiS: string[]
+  /** počet členů, proti kterým se hodnotilo */
+  zClenu: number
+}
+
+/** Jak jméno ladí se jmény rodičů a sourozence — styl, původ, rytmus, podoba. */
+export function rodinnaHarmonie(j: Jmeno, clenove: ClenProShodu[], jmena: Jmeno[]): RodinnaShoda {
   let body = 70
   const duvody: string[] = []
-  const rodice = [
-    { jmeno: maminka, kdo: 'maminka', koho: 'maminky' },
-    { jmeno: tatinek, kdo: 'tatínek', koho: 'tatínka' },
-  ].filter(r => r.jmeno)
+  const ladiS: string[] = []
+  const rodina = clenove.filter(c => c.jmeno.trim())
 
-  for (const rodic of rodice) {
-    const klicR = bezDiakritiky(rodic.jmeno)
+  for (const clen of rodina) {
+    const klicC = bezDiakritiky(clen.jmeno)
+    let sladeno = 0  // kladné signály minus záporné pro tohoto člena
 
-    if (bezDiakritiky(j.jmeno) === klicR) {
+    if (bezDiakritiky(j.jmeno) === klicC) {
       body -= 15
-      duvody.push(`úplně stejné jméno jako ${rodic.kdo} se doma plete`)
+      duvody.push(`úplně stejné jméno jako ${clen.kdo} se doma plete`)
       continue
     }
-    if (jePodobaJmena(j.jmeno, rodic.jmeno)) {
-      body += 14
-      duvody.push(`krásně odkazuje na jméno ${rodic.koho} (${rodic.jmeno} → ${j.jmeno})`)
-    } else if (j.jmeno.length >= 2 && rodic.jmeno.length >= 2
-      && bezDiakritiky(j.jmeno.slice(-2)) === klicR.slice(-2)) {
-      body -= 8
-      duvody.push(`rýmuje se se jménem ${rodic.koho}`)
+    if (jePodobaJmena(j.jmeno, clen.jmeno)) {
+      body += 14; sladeno += 2
+      duvody.push(`krásně odkazuje na jméno ${clen.koho} (${clen.jmeno} → ${j.jmeno})`)
+    } else if (j.jmeno.length >= 2 && clen.jmeno.length >= 2
+      && bezDiakritiky(j.jmeno.slice(-2)) === klicC.slice(-2)) {
+      body -= 8; sladeno -= 2
+      duvody.push(`rýmuje se se jménem ${clen.koho}`)
     }
 
-    // najdeme jméno rodiče v katalogu a porovnáme styl a původ
+    // najdeme jméno člena rodiny v katalogu a porovnáme styl a původ
     const ref = jmena.find(x =>
-      (x.kategorie === 'kluk' || x.kategorie === 'holka') && bezDiakritiky(x.jmeno) === klicR)
+      (x.kategorie === 'kluk' || x.kategorie === 'holka') && bezDiakritiky(x.jmeno) === klicC)
     if (ref) {
       const prekryv = j.styly.filter(s => ref.styly.includes(s))
       if (prekryv.length) {
-        body += Math.min(10, prekryv.length * 6)
-        duvody.push(`ladí stylem se jménem ${rodic.koho} (${prekryv.join(', ')})`)
+        body += Math.min(10, prekryv.length * 6); sladeno += 1
+        duvody.push(`ladí stylem se jménem ${clen.koho} (${prekryv.join(', ')})`)
       }
       if (j.zeme === ref.zeme) {
-        body += 5
-        duvody.push(`stejný původ jako jméno ${rodic.koho}`)
+        body += 5; sladeno += 1
+        duvody.push(`stejný původ jako jméno ${clen.koho}`)
+      }
+      if (Math.abs(j.popularita - ref.popularita) <= 12) {
+        body += 3; sladeno += 1
+        duvody.push(`podobně oblíbené jméno jako ${clen.koho}`)
       }
     }
+
+    if (sladeno > 0) ladiS.push(clen.kdo)
   }
 
   // rodinný rytmus: nejhezčí je, když se délky jmen střídají
-  if (rodice.length === 2) {
-    const slabikyRodicu = rodice.map(r => slabiky(r.jmeno))
-    if (slabikyRodicu.every(s => s === j.slabiky)) {
+  if (rodina.length >= 2) {
+    const slabikyRodiny = rodina.map(c => slabiky(c.jmeno))
+    if (slabikyRodiny.every(s => s === j.slabiky)) {
       body -= 6
-      duvody.push('tři stejně dlouhá jména znějí monotónně')
-    } else if (slabikyRodicu.every(s => s !== j.slabiky)) {
+      duvody.push('všechna jména v rodině by byla stejně dlouhá — zní to monotónně')
+    } else if (slabikyRodiny.every(s => s !== j.slabiky)) {
       body += 6
       duvody.push('rytmus jmen se v rodině hezky střídá')
     }
   }
 
-  // aliterace s rodičem — jen jednou
-  const aliterace = rodice.find(r => bezDiakritiky(r.jmeno)[0] === bezDiakritiky(j.jmeno)[0]
-    && bezDiakritiky(r.jmeno) !== bezDiakritiky(j.jmeno))
+  // aliterace se členem rodiny — jen jednou
+  const aliterace = rodina.find(c => bezDiakritiky(c.jmeno)[0] === bezDiakritiky(j.jmeno)[0]
+    && bezDiakritiky(c.jmeno) !== bezDiakritiky(j.jmeno))
   if (aliterace) {
     body += 4
     duvody.push(`stejná iniciála jako ${aliterace.kdo}`)
   }
 
-  return { body: Math.max(0, Math.min(100, body)), duvody }
+  return { body: Math.max(0, Math.min(100, body)), duvody, ladiS, zClenu: rodina.length }
+}
+
+/** Štítek shrnující, s kým v rodině jméno ladí (nebo null). */
+export function rodinnyStitek(r: RodinnaShoda): { text: string; popis: string } | null {
+  const rodice = r.ladiS.filter(k => k === 'maminka' || k === 'tatínek')
+  if (r.zClenu >= 3 && r.ladiS.length === r.zClenu) {
+    return { text: '👪 ladí s celou rodinou', popis: 'Jméno sedí ke jménům obou rodičů i sourozence.' }
+  }
+  if (rodice.length === 2) {
+    return { text: '💞 ladí s oběma rodiči', popis: 'Jméno sedí ke jménu maminky i tatínka.' }
+  }
+  if (r.ladiS.includes('sourozenec') && rodice.length === 1) {
+    return { text: '👫 ladí s rodičem i sourozencem', popis: 'Jméno sedí ke jménu jednoho rodiče i sourozence.' }
+  }
+  if (r.ladiS.length === 1) {
+    return { text: `✨ ladí se jménem ${r.ladiS[0] === 'sourozenec' ? 'sourozence' : r.ladiS[0]}`, popis: 'Jméno sedí k jednomu členu rodiny.' }
+  }
+  return null
 }
 
 // ── doporučení do rodinného profilu: další jména, která ladí s celou rodinou ─
@@ -436,17 +487,23 @@ export function najdiProRodinu(jmena: Jmeno[], clenove: string[], kategorie: Kat
 
 export function najdiNejlepsiShody(jmena: Jmeno[], vstup: VstupShody, limit = 12): Shoda[] {
   const prijmeni = vstup.prijmeni.trim()
-  const maminka = (vstup.maminka ?? '').trim()
-  const tatinek = (vstup.tatinek ?? '').trim()
+  const rodina: ClenProShodu[] = [
+    { jmeno: (vstup.maminka ?? '').trim(), kdo: 'maminka', koho: 'maminky' },
+    { jmeno: (vstup.tatinek ?? '').trim(), kdo: 'tatínek', koho: 'tatínka' },
+    { jmeno: (vstup.sourozenec ?? '').trim(), kdo: 'sourozenec', koho: 'sourozence' },
+  ].filter(c => c.jmeno)
+
   const kandidati = jmena.filter(j =>
     j.kategorie === vstup.pohlavi &&
-    (!vstup.zeme.length || vstup.zeme.includes(j.zeme))
+    (!vstup.zeme.length || vstup.zeme.includes(j.zeme)) &&
+    !rodina.some(c => bezDiakritiky(c.jmeno) === bezDiakritiky(j.jmeno))
   )
 
   const shody: Shoda[] = kandidati.map(j => {
     const duvody: string[] = []
     // každé kritérium dává 0–100 a má váhu; skóre je vážený průměr zadaných kritérií
     const slozky: [number, number][] = []
+    let stitek: { text: string; popis: string } | null = null
 
     slozky.push([j.popularita, 25])
     if (j.popularita >= 90) duvody.push('dlouhodobě velmi oblíbené jméno')
@@ -457,10 +514,11 @@ export function najdiNejlepsiShody(jmena: Jmeno[], vstup: VstupShody, limit = 12
       duvody.push(...s.duvody)
     }
 
-    if (maminka || tatinek) {
-      const r = rodinnaHarmonie(j, maminka, tatinek, jmena)
+    if (rodina.length) {
+      const r = rodinnaHarmonie(j, rodina, jmena)
       slozky.push([r.body, 30])
       duvody.push(...r.duvody)
+      stitek = rodinnyStitek(r)
     }
 
     if (vstup.mesic) {
@@ -484,7 +542,7 @@ export function najdiNejlepsiShody(jmena: Jmeno[], vstup: VstupShody, limit = 12
     const soucetVah = slozky.reduce((a, [, v]) => a + v, 0)
     const skore = Math.round(slozky.reduce((a, [h, v]) => a + h * v, 0) / soucetVah)
 
-    return { jmeno: j, skore: Math.max(0, Math.min(100, skore)), duvody }
+    return { jmeno: j, skore: Math.max(0, Math.min(100, skore)), duvody, rodinnyStitek: stitek }
   })
 
   return shody

@@ -58,6 +58,14 @@ function ShodaKarta({ shoda, poradi }: { shoda: Shoda; poradi: number }) {
         </div>
       </div>
       <div className="mt-1.5 flex flex-wrap gap-1.5 empty:hidden">
+        {shoda.rodinnyStitek && (
+          <span
+            className="rounded-full bg-[#fbe7e2] px-2 py-0.5 text-[11px] font-semibold text-[#b3563a]"
+            title={shoda.rodinnyStitek.popis}
+          >
+            {shoda.rodinnyStitek.text}
+          </span>
+        )}
         <Stitky jmeno={shoda.jmeno} />
       </div>
       <div className="mt-1 h-2 overflow-hidden rounded-full bg-[#f3ecdf]">
@@ -128,8 +136,11 @@ export default function DetiFinder() {
   }, [detska])
 
   const shody = useMemo(
-    () => najdiNejlepsiShody(detska, { pohlavi, prijmeni, mesic, styly: stylyShody, zeme: zemeShody, maminka, tatinek }),
-    [detska, pohlavi, prijmeni, mesic, stylyShody, zemeShody, maminka, tatinek],
+    () => najdiNejlepsiShody(detska, {
+      pohlavi, prijmeni, mesic, styly: stylyShody, zeme: zemeShody,
+      maminka, tatinek, sourozenec,
+    }),
+    [detska, pohlavi, prijmeni, mesic, stylyShody, zemeShody, maminka, tatinek, sourozenec],
   )
 
   const sourozenci = useMemo(
@@ -391,7 +402,7 @@ export default function DetiFinder() {
             </label>
 
             <div>
-              <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-[#8a7f71]">Jména rodičů (nepovinné)</p>
+              <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-[#8a7f71]">Jména v rodině (nepovinné)</p>
               <div className="grid grid-cols-2 gap-2">
                 <input
                   value={maminka}
@@ -406,9 +417,16 @@ export default function DetiFinder() {
                   className="w-full rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-4 py-2 text-sm outline-none focus:border-[#2b2723]"
                 />
               </div>
+              <input
+                value={sourozenec}
+                onChange={e => setSourozenec(e.target.value)}
+                placeholder="sourozenec — např. Eliška"
+                className="mt-2 w-full rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-4 py-2 text-sm outline-none focus:border-[#2b2723]"
+              />
               <p className="mt-1 text-[11px] text-[#8a7f71]">
                 Doporučíme jména ladící s celou rodinou — stylem, původem i rytmem. Poznáme
-                i podobu jména po rodiči (Petr → Petra, Josef → Josefína).
+                i podobu jména po rodiči (Petr → Petra, Josef → Josefína). Jména, která ladí
+                s více členy rodiny, dostanou štítek.
               </p>
             </div>
 
@@ -449,8 +467,8 @@ export default function DetiFinder() {
             <p className="mb-1 text-sm text-[#6b6156]">
               <strong className="[font-family:var(--font-syne)] text-lg text-[#2b2723]">Top {shody.length}</strong> nejlepších shod
               {prijmeni.trim() && <> pro příjmení <strong>{prijmeni.trim()}</strong></>}
-              {(maminka.trim() || tatinek.trim()) && (
-                <>, ladící se jmény <strong>{[maminka.trim(), tatinek.trim()].filter(Boolean).join(' a ')}</strong></>
+              {(maminka.trim() || tatinek.trim() || sourozenec.trim()) && (
+                <>, ladící se jmény <strong>{[maminka.trim(), tatinek.trim(), sourozenec.trim()].filter(Boolean).join(', ')}</strong></>
               )}
               {mesic && <>, narození v měsíci <strong>{MESICE_NAZVY[mesic - 1]}</strong></>}
             </p>

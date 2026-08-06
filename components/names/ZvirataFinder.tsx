@@ -13,13 +13,14 @@ import {
 } from '@/lib/names/logic'
 import { useOblibene } from '@/lib/names/oblibene'
 import type { Filtr, Razeni } from '@/lib/names/logic'
-import { KATEGORIE_INFO, VSECHNY_STYLY } from '@/lib/names/types'
-import type { Energie, Kategorie, Velikost } from '@/lib/names/types'
+import { KATEGORIE_INFO, POHLAVI_INFO, VSECHNY_STYLY } from '@/lib/names/types'
+import type { Energie, Kategorie, PohlaviZvirete, Velikost } from '@/lib/names/types'
 import NameCard from './NameCard'
 
 const ZVIRECI_KATEGORIE: Kategorie[] = ['pes', 'fenka', 'kocour', 'kocka', 'kun', 'kralik', 'papousek', 'krecek']
 const ENERGIE: Energie[] = ['klidná', 'vyvážená', 'živá']
 const VELIKOSTI: Velikost[] = ['malé', 'střední', 'velké']
+const POHLAVI: PohlaviZvirete[] = ['samec', 'samice']
 
 function Chip({ aktivni, onClick, children, title }: {
   aktivni: boolean; onClick: () => void; children: React.ReactNode; title?: string
@@ -144,6 +145,26 @@ export default function ZvirataFinder() {
           <Chip aktivni={rychle.includes('trendy')} onClick={() => setRychle(prepni(rychle, 'trendy'))} title="Moderní jména, která právě letí">📈 trendy</Chip>
           <Chip aktivni={rychle.includes('original')} onClick={() => setRychle(prepni(rychle, 'original'))} title="Méně obvyklá, ale krásná — skryté poklady">💎 originální</Chip>
           <Chip aktivni={rychle.includes('volatelne')} onClick={() => setRychle(prepni(rychle, 'volatelne'))} title="1–2 slabiky, samohláska na konci a žádná podobnost s povelem — kynologická doporučení">📣 dobře se volá</Chip>
+        </Sekce>
+
+        <Sekce nazev="Pohlaví zvířete">
+          {POHLAVI.map(p => (
+            <Chip
+              key={p}
+              aktivni={filtr.pohlavi.includes(p)}
+              onClick={() => setFiltr({ ...filtr, pohlavi: prepni(filtr.pohlavi, p) })}
+              title={`${POHLAVI_INFO[p].nazev} — jména vhodná pro obě pohlaví se ukážou vždy`}
+            >
+              {POHLAVI_INFO[p].znak} {p === 'samec' ? 'samec' : 'samička'}
+            </Chip>
+          ))}
+          <Chip
+            aktivni={filtr.pohlavi.length === 0}
+            onClick={() => setFiltr({ ...filtr, pohlavi: [] })}
+            title="Bez rozlišení pohlaví"
+          >
+            ⚥ na tom nezáleží
+          </Chip>
         </Sekce>
 
         <Sekce nazev="Kdo dostane jméno">

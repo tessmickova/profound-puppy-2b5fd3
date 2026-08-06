@@ -41,6 +41,16 @@ export interface Jmeno {
   svatek?: string
   /** jméno se používá pro kluky i holčičky */
   unisex?: boolean
+  /** u zvířat: pro koho se jméno hodí */
+  pohlavi?: PohlaviZvirete
+}
+
+export type PohlaviZvirete = 'samec' | 'samice' | 'unisex'
+
+export const POHLAVI_INFO: Record<PohlaviZvirete, { nazev: string; znak: string }> = {
+  samec:  { nazev: 'pro samce',    znak: '♂' },
+  samice: { nazev: 'pro samičku',  znak: '♀' },
+  unisex: { nazev: 'pro obě pohlaví', znak: '⚥' },
 }
 
 export interface Zeme {
