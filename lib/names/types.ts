@@ -35,6 +35,12 @@ export interface Jmeno {
   mesice: number[]
   /** jen psi a fenky — k jaké velikosti plemene jméno sedí */
   velikost?: Velikost
+  /** domácké podoby a zdrobněliny */
+  domacky?: string[]
+  /** jmeniny v českém kalendáři, např. „25. 7." */
+  svatek?: string
+  /** jméno se používá pro kluky i holčičky */
+  unisex?: boolean
 }
 
 export interface Zeme {

@@ -8,8 +8,8 @@ import { useSearchParams } from 'next/navigation'
 import { JMENA, ZEME } from '@/lib/names/data'
 import { PLEMENA_KOCEK, PLEMENA_PSU, VSECHNA_PLEMENA } from '@/lib/names/breeds'
 import {
-  filtruj, jeHit, jeOriginal, jeTrendy, jmenaProPlemeno, kolator, PRAZDNY_FILTR,
-  RAZENI_MOZNOSTI, serad, ZPUSOBY_ZIVOTA,
+  dobreSeVola, filtruj, jeHit, jeOriginal, jeTrendy, jmenaProPlemeno, kolator,
+  PRAZDNY_FILTR, RAZENI_MOZNOSTI, serad, ZPUSOBY_ZIVOTA,
 } from '@/lib/names/logic'
 import { useOblibene } from '@/lib/names/oblibene'
 import type { Filtr, Razeni } from '@/lib/names/logic'
@@ -63,6 +63,7 @@ export default function ZvirataFinder() {
   const [plemeno, setPlemeno] = useState<string>('')
   const [zivot, setZivot] = useState<string>('')
   const [rychle, setRychle] = useState<string[]>([])
+  const [nahodne, setNahodne] = useState<string | null>(null)
   const { ids: oblibena } = useOblibene()
 
   const vybranePlemeno = VSECHNA_PLEMENA.find(p => p.nazev === plemeno)
@@ -88,6 +89,7 @@ export default function ZvirataFinder() {
     if (rychle.includes('hit')) kandidati = kandidati.filter(jeHit)
     if (rychle.includes('trendy')) kandidati = kandidati.filter(jeTrendy)
     if (rychle.includes('original')) kandidati = kandidati.filter(jeOriginal)
+    if (rychle.includes('volatelne')) kandidati = kandidati.filter(dobreSeVola)
     if (razeni === 'doporucene') return kandidati // pořadí z jmenaProPlemeno
     return serad(kandidati, razeni)
   }, [zakladni, filtr, razeni, vybranePlemeno, vybranyZivot, rychle, oblibena])
@@ -96,6 +98,13 @@ export default function ZvirataFinder() {
     const set = new Set(zakladni.map(j => j.jmeno[0].toUpperCase()))
     return [...set].sort((a, b) => kolator.compare(a, b))
   }, [zakladni])
+
+  const koncovaPismena = useMemo(() => {
+    const set = new Set(zakladni.map(j => j.jmeno[j.jmeno.length - 1].toUpperCase()))
+    return [...set].sort((a, b) => kolator.compare(a, b))
+  }, [zakladni])
+
+  const nahodneJmeno = nahodne ? vysledky.find(j => j.id === nahodne) : null
 
   const abecedne = razeni === 'abecedne' || razeni === 'abecedne-z'
   const skupiny = useMemo(() => {
@@ -134,6 +143,7 @@ export default function ZvirataFinder() {
           <Chip aktivni={rychle.includes('hit')} onClick={() => setRychle(prepni(rychle, 'hit'))} title="Dlouhodobě nejoblíbenější jména">🔥 hity</Chip>
           <Chip aktivni={rychle.includes('trendy')} onClick={() => setRychle(prepni(rychle, 'trendy'))} title="Moderní jména, která právě letí">📈 trendy</Chip>
           <Chip aktivni={rychle.includes('original')} onClick={() => setRychle(prepni(rychle, 'original'))} title="Méně obvyklá, ale krásná — skryté poklady">💎 originální</Chip>
+          <Chip aktivni={rychle.includes('volatelne')} onClick={() => setRychle(prepni(rychle, 'volatelne'))} title="1–2 slabiky, samohláska na konci a žádná podobnost s povelem — kynologická doporučení">📣 dobře se volá</Chip>
         </Sekce>
 
         <Sekce nazev="Kdo dostane jméno">
@@ -247,6 +257,15 @@ export default function ZvirataFinder() {
             </Chip>
           ))}
         </Sekce>
+
+        <Sekce nazev="Končí písmenem">
+          <Chip aktivni={filtr.konciNa === null} onClick={() => setFiltr({ ...filtr, konciNa: null })}>vše</Chip>
+          {koncovaPismena.map(p => (
+            <Chip key={p} aktivni={filtr.konciNa === p} onClick={() => setFiltr({ ...filtr, konciNa: filtr.konciNa === p ? null : p })}>
+              {p}
+            </Chip>
+          ))}
+        </Sekce>
       </aside>
 
       <section>
@@ -255,18 +274,34 @@ export default function ZvirataFinder() {
             <strong className="[font-family:var(--font-syne)] text-lg text-[#2b2723]">{vysledky.length}</strong> jmen
             {vybranePlemeno && <> pro plemeno <strong>{vybranePlemeno.nazev}</strong></>}
           </p>
-          <label className="flex items-center gap-2 text-sm text-[#6b6156]">
-            Seřadit:
-            <select
-              value={razeni}
-              onChange={e => setRazeni(e.target.value as Razeni | 'doporucene')}
-              className="rounded-full border border-[#e8dfd2] bg-white px-3 py-1.5 outline-none focus:border-[#2b2723]"
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => vysledky.length && setNahodne(vysledky[Math.floor(Math.random() * vysledky.length)].id)}
+              className="rounded-full border border-[#e8dfd2] bg-white px-3 py-1.5 text-sm text-[#6b6156] transition-colors hover:border-[#2b2723]"
+              title="Vylosovat jedno jméno z aktuálního výběru"
             >
-              {vybranePlemeno && <option value="doporucene">Doporučené pro plemeno</option>}
-              {RAZENI_MOZNOSTI.map(r => <option key={r.id} value={r.id}>{r.nazev}</option>)}
-            </select>
-          </label>
+              🎲 Překvap mě
+            </button>
+            <label className="flex items-center gap-2 text-sm text-[#6b6156]">
+              Seřadit:
+              <select
+                value={razeni}
+                onChange={e => setRazeni(e.target.value as Razeni | 'doporucene')}
+                className="rounded-full border border-[#e8dfd2] bg-white px-3 py-1.5 outline-none focus:border-[#2b2723]"
+              >
+                {vybranePlemeno && <option value="doporucene">Doporučené pro plemeno</option>}
+                {RAZENI_MOZNOSTI.map(r => <option key={r.id} value={r.id}>{r.nazev}</option>)}
+              </select>
+            </label>
+          </div>
         </div>
+
+        {nahodneJmeno && (
+          <div className="mb-5 rounded-2xl border-2 border-[#d97757] p-1">
+            <p className="px-3 pt-1 text-xs font-semibold uppercase tracking-wide text-[#d97757]">🎲 Náhodný tip</p>
+            <NameCard jmeno={nahodneJmeno} />
+          </div>
+        )}
 
         {vysledky.length === 0 && (
           <div className="rounded-3xl border border-dashed border-[#e8dfd2] p-10 text-center text-[#8a7f71]">

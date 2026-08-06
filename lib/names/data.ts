@@ -2,6 +2,7 @@
 // Popularita je redakční skóre líbivosti 0–100 (kombinace tamních žebříčků a zvuku jména).
 
 import type { Energie, Jmeno, Kategorie, Kontinent, Styl, Velikost, Zeme } from './types'
+import { DOMACKY, SVATKY_CZ, UNISEX } from './extra'
 
 export const KONTINENTY: Kontinent[] = [
   { id: 'evropa',          nazev: 'Evropa',              popis: 'Tradice svátků, jmeniny a klasika, která nestárne.' },
@@ -40,6 +41,8 @@ export const zemePodleKodu = (kod: string) => ZEME.find(z => z.kod === kod)
 
 const SAMOHLASKY = 'aáeéěiíoóuúůyý'
 
+const klic = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+
 function pocetSlabik(jmeno: string): number {
   const s = jmeno.toLowerCase()
   let n = 0
@@ -63,6 +66,7 @@ function pridej(zeme: string, kategorie: Kategorie, radky: (RadekZvire | RadekDi
   const jeDite = kategorie === 'kluk' || kategorie === 'holka'
   for (const r of radky) {
     const [jmeno, vyznam, popularita, styly, energie, extra] = r
+    const k = klic(jmeno)
     vsechna.push({
       id: `${zeme}-${kategorie}-${poradi++}`,
       jmeno, kategorie, zeme, vyznam, popularita, styly, energie,
@@ -70,6 +74,9 @@ function pridej(zeme: string, kategorie: Kategorie, radky: (RadekZvire | RadekDi
       slabiky: pocetSlabik(jmeno),
       mesice: jeDite && Array.isArray(extra) ? extra : [],
       velikost: jePes && typeof extra === 'string' ? extra : undefined,
+      domacky: jeDite ? DOMACKY[k] : undefined,
+      svatek: jeDite && zeme === 'cz' ? SVATKY_CZ[k] : undefined,
+      unisex: jeDite && UNISEX.has(k) ? true : undefined,
     })
   }
 }
@@ -1287,6 +1294,25 @@ pridej('us', 'kun', [
 ])
 
 export const JMENA: Jmeno[] = vsechna
+
+/** Dětská jména, která se používají ve více zemích — „fungují i v zahraničí". */
+export const MEZINARODNI: Set<string> = (() => {
+  const zeme = new Map<string, Set<string>>()
+  for (const j of vsechna) {
+    if (j.kategorie !== 'kluk' && j.kategorie !== 'holka') continue
+    const k = klic(j.jmeno)
+    if (!zeme.has(k)) zeme.set(k, new Set())
+    zeme.get(k)!.add(j.zeme)
+  }
+  const vysledek = new Set<string>()
+  for (const [k, z] of zeme) if (z.size >= 2) vysledek.add(k)
+  // krátká světová jména srozumitelná všude, i když jsou v katalogu jednou
+  for (const k of ['kai', 'leo', 'ema', 'emma', 'mia', 'nina', 'lena', 'alma', 'maia']) vysledek.add(k)
+  return vysledek
+})()
+
+export const jeMezinarodni = (j: Jmeno) =>
+  (j.kategorie === 'kluk' || j.kategorie === 'holka') && MEZINARODNI.has(klic(j.jmeno))
 
 export const jmenaZeme = (kod: string) => JMENA.filter(j => j.zeme === kod)
 export const jmenaKontinentu = (kontinent: string) => {

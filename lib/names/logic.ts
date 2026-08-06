@@ -16,6 +16,69 @@ export const jeTrendy = (j: Jmeno) => j.styly.includes('moderní')
 /** 💎 Originál — méně obvyklá, ale krásná jména (skryté poklady). */
 export const jeOriginal = (j: Jmeno) => j.popularita <= 80
 
+// ── volatelnost psích jmen (kynologická doporučení: 1–2 slabiky, samohláska
+//    na konci, žádná podobnost s povelem) ─────────────────────────────────────
+
+const POVELY = ['sedni', 'lehni', 'fuj', 'aport', 'zustan', 'dej', 'ne', 'sem']
+
+const bezDiakritikyText = (s: string) =>
+  s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+
+/** 📣 Dobře se volá — krátké psí jméno končící samohláskou. */
+export function dobreSeVola(j: Jmeno): boolean {
+  if (j.kategorie !== 'pes' && j.kategorie !== 'fenka') return false
+  return j.slabiky <= 2 && /[aáeéěiíoóuúůyý]$/i.test(j.jmeno) && !povelKolize(j)
+}
+
+/** Vrátí povel, se kterým se jméno může plést (nebo null). */
+export function povelKolize(j: Jmeno): string | null {
+  if (j.kategorie !== 'pes' && j.kategorie !== 'fenka') return null
+  const n = bezDiakritikyText(j.jmeno)
+  for (const p of POVELY) {
+    if (p.length >= 3 ? n.startsWith(p.slice(0, 3)) : n.startsWith(p)) return p
+  }
+  return null
+}
+
+// ── numerologie, znamení a monogram ──────────────────────────────────────────
+
+const NUMEROLOGIE_VYZNAM: Record<number, string> = {
+  1: 'vůdce', 2: 'diplomat', 3: 'tvořivý duch', 4: 'stavitel', 5: 'dobrodruh',
+  6: 'pečovatel', 7: 'myslitel', 8: 'vládce', 9: 'idealista',
+}
+
+/** Číslo jména podle pythagorejské numerologie (1–9) + krátký význam. */
+export function numerologie(jmeno: string): { cislo: number; vyznam: string } {
+  let soucet = 0
+  for (const ch of bezDiakritikyText(jmeno)) {
+    const kod = ch.charCodeAt(0) - 96 // a=1 … z=26
+    if (kod >= 1 && kod <= 26) soucet += ((kod - 1) % 9) + 1
+  }
+  let cislo = soucet
+  while (cislo > 9) cislo = String(cislo).split('').reduce((a, c) => a + Number(c), 0)
+  if (cislo < 1) cislo = 1
+  return { cislo, vyznam: NUMEROLOGIE_VYZNAM[cislo] }
+}
+
+/** Znamení zvěrokruhu připadající na daný měsíc (vždy dvě). */
+export const ZNAMENI_MESICE: Record<number, string> = {
+  1: 'Kozoroh / Vodnář', 2: 'Vodnář / Ryby', 3: 'Ryby / Beran', 4: 'Beran / Býk',
+  5: 'Býk / Blíženci', 6: 'Blíženci / Rak', 7: 'Rak / Lev', 8: 'Lev / Panna',
+  9: 'Panna / Váhy', 10: 'Váhy / Štír', 11: 'Štír / Střelec', 12: 'Střelec / Kozoroh',
+}
+
+const NEVHODNE_MONOGRAMY = new Set(['SS', 'WC', 'BS', 'PMS', 'KKK'])
+
+/** Iniciály jména a příjmení + upozornění na nešťastné monogramy. */
+export function monogram(jmeno: string, prijmeni: string): { text: string; varovani: string | null } {
+  const inicialy = (jmeno[0] ?? '') + (prijmeni.trim()[0] ?? '')
+  const text = inicialy.toUpperCase().split('').join('. ') + (inicialy ? '.' : '')
+  const varovani = NEVHODNE_MONOGRAMY.has(inicialy.toUpperCase())
+    ? `iniciály ${text} mohou být terčem vtipů — zvažte jiné jméno`
+    : null
+  return { text, varovani }
+}
+
 // ── řazení ───────────────────────────────────────────────────────────────────
 
 export type Razeni = 'abecedne' | 'abecedne-z' | 'popularita' | 'nejkratsi' | 'nejdelsi' | 'slabiky'
@@ -50,6 +113,7 @@ export interface Filtr {
   energie: Energie[]
   velikosti: Velikost[]
   pismeno: string | null
+  konciNa: string | null
   maxDelka: number | null
   maxSlabiky: number | null
   hledat: string
@@ -57,7 +121,7 @@ export interface Filtr {
 
 export const PRAZDNY_FILTR: Filtr = {
   kategorie: [], zeme: [], styly: [], energie: [], velikosti: [],
-  pismeno: null, maxDelka: null, maxSlabiky: null, hledat: '',
+  pismeno: null, konciNa: null, maxDelka: null, maxSlabiky: null, hledat: '',
 }
 
 const bezDiakritiky = (s: string) =>
@@ -72,9 +136,13 @@ export function filtruj(jmena: Jmeno[], f: Filtr): Jmeno[] {
     if (f.energie.length && !f.energie.includes(j.energie)) return false
     if (f.velikosti.length && j.velikost && !f.velikosti.includes(j.velikost)) return false
     if (f.pismeno && bezDiakritiky(j.jmeno[0]) !== bezDiakritiky(f.pismeno)) return false
+    if (f.konciNa && bezDiakritiky(j.jmeno[j.jmeno.length - 1]) !== bezDiakritiky(f.konciNa)) return false
     if (f.maxDelka && j.delka > f.maxDelka) return false
     if (f.maxSlabiky && j.slabiky > f.maxSlabiky) return false
-    if (hledat && !bezDiakritiky(j.jmeno).includes(hledat) && !bezDiakritiky(j.vyznam).includes(hledat)) return false
+    if (hledat
+      && !bezDiakritiky(j.jmeno).includes(hledat)
+      && !bezDiakritiky(j.vyznam).includes(hledat)
+      && !(j.domacky ?? []).some(d => bezDiakritiky(d).includes(hledat))) return false
     return true
   })
 }
@@ -182,6 +250,52 @@ export function souzvukSPrijmenim(jmeno: string, prijmeni: string): { body: numb
   if (sj !== sp) { body += 4 } else { body -= 3; duvody.push('stejný počet slabik působí monotónně') }
 
   return { body: Math.max(0, Math.min(100, body)), duvody }
+}
+
+// ── sourozenecký ladič: jméno k bráškovi či sestřičce ────────────────────────
+
+export interface VstupSourozenec {
+  pohlavi: 'kluk' | 'holka'
+  sourozenec: string
+  prijmeni: string
+}
+
+export function najdiKSourozenci(jmena: Jmeno[], vstup: VstupSourozenec, limit = 12): Shoda[] {
+  const surName = vstup.sourozenec.trim()
+  if (!surName) return []
+  const klicS = bezDiakritiky(surName)
+  const referencni = jmena.find(j =>
+    (j.kategorie === 'kluk' || j.kategorie === 'holka') && bezDiakritiky(j.jmeno) === klicS)
+  const kandidati = jmena.filter(j =>
+    j.kategorie === vstup.pohlavi && bezDiakritiky(j.jmeno) !== klicS)
+
+  const shody: Shoda[] = kandidati.map(j => {
+    const duvody: string[] = []
+    let skore = 45 + j.popularita * 0.2
+
+    if (referencni) {
+      const prekryv = j.styly.filter(s => referencni.styly.includes(s))
+      if (prekryv.length) { skore += Math.min(16, prekryv.length * 8); duvody.push(`stejný styl jako ${referencni.jmeno} (${prekryv.join(', ')})`) }
+      if (j.zeme === referencni.zeme) { skore += 10; duvody.push('stejná země původu — jména ladí kulturně') }
+      if (Math.abs(j.popularita - referencni.popularita) <= 12) { skore += 6; duvody.push('podobně oblíbená dvojice') }
+    }
+    if (Math.abs(j.slabiky - slabiky(surName)) <= 1) { skore += 8; duvody.push('podobný rytmus obou jmen') }
+    if (bezDiakritiky(j.jmeno[0]) === klicS[0]) { skore -= 6; duvody.push('stejná iniciála — doma se může plést') }
+    if (j.jmeno.length >= 2 && surName.length >= 2
+      && bezDiakritiky(j.jmeno.slice(-2)) === klicS.slice(-2)) { skore -= 12; duvody.push(`rýmuje se se jménem ${surName}`) }
+
+    if (vstup.prijmeni.trim()) {
+      const s = souzvukSPrijmenim(j.jmeno, vstup.prijmeni)
+      skore += (s.body - 70) * 0.3
+      duvody.push(...s.duvody.slice(0, 2))
+    }
+
+    return { jmeno: j, skore: Math.round(Math.max(0, Math.min(100, skore))), duvody }
+  })
+
+  return shody
+    .sort((a, b) => b.skore - a.skore || kolator.compare(a.jmeno.jmeno, b.jmeno.jmeno))
+    .slice(0, limit)
 }
 
 export function najdiNejlepsiShody(jmena: Jmeno[], vstup: VstupShody, limit = 12): Shoda[] {

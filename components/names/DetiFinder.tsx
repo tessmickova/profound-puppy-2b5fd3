@@ -5,10 +5,11 @@
 
 import { useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { JMENA, ZEME, zemePodleKodu } from '@/lib/names/data'
+import { JMENA, jeMezinarodni, ZEME, zemePodleKodu } from '@/lib/names/data'
 import {
-  filtruj, jeHit, jeOriginal, jeTrendy, kolator, najdiNejlepsiShody,
-  PRAZDNY_FILTR, RAZENI_MOZNOSTI, serad,
+  filtruj, jeHit, jeOriginal, jeTrendy, kolator, monogram, najdiKSourozenci,
+  najdiNejlepsiShody, numerologie, PRAZDNY_FILTR, RAZENI_MOZNOSTI, serad,
+  ZNAMENI_MESICE,
 } from '@/lib/names/logic'
 import { useOblibene } from '@/lib/names/oblibene'
 import type { Filtr, Razeni, Shoda } from '@/lib/names/logic'
@@ -39,6 +40,7 @@ const prepni = <T,>(pole: T[], hodnota: T): T[] =>
 
 function ShodaKarta({ shoda, poradi }: { shoda: Shoda; poradi: number }) {
   const zeme = zemePodleKodu(shoda.jmeno.zeme)
+  const num = numerologie(shoda.jmeno.jmeno)
   return (
     <article className="rounded-2xl border border-[#efe7da] bg-white p-4 shadow-sm">
       <div className="flex items-center justify-between gap-3">
@@ -62,6 +64,13 @@ function ShodaKarta({ shoda, poradi }: { shoda: Shoda; poradi: number }) {
         <div className="h-full rounded-full bg-gradient-to-r from-[#e7a15c] to-[#d97757]" style={{ width: `${shoda.skore}%` }} />
       </div>
       <p className="mt-2 text-sm text-[#6b6156]">{shoda.jmeno.vyznam}</p>
+      {shoda.jmeno.domacky && shoda.jmeno.domacky.length > 0 && (
+        <p className="mt-1 text-xs text-[#8a7f71]">doma: {shoda.jmeno.domacky.join(', ')}</p>
+      )}
+      <p className="mt-1 text-xs text-[#8a7f71]" title="Číslo jména podle pythagorejské numerologie">
+        🔢 číslo jména {num.cislo} — {num.vyznam}
+        {shoda.jmeno.svatek && <span className="ml-2">📅 svátek {shoda.jmeno.svatek}</span>}
+      </p>
       {shoda.duvody.length > 0 && (
         <ul className="mt-2 space-y-1 text-xs text-[#8a7f71]">
           {shoda.duvody.slice(0, 4).map((d, i) => (
@@ -75,7 +84,7 @@ function ShodaKarta({ shoda, poradi }: { shoda: Shoda; poradi: number }) {
 
 export default function DetiFinder() {
   const params = useSearchParams()
-  const [rezim, setRezim] = useState<'prochazet' | 'shoda'>('prochazet')
+  const [rezim, setRezim] = useState<'prochazet' | 'shoda' | 'sourozenec'>('prochazet')
 
   // ── procházení ──
   const [filtr, setFiltr] = useState<Filtr>(() => ({
@@ -93,6 +102,8 @@ export default function DetiFinder() {
   const [mesic, setMesic] = useState<number | null>(null)
   const [stylyShody, setStylyShody] = useState<Styl[]>([])
   const [zemeShody, setZemeShody] = useState<string[]>([])
+  const [sourozenec, setSourozenec] = useState('')
+  const [nahodne, setNahodne] = useState<string | null>(null)
 
   const detska = useMemo(() => JMENA.filter(j => j.kategorie === 'kluk' || j.kategorie === 'holka'), [])
 
@@ -103,6 +114,9 @@ export default function DetiFinder() {
     if (rychle.includes('hit')) kandidati = kandidati.filter(jeHit)
     if (rychle.includes('trendy')) kandidati = kandidati.filter(jeTrendy)
     if (rychle.includes('original')) kandidati = kandidati.filter(jeOriginal)
+    if (rychle.includes('unisex')) kandidati = kandidati.filter(j => j.unisex)
+    if (rychle.includes('mezinarodni')) kandidati = kandidati.filter(jeMezinarodni)
+    if (rychle.includes('svatek')) kandidati = kandidati.filter(j => j.svatek)
     return serad(kandidati, razeni)
   }, [detska, filtr, razeni, rychle, oblibena])
 
@@ -115,6 +129,18 @@ export default function DetiFinder() {
     () => najdiNejlepsiShody(detska, { pohlavi, prijmeni, mesic, styly: stylyShody, zeme: zemeShody }),
     [detska, pohlavi, prijmeni, mesic, stylyShody, zemeShody],
   )
+
+  const sourozenci = useMemo(
+    () => najdiKSourozenci(detska, { pohlavi, sourozenec, prijmeni }),
+    [detska, pohlavi, sourozenec, prijmeni],
+  )
+
+  const koncovaPismena = useMemo(() => {
+    const set = new Set(detska.map(j => j.jmeno[j.jmeno.length - 1].toUpperCase()))
+    return [...set].sort((a, b) => kolator.compare(a, b))
+  }, [detska])
+
+  const inicialy = prijmeni.trim() && shody.length ? monogram(shody[0].jmeno.jmeno, prijmeni) : null
 
   const abecedne = razeni === 'abecedne' || razeni === 'abecedne-z'
   const skupiny = useMemo(() => {
@@ -143,6 +169,12 @@ export default function DetiFinder() {
         >
           💘 Najít nejlepší shodu
         </button>
+        <button
+          onClick={() => setRezim('sourozenec')}
+          className={`rounded-full px-4 py-1.5 text-sm font-medium ${rezim === 'sourozenec' ? 'bg-[#2b2723] text-[#faf6ef]' : 'text-[#6b6156]'}`}
+        >
+          👫 Ladí k sourozenci
+        </button>
       </div>
 
       {rezim === 'prochazet' ? (
@@ -170,6 +202,9 @@ export default function DetiFinder() {
                 <Chip aktivni={rychle.includes('hit')} onClick={() => setRychle(prepni(rychle, 'hit'))}>🔥 hity</Chip>
                 <Chip aktivni={rychle.includes('trendy')} onClick={() => setRychle(prepni(rychle, 'trendy'))}>📈 trendy</Chip>
                 <Chip aktivni={rychle.includes('original')} onClick={() => setRychle(prepni(rychle, 'original'))}>💎 originální</Chip>
+                <Chip aktivni={rychle.includes('unisex')} onClick={() => setRychle(prepni(rychle, 'unisex'))}>⚪ unisex</Chip>
+                <Chip aktivni={rychle.includes('mezinarodni')} onClick={() => setRychle(prepni(rychle, 'mezinarodni'))}>🌍 mezinárodní</Chip>
+                <Chip aktivni={rychle.includes('svatek')} onClick={() => setRychle(prepni(rychle, 'svatek'))}>📅 s českým svátkem</Chip>
               </div>
             </div>
 
@@ -258,6 +293,18 @@ export default function DetiFinder() {
                 ))}
               </div>
             </div>
+
+            <div>
+              <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-[#8a7f71]">Končí písmenem</p>
+              <div className="flex flex-wrap gap-1.5">
+                <Chip aktivni={filtr.konciNa === null} onClick={() => setFiltr({ ...filtr, konciNa: null })}>vše</Chip>
+                {koncovaPismena.map(p => (
+                  <Chip key={p} aktivni={filtr.konciNa === p} onClick={() => setFiltr({ ...filtr, konciNa: filtr.konciNa === p ? null : p })}>
+                    {p}
+                  </Chip>
+                ))}
+              </div>
+            </div>
           </aside>
 
           <section>
@@ -265,17 +312,33 @@ export default function DetiFinder() {
               <p className="text-sm text-[#6b6156]">
                 <strong className="[font-family:var(--font-syne)] text-lg text-[#2b2723]">{vysledky.length}</strong> jmen
               </p>
-              <label className="flex items-center gap-2 text-sm text-[#6b6156]">
-                Seřadit:
-                <select
-                  value={razeni}
-                  onChange={e => setRazeni(e.target.value as Razeni)}
-                  className="rounded-full border border-[#e8dfd2] bg-white px-3 py-1.5 outline-none focus:border-[#2b2723]"
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => vysledky.length && setNahodne(vysledky[Math.floor(Math.random() * vysledky.length)].id)}
+                  className="rounded-full border border-[#e8dfd2] bg-white px-3 py-1.5 text-sm text-[#6b6156] transition-colors hover:border-[#2b2723]"
+                  title="Vylosovat jedno jméno z aktuálního výběru"
                 >
-                  {RAZENI_MOZNOSTI.map(r => <option key={r.id} value={r.id}>{r.nazev}</option>)}
-                </select>
-              </label>
+                  🎲 Překvap mě
+                </button>
+                <label className="flex items-center gap-2 text-sm text-[#6b6156]">
+                  Seřadit:
+                  <select
+                    value={razeni}
+                    onChange={e => setRazeni(e.target.value as Razeni)}
+                    className="rounded-full border border-[#e8dfd2] bg-white px-3 py-1.5 outline-none focus:border-[#2b2723]"
+                  >
+                    {RAZENI_MOZNOSTI.map(r => <option key={r.id} value={r.id}>{r.nazev}</option>)}
+                  </select>
+                </label>
+              </div>
             </div>
+
+            {nahodne && vysledky.some(j => j.id === nahodne) && (
+              <div className="mb-5 rounded-2xl border-2 border-[#d97757] p-1">
+                <p className="px-3 pt-1 text-xs font-semibold uppercase tracking-wide text-[#d97757]">🎲 Náhodný tip</p>
+                <NameCard jmeno={vysledky.find(j => j.id === nahodne)!} />
+              </div>
+            )}
 
             {vysledky.length === 0 && (
               <div className="rounded-3xl border border-dashed border-[#e8dfd2] p-10 text-center text-[#8a7f71]">
@@ -301,7 +364,7 @@ export default function DetiFinder() {
             )}
           </section>
         </div>
-      ) : (
+      ) : rezim === 'shoda' ? (
         <div className="grid gap-8 lg:grid-cols-[340px,1fr]">
           <aside className="space-y-5 self-start rounded-3xl border border-[#e8dfd2] bg-white p-5 shadow-sm lg:sticky lg:top-20">
             <h2 className="[font-family:var(--font-syne)] text-lg font-bold">Vaše preference</h2>
@@ -359,14 +422,78 @@ export default function DetiFinder() {
           </aside>
 
           <section>
-            <p className="mb-4 text-sm text-[#6b6156]">
+            <p className="mb-1 text-sm text-[#6b6156]">
               <strong className="[font-family:var(--font-syne)] text-lg text-[#2b2723]">Top {shody.length}</strong> nejlepších shod
               {prijmeni.trim() && <> pro příjmení <strong>{prijmeni.trim()}</strong></>}
               {mesic && <>, narození v měsíci <strong>{MESICE_NAZVY[mesic - 1]}</strong></>}
             </p>
+            <p className="mb-4 text-xs text-[#8a7f71]">
+              {inicialy && <>Monogram top shody: <strong>{inicialy.text}</strong>{inicialy.varovani && <span className="text-[#9a6b1f]"> — ⚠️ {inicialy.varovani}</span>} · </>}
+              {mesic && <>znamení: <strong>{ZNAMENI_MESICE[mesic]}</strong> · </>}
+              u každého jména uvádíme i číslo jména a případný svátek
+            </p>
             <div className="grid gap-3 sm:grid-cols-2">
               {shody.map((s, i) => <ShodaKarta key={s.jmeno.id} shoda={s} poradi={i + 1} />)}
             </div>
+          </section>
+        </div>
+      ) : null}
+
+      {rezim === 'sourozenec' && (
+        <div className="grid gap-8 lg:grid-cols-[340px,1fr]">
+          <aside className="space-y-5 self-start rounded-3xl border border-[#e8dfd2] bg-white p-5 shadow-sm lg:sticky lg:top-20">
+            <h2 className="[font-family:var(--font-syne)] text-lg font-bold">Sourozenecký ladič</h2>
+            <p className="text-xs text-[#8a7f71]">
+              Najdeme jména, která ladí se jménem prvního dítěte — stylem, původem i rytmem.
+              Stejnou iniciálu a rýmy hlídáme, aby se jména doma nepletla.
+            </p>
+
+            <div>
+              <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-[#8a7f71]">Čekáte</p>
+              <div className="flex gap-1.5">
+                <Chip aktivni={pohlavi === 'holka'} onClick={() => setPohlavi('holka')}>👧 Holčičku</Chip>
+                <Chip aktivni={pohlavi === 'kluk'} onClick={() => setPohlavi('kluk')}>👦 Chlapečka</Chip>
+              </div>
+            </div>
+
+            <label className="block">
+              <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-[#8a7f71]">Jméno sourozence</p>
+              <input
+                value={sourozenec}
+                onChange={e => setSourozenec(e.target.value)}
+                placeholder="např. Eliška"
+                className="w-full rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-4 py-2 text-sm outline-none focus:border-[#2b2723]"
+              />
+            </label>
+
+            <label className="block">
+              <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-[#8a7f71]">Příjmení (nepovinné)</p>
+              <input
+                value={prijmeni}
+                onChange={e => setPrijmeni(e.target.value)}
+                placeholder="např. Nováková"
+                className="w-full rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-4 py-2 text-sm outline-none focus:border-[#2b2723]"
+              />
+              <p className="mt-1 text-[11px] text-[#8a7f71]">Když ho zadáte, hlídáme i souzvuk s příjmením.</p>
+            </label>
+          </aside>
+
+          <section>
+            {!sourozenec.trim() ? (
+              <div className="rounded-3xl border border-dashed border-[#e8dfd2] p-10 text-center text-[#8a7f71]">
+                Zadejte jméno prvního dítěte a najdeme mu ladícího brášku či sestřičku. 👫
+              </div>
+            ) : (
+              <>
+                <p className="mb-4 text-sm text-[#6b6156]">
+                  <strong className="[font-family:var(--font-syne)] text-lg text-[#2b2723]">Top {sourozenci.length}</strong> jmen,
+                  která ladí se jménem <strong>{sourozenec.trim()}</strong>
+                </p>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {sourozenci.map((s, i) => <ShodaKarta key={s.jmeno.id} shoda={s} poradi={i + 1} />)}
+                </div>
+              </>
+            )}
           </section>
         </div>
       )}
