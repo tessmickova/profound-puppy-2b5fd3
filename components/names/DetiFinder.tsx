@@ -73,7 +73,7 @@ function ShodaKarta({ shoda, poradi }: { shoda: Shoda; poradi: number }) {
       </p>
       {shoda.duvody.length > 0 && (
         <ul className="mt-2 space-y-1 text-xs text-[#8a7f71]">
-          {shoda.duvody.slice(0, 4).map((d, i) => (
+          {shoda.duvody.slice(0, 5).map((d, i) => (
             <li key={i} className="flex gap-1.5"><span aria-hidden>•</span>{d}</li>
           ))}
         </ul>
@@ -103,6 +103,8 @@ export default function DetiFinder() {
   const [stylyShody, setStylyShody] = useState<Styl[]>([])
   const [zemeShody, setZemeShody] = useState<string[]>([])
   const [sourozenec, setSourozenec] = useState('')
+  const [maminka, setMaminka] = useState('')
+  const [tatinek, setTatinek] = useState('')
   const [nahodne, setNahodne] = useState<string | null>(null)
 
   const detska = useMemo(() => JMENA.filter(j => j.kategorie === 'kluk' || j.kategorie === 'holka'), [])
@@ -126,8 +128,8 @@ export default function DetiFinder() {
   }, [detska])
 
   const shody = useMemo(
-    () => najdiNejlepsiShody(detska, { pohlavi, prijmeni, mesic, styly: stylyShody, zeme: zemeShody }),
-    [detska, pohlavi, prijmeni, mesic, stylyShody, zemeShody],
+    () => najdiNejlepsiShody(detska, { pohlavi, prijmeni, mesic, styly: stylyShody, zeme: zemeShody, maminka, tatinek }),
+    [detska, pohlavi, prijmeni, mesic, stylyShody, zemeShody, maminka, tatinek],
   )
 
   const sourozenci = useMemo(
@@ -388,6 +390,28 @@ export default function DetiFinder() {
               <p className="mt-1 text-[11px] text-[#8a7f71]">Zhodnotíme rytmus, plynulost i to, jestli se jméno s příjmením nerýmuje.</p>
             </label>
 
+            <div>
+              <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-[#8a7f71]">Jména rodičů (nepovinné)</p>
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  value={maminka}
+                  onChange={e => setMaminka(e.target.value)}
+                  placeholder="maminka — Jana"
+                  className="w-full rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-4 py-2 text-sm outline-none focus:border-[#2b2723]"
+                />
+                <input
+                  value={tatinek}
+                  onChange={e => setTatinek(e.target.value)}
+                  placeholder="tatínek — Petr"
+                  className="w-full rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-4 py-2 text-sm outline-none focus:border-[#2b2723]"
+                />
+              </div>
+              <p className="mt-1 text-[11px] text-[#8a7f71]">
+                Doporučíme jména ladící s celou rodinou — stylem, původem i rytmem. Poznáme
+                i podobu jména po rodiči (Petr → Petra, Josef → Josefína).
+              </p>
+            </div>
+
             <label className="block">
               <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-[#8a7f71]">Měsíc narození</p>
               <select
@@ -425,6 +449,9 @@ export default function DetiFinder() {
             <p className="mb-1 text-sm text-[#6b6156]">
               <strong className="[font-family:var(--font-syne)] text-lg text-[#2b2723]">Top {shody.length}</strong> nejlepších shod
               {prijmeni.trim() && <> pro příjmení <strong>{prijmeni.trim()}</strong></>}
+              {(maminka.trim() || tatinek.trim()) && (
+                <>, ladící se jmény <strong>{[maminka.trim(), tatinek.trim()].filter(Boolean).join(' a ')}</strong></>
+              )}
               {mesic && <>, narození v měsíci <strong>{MESICE_NAZVY[mesic - 1]}</strong></>}
             </p>
             <p className="mb-4 text-xs text-[#8a7f71]">

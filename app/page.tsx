@@ -22,7 +22,7 @@ export default function Domov() {
     <Shell>
       <section className="mb-10 text-center">
         <h1 className="[font-family:var(--font-syne)] text-4xl font-extrabold tracking-tight sm:text-5xl">
-          Najděte jméno, které <span className="text-[#d97757]">sedne</span>
+          Najděte jméno, které <span className="text-[#d97757]">k vám patří</span>
         </h1>
         <p className="mx-auto mt-3 max-w-2xl text-[#6b6156]">
           Nejlíbivější jména pro psy, fenky, kočky, kocoury i další zvířata — a taky pro holčičky

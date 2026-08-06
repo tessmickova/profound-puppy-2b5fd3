@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useOblibene } from '@/lib/names/oblibene'
+import { useRodina } from '@/lib/names/rodina'
 
 const POLOZKY = [
   { href: '/', nazev: 'Mapa světa', emoji: '🗺️' },
@@ -13,6 +14,7 @@ const POLOZKY = [
 export default function Shell({ children }: { children: React.ReactNode }) {
   const cesta = usePathname()
   const { pocet } = useOblibene()
+  const { pocet: pocetRodiny } = useRodina()
   return (
     <div className="min-h-screen bg-[#faf6ef] text-[#2b2723]">
       <header className="sticky top-0 z-40 border-b border-[#e8dfd2] bg-[#faf6ef]/90 backdrop-blur">
@@ -39,6 +41,17 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                 </Link>
               )
             })}
+            <Link
+              href="/rodina"
+              className={`rounded-full px-3 py-1.5 font-medium transition-colors ${
+                cesta.startsWith('/rodina')
+                  ? 'bg-[#2b2723] text-[#faf6ef]'
+                  : 'text-[#6b6156] hover:bg-[#efe7da] hover:text-[#2b2723]'
+              }`}
+              title="Profil vaší rodiny — lidé i zvířata"
+            >
+              👪{pocetRodiny > 0 && <span className="ml-1 font-semibold">{pocetRodiny}</span>}
+            </Link>
             <Link
               href="/oblibene"
               className={`rounded-full px-3 py-1.5 font-medium transition-colors ${
