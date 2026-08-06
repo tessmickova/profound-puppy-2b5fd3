@@ -91,7 +91,7 @@ export default function Home() {
       {/* NAV */}
       <nav className="sticky top-0 z-50 bg-[#03080f]/90 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center gap-4">
-          <a href="/" className="flex items-center gap-2 no-underline">
+          <a href="/aurora" className="flex items-center gap-2 no-underline">
             <HuskyLogo size={28} />
             <span className="font-display text-base font-black tracking-widest bg-gradient-to-r from-aurora-green to-aurora-teal bg-clip-text text-transparent">
               AURORADOG

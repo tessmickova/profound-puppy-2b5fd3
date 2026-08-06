@@ -37,7 +37,7 @@ export default function AdminPage() {
         </div>
         <nav className="sticky top-0 z-50 bg-[#03080f]/90 backdrop-blur-xl border-b border-white/5">
           <div className="max-w-6xl mx-auto px-4 h-14 flex items-center">
-            <a href="/" className="flex items-center gap-2 no-underline">
+            <a href="/aurora" className="flex items-center gap-2 no-underline">
               <HuskyLogo size={28} />
               <span className="font-display text-base font-black tracking-widest bg-gradient-to-r from-aurora-green to-aurora-teal bg-clip-text text-transparent">
                 AURORADOG
@@ -64,7 +64,7 @@ export default function AdminPage() {
       {/* ── NAV ── */}
       <nav className="sticky top-0 z-50 bg-[#03080f]/90 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-4">
-          <a href="/" className="flex items-center gap-2 no-underline">
+          <a href="/aurora" className="flex items-center gap-2 no-underline">
             <HuskyLogo size={28} />
             <span className="font-display text-base font-black tracking-widest bg-gradient-to-r from-aurora-green to-aurora-teal bg-clip-text text-transparent">
               AURORADOG
@@ -78,7 +78,7 @@ export default function AdminPage() {
               🔧 Admin
             </span>
           </div>
-          <a href="/" className="ml-auto text-xs font-mono text-slate-400 hover:text-aurora-teal transition-colors">
+          <a href="/aurora" className="ml-auto text-xs font-mono text-slate-400 hover:text-aurora-teal transition-colors">
             ← Dashboard
           </a>
         </div>
@@ -372,7 +372,7 @@ export default function AdminPage() {
             Admin diagnostics — AuroraDog — data z NOAA SWPC + NASA DONKI
           </p>
           <div className="flex gap-4 text-xs">
-            <a href="/" className="text-slate-400 hover:text-aurora-teal transition-colors">Dashboard</a>
+            <a href="/aurora" className="text-slate-400 hover:text-aurora-teal transition-colors">Dashboard</a>
             <a href="/docs" className="text-slate-400 hover:text-aurora-teal transition-colors">Docs</a>
           </div>
         </div>
