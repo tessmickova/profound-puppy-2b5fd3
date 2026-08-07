@@ -7,6 +7,7 @@ import { useMemo, useState } from 'react'
 import { JMENA } from '@/lib/names/data'
 import { najdiProRodinu } from '@/lib/names/logic'
 import type { Kategorie } from '@/lib/names/types'
+import { Users } from 'lucide-react'
 import { ROLE, useRodina } from '@/lib/names/rodina'
 import ShodaKarta from './ShodaKarta'
 import Vyber from './Vyber'
@@ -59,14 +60,14 @@ export default function RodinaProfil() {
         </p>
 
         <form
-          className="mt-4 flex flex-wrap gap-2"
+          className="rodina-pridani mt-4 flex flex-wrap gap-2"
           onSubmit={e => { e.preventDefault(); pridat() }}
         >
           <input
             value={jmeno}
             onChange={e => setJmeno(e.target.value)}
             placeholder="jméno — např. Jana nebo Rex"
-            className="w-56 rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-4 py-2 text-sm outline-none focus:border-[#2b2723]"
+            className="w-56 max-w-full rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-4 py-2 text-sm outline-none focus:border-[#2b2723]"
           />
           <div className="w-44">
             <Vyber
@@ -110,7 +111,7 @@ export default function RodinaProfil() {
 
       {clenove.length === 0 ? (
         <div className="rounded-3xl border border-dashed border-[#e8dfd2] p-12 text-center text-[#8a7f71]">
-          <p className="text-4xl">👪</p>
+          <p className="flex justify-center text-[#c4b8a7]"><Users size={40} strokeWidth={1.5} aria-hidden /></p>
           <p className="mt-3">
             Přidejte prvního člena rodiny — třeba sebe nebo svého mazlíčka — a hned
             doporučíme další jména, která k vám budou patřit.

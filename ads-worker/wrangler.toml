@@ -13,7 +13,7 @@ crons = ["10 0 * * *"]
 [[d1_databases]]
 binding = "DB"
 database_name = "svetjmen-ads"
-database_id = "VYPLNIT_PO_VYTVORENI"
+database_id = "3f944ded-bc71-4646-9559-66306c5c9e26"
 
 # Loga inzerentů
 [[r2_buckets]]

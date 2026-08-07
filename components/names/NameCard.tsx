@@ -48,6 +48,17 @@ export function Stitky({ jmeno }: { jmeno: Jmeno }) {
   return <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${s.trida}`}>{s.text}</span>
 }
 
+/**
+ * Vrátí třídu podle toho, kolik znaků se má na řádek vejít. Číslo pořadí
+ * se počítá taky — „128." zabere skoro tolik co dvě písmena.
+ */
+function delkaTridy(jmeno: string, poradi?: number | null): string {
+  const znaku = jmeno.length + (poradi != null ? String(poradi).length + 1 : 0)
+  if (znaku >= 11) return 'je-velmi-dlouhe'
+  if (znaku >= 9) return 'je-dlouhe'
+  return ''
+}
+
 export default function NameCard({ jmeno, poradi }: { jmeno: Jmeno; poradi?: number }) {
   const zeme = zemePodleKodu(jmeno.zeme)
   const kat = KATEGORIE_INFO[jmeno.kategorie]
@@ -62,8 +73,9 @@ export default function NameCard({ jmeno, poradi }: { jmeno: Jmeno; poradi?: num
       tabIndex={0}
       aria-label={`Zobrazit detail jména ${jmeno.jmeno}`}
     >
-      {/* jméno má celý řádek pro sebe, ať se nemusí lámat */}
-      <h3 className="karta-jmeno">
+      {/* Jméno má celý řádek pro sebe. Delší jména dostanou menší písmo,
+          aby se nikdy nelámala uprostřed slova. */}
+      <h3 className={`karta-jmeno ${delkaTridy(jmeno.jmeno, poradi)}`}>
         {poradi != null && <span className="karta-poradi">{poradi}.</span>}
         {jmeno.jmeno}
       </h3>

@@ -1554,3 +1554,119 @@ body { overflow-x: clip; }
   font-size: .88em;
   color: #4a423a;
 }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   MOBILNÍ DOLADĚNÍ
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Přepínač režimů (procházet / shoda / sourozenec) ────────────────────
+   Tři popisky se na telefon vedle sebe nevejdou. Zalomit je uvnitř kulaté
+   pilulky vypadalo rozbitě, proto se pruh na úzkém displeji posouvá do
+   strany — jeden řádek, prst si ho odtáhne. */
+.taby {
+  display: flex;
+  gap: 2px;
+  border: 1px solid #e8dfd2;
+  border-radius: 999px;
+  background: #fff;
+  padding: 4px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.taby::-webkit-scrollbar { display: none; }
+.tab {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  border-radius: 999px;
+  padding: 7px 16px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #6b6156;
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease;
+}
+.tab.je-aktivni { background: #2b2723; color: #faf6ef; }
+.tab:focus-visible { outline: 2px solid #d97757; outline-offset: 1px; }
+
+@media (min-width: 640px) {
+  /* Na širším displeji se pruh nemusí posouvat a drží se u levého okraje. */
+  .taby { width: max-content; max-width: 100%; }
+}
+
+/* ── Vyhledávač: přepínač pohlaví ────────────────────────────────────────
+   „čekáme chlapečka" se na dvě řádky lámalo jen v jedné z půlek a pilulka
+   se rozjela. Na telefonu má přepínač celou šířku a obě půlky stejně. */
+@media (max-width: 640px) {
+  .vyhledavac-hlava { flex-direction: column; align-items: stretch; gap: 12px; }
+  .vyhledavac-pohlavi { flex: 1 1 auto; width: 100%; }
+  .vyhledavac-pohlavi button {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 9px 6px;
+    font-size: 12.5px;
+    line-height: 1.25;
+    text-align: center;
+  }
+}
+
+/* ── Vysunutý filtr ──────────────────────────────────────────────────────
+   Poslední sekce mizela pod spodní lištou. */
+@media (max-width: 899px) {
+  .filtr-panel { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
+}
+
+/* ── Rodinný profil: přidání člena ───────────────────────────────────────
+   Tři prvky vedle sebe se na telefon nevejdou, jméno se ořezávalo. */
+@media (max-width: 640px) {
+  .rodina-pridani { flex-direction: column; align-items: stretch; }
+  .rodina-pridani > * { width: 100% !important; }
+}
+
+/* ── Nadpisy ────────────────────────────────────────────────────────────
+   Ať se řádky lámou vyváženě a nezůstává na konci osamělé slovo. */
+h1, h2, .vyhledavac-hlava h2 { text-wrap: balance; }
+
+/* Ikona u nadpisu vyhledávače má sedět na prvním řádku, ne uprostřed
+   dvouřádkového nadpisu. */
+.vyhledavac-hlava h2 { align-items: flex-start; }
+.vyhledavac-hlava h2 > svg { flex: none; margin-top: 3px; }
+
+/* Jezdící pásy: na telefonu mezi nimi a obsahem zbývalo příliš místa. */
+@media (max-width: 640px) {
+  .pasy { gap: 8px; margin-bottom: 4px; }
+}
+
+/* ── Karta jména v mřížce ────────────────────────────────────────────────
+   Karta o sobě neměla ani pozadí, ani rámeček — jména se slévala s papírem
+   a nebylo poznat, kde jedna končí a druhá začíná. Vzhled sjednocujeme
+   s kartou shody. */
+.karta-klikatelna {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #efe7da;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(43, 39, 35, .04);
+}
+.karta-klikatelna:hover { border-color: #e0d3bf; }
+
+/* Dlouhé jméno se raději zmenší, než aby se zlomilo uprostřed slova.
+   Kolik ubrat, se pozná z délky jména — poměr k šířce karty je u všech
+   rozlišení podobný, protože karta se drží kolem 150–200 px. */
+.karta-jmeno { overflow-wrap: normal; hyphens: none; }
+.karta-jmeno.je-dlouhe { font-size: 15.5px; }
+.karta-jmeno.je-velmi-dlouhe { font-size: 13.5px; }
+@media (max-width: 640px) {
+  .karta-klikatelna { padding: 13px 14px; gap: 8px; }
+  .karta-poradi { font-size: 11px; margin-right: 4px; }
+}
+
+/* Ikona nadpisu sedí na prvním řádku — u dvouřádkového nadpisu vypadala,
+   jako by se vznášela někde uprostřed. */
+.nadpis-sekce { align-items: flex-start; }
+.nadpis-sekce .nadpis-znak { flex: none; margin-top: 2px; }

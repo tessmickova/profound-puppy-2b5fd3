@@ -175,7 +175,7 @@ export default function DetiFinder() {
   }, [vysledky, abecedne])
 
   const taby = (
-    <div className="mb-5 inline-flex flex-wrap rounded-full border border-[#e8dfd2] bg-white p-1">
+    <div className="taby mb-5">
       {([
         { id: 'prochazet', nazev: 'Procházet jména', ikona: <BookOpen size={14} /> },
         { id: 'shoda', nazev: 'Najít nejlepší shodu', ikona: <Sparkles size={14} /> },
@@ -184,9 +184,7 @@ export default function DetiFinder() {
         <button
           key={t.id}
           onClick={() => setRezim(t.id)}
-          className={`inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-[13.5px] font-semibold transition-colors ${
-            rezim === t.id ? 'bg-[#2b2723] text-[#faf6ef]' : 'text-[#6b6156]'
-          }`}
+          className={`tab ${rezim === t.id ? 'je-aktivni' : ''}`}
         >
           {t.ikona} {t.nazev}
         </button>
