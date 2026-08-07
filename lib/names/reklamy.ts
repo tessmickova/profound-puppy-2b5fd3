@@ -7,6 +7,7 @@
 // v obou případech stejný.
 
 export type ReklamniPlocha =
+  | 'mobil-pas'
   | 'domov-nad-mapou' | 'domov-po-mape' | 'domov-mezi' | 'domov-pred-patickou' | 'domov-bocni'
   | 'zvirata-filtr' | 'zvirata-nad' | 'zvirata-v-mrizce' | 'zvirata-pod' | 'zvirata-bocni'
   | 'deti-filtr' | 'deti-nad' | 'deti-v-mrizce' | 'deti-pod' | 'deti-bocni'
@@ -59,6 +60,10 @@ const OBECNE: Inzerat[] = [
 
 /** Kreativy pro každou plochu — plocha se po 30 s překlopí na další. */
 export const REKLAMY: Record<string, Inzerat[]> = {
+  // Pruh nahoře na telefonu — jede na všech stránkách, proto je v něm
+  // průřez všemi obory.
+  'mobil-pas': [...DETI, ...OBECNE, ...PSI, ...KOCKY],
+
   'domov-nad-mapou': OBECNE,
   'domov-po-mape': [...DETI, ...OBECNE].slice(0, 4),
   'domov-mezi': PSI,

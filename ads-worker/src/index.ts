@@ -19,7 +19,7 @@ import {
   obsazenost, platiDo, zhasniProsle, zrusNezaplacene,
   type Prostredi,
 } from './db'
-import { IKONY, KAPACITA, OBDOBI, PLOCHY, cena, plochaPodleId, type Obdobi } from './plochy'
+import { IKONY, KAPACITA, OBDOBI, PLOCHY, cena, kapacitaPlochy, plochaPodleId, type Obdobi } from './plochy'
 import { samoobsluha } from './samoobsluha'
 
 const MAX_LOGO = 200 * 1024
@@ -117,7 +117,8 @@ async function dejSloty(env: Prostredi, cors: Record<string, string>) {
       id: p.id,
       nazev: p.nazev,
       stranka: p.stranka,
-      volno: Math.max(0, KAPACITA - (obsazeno[p.id] ?? 0)),
+      kapacita: kapacitaPlochy(p),
+      volno: Math.max(0, kapacitaPlochy(p) - (obsazeno[p.id] ?? 0)),
       ceny: {
         mesic: cena(p, 'mesic'),
         pulrok: cena(p, 'pulrok'),
@@ -165,7 +166,7 @@ async function vytvorObjednavku(req: Request, env: Prostredi, cors: Record<strin
   if (telo.souhlas !== true) return chyba('Bez souhlasu s podmínkami to nejde odeslat.', 400, cors)
 
   const obsazeno = await obsazenost(env)
-  if ((obsazeno[plocha.id] ?? 0) >= KAPACITA) {
+  if ((obsazeno[plocha.id] ?? 0) >= kapacitaPlochy(plocha)) {
     return chyba('Tahle plocha je právě obsazená. Vyberte prosím jinou.', 409, cors)
   }
 

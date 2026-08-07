@@ -7,6 +7,7 @@ import { useOblibene } from '@/lib/names/oblibene'
 import { useRodina } from '@/lib/names/rodina'
 import Paticka from './Paticka'
 import DetailPanel from './DetailPanel'
+import ReklamniPas from './ReklamniPas'
 
 // Navigace je dvojí: v hlavičce na velkých displejích, jako spodní lišta
 // na telefonu. Obojí ukazuje stejných pět míst, aby se uživatel neztratil.
@@ -26,7 +27,9 @@ export default function Shell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-[#faf6ef] pb-16 text-[#2b2723] lg:pb-0">
-      <header className="sticky top-0 z-40 border-b border-[#e8dfd2] bg-[#faf6ef]/92 backdrop-blur">
+      {/* Na telefonu drží reklamní pruh úplně nahoře, hlavička se lepí pod něj. */}
+      <ReklamniPas />
+      <header className="hlavicka sticky top-0 z-40 border-b border-[#e8dfd2] bg-[#faf6ef]/92 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center gap-2 px-3 py-2.5 sm:px-4">
           <Link href="/" className="flex shrink-0 items-center gap-1.5 [font-family:var(--font-syne)] text-base font-extrabold tracking-tight sm:text-lg">
             <PawPrint size={20} className="text-[#d97757]" aria-hidden />

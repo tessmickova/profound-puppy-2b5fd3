@@ -8,8 +8,13 @@
 // psaní skáče na první odpovídající položku a čtečka obrazovky slyší
 // „seznam s výběrem".
 
-import { useEffect, useId, useRef, useState } from 'react'
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
 import { Check, ChevronDown } from 'lucide-react'
+
+/** Výška spodní lišty na telefonu — nabídka se pod ni nesmí schovat. */
+const LISTA = 62
+/** Kolik místa nabídce stačí, aby se vyplatilo rozbalit ji dolů. */
+const STACI = 200
 
 export interface Volba {
   hodnota: string
@@ -36,6 +41,7 @@ export default function Vyber({
 }) {
   const [otevreno, setOtevreno] = useState(false)
   const [kurzor, setKurzor] = useState(0)
+  const [misto, setMisto] = useState<{ nahoru: boolean; vyska: number }>({ nahoru: false, vyska: 290 })
   const obal = useRef<HTMLDivElement>(null)
   const seznam = useRef<HTMLDivElement>(null)
   const hledani = useRef({ text: '', kdy: 0 })
@@ -55,6 +61,31 @@ export default function Vyber({
     document.addEventListener('mousedown', mimo)
     return () => document.removeEventListener('mousedown', mimo)
   }, [otevreno])
+
+  // Kam se nabídka vejde. Na telefonu bývá spoušť u spodního okraje a nabídka
+  // rozbalená dolů zmizí pod spodní lištou — v tom případě ji otočíme nahoru
+  // a vždy ji zkrátíme přesně na volné místo.
+  const zmerMisto = useCallback(() => {
+    const spoust = obal.current?.querySelector('button')
+    if (!spoust) return
+    const r = spoust.getBoundingClientRect()
+    const lista = window.innerWidth < 640 ? LISTA : 0
+    const pod = window.innerHeight - r.bottom - lista - 13
+    const nad = r.top - 13
+    const nahoru = pod < STACI && nad > pod
+    setMisto({ nahoru, vyska: Math.max(132, Math.min(290, nahoru ? nad : pod)) })
+  }, [])
+
+  useLayoutEffect(() => {
+    if (!otevreno) return
+    zmerMisto()
+    window.addEventListener('resize', zmerMisto)
+    window.addEventListener('scroll', zmerMisto, true)
+    return () => {
+      window.removeEventListener('resize', zmerMisto)
+      window.removeEventListener('scroll', zmerMisto, true)
+    }
+  }, [otevreno, zmerMisto])
 
   // Po otevření doskrolujeme na vybranou položku, ať ji je vidět.
   useEffect(() => {
@@ -151,7 +182,8 @@ export default function Vyber({
       {otevreno && (
         <div
           ref={seznam}
-          className="vyber-nabidka"
+          className={`vyber-nabidka ${misto.nahoru ? 'je-nahoru' : ''}`}
+          style={{ maxHeight: misto.vyska }}
           role="listbox"
           id={id}
           tabIndex={-1}

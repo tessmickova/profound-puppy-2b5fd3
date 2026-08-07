@@ -65,12 +65,17 @@ Mapa světa na úvodu **už není** — země jsou jen ve filtru a v patičce.
   s kojencem, zvířata teplá okrová s tlapkou.
 - **Vyber.tsx** — vlastní rozbalovací nabídka místo systémového `<select>`.
   Ovládá se klávesnicí (šipky, Enter, Esc, psaní), má `role="listbox"`
-  a vypadá jako zbytek webu. Systémový select už není nikde.
+  a vypadá jako zbytek webu. Systémový select už není nikde. Před otevřením si
+  změří místo nad spouští a pod ní a při nedostatku dole se rozbalí nahoru —
+  na telefonu jinak poslední položky mizely pod spodní lištou.
 - **ShodaKarta.tsx** — karta nalezené shody s pevným pořadím řádků.
 - **VolbaPodrobnosti.tsx** — přepínače toho, co se u jmen ukazuje.
 - **RychleOdpovedi.tsx** — krátké odpovědi na časté otázky; text je vidět
   na stránce a zároveň jde stránkou jako strukturovaná data.
 - **Reklama.tsx** — jedna nativní reklamní plocha (viz níže).
+- **ReklamniPas.tsx** — reklamní pruh připnutý úplně nahoře, jen na telefonu.
+  Místo karet v něm jede pomalý pás s názvy firem; každý název je odkaz, takže
+  celý pruh je jedno velké CTA. Od 640 px se nevykresluje.
 - **RodinaProfil.tsx**, **OblibeneSeznam.tsx**, **Paticka.tsx**.
 
 ## Knihovna (`lib/names/`)
@@ -117,8 +122,11 @@ Každá plocha se po **30 sekundách** překlopí na další kreativu (nejvýš 
 překlopení se pozastaví při najetí myší a při zaměření klávesnicí. Označení
 „sponzorováno" je vždy vidět, odkazy mají `rel="sponsored nofollow noopener"`.
 
-Ploch je **30** — pět na každém typu stránky. Jejich seznam a ceník je
-v `ads-worker/src/plochy.ts`, jména ploch používá web v `Rozvrzeni`.
+Ploch je **31** — pět na každém typu stránky a k tomu `mobil-pas`, pruh nahoře
+na telefonu, který běží na všech stránkách. Jejich seznam a ceník je
+v `ads-worker/src/plochy.ts`; jména ploch používá web v `Rozvrzeni`, pruh
+v `ReklamniPas`. Na jedné ploše se střídají čtyři kampaně, pruh jich unese
+deset (vlastní kapacita u plochy).
 
 ## Jak web přijde ke kreativám
 

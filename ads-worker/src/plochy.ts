@@ -4,7 +4,7 @@
 // takže „volný slot" znamená, že plocha ještě nemá plný počet aktivních
 // objednávek. Názvy ploch se musí shodovat s tím, co web posílá v ?plocha=.
 
-/** Kolik kampaní se na jedné ploše střídá. */
+/** Kolik kampaní se na jedné ploše střídá, když plocha neurčí vlastní počet. */
 export const KAPACITA = 4
 
 export type Obdobi = 'mesic' | 'pulrok' | 'rok'
@@ -22,16 +22,23 @@ export interface Plocha {
   stranka: string
   /** cena za měsíc v Kč bez DPH */
   cena_mesic: number
+  /** kolik kampaní se na této ploše střídá; bez uvedení platí KAPACITA */
+  kapacita?: number
 }
 
-const p = (id: string, nazev: string, stranka: string, cena_mesic: number): Plocha =>
-  ({ id, nazev, stranka, cena_mesic })
+const p = (id: string, nazev: string, stranka: string, cena_mesic: number, kapacita?: number): Plocha =>
+  ({ id, nazev, stranka, cena_mesic, ...(kapacita ? { kapacita } : {}) })
 
 /**
  * Ceník vychází z toho, kolik lidí plochu uvidí: úvodní strana nejvíc,
  * stránky zemí nejmíň. Postranní sloupce jsou levnější než plochy v obsahu.
  */
 export const PLOCHY: Plocha[] = [
+  // Jediná plocha, která běží na všech stránkách — proto je nejdražší a vejde
+  // se do ní víc firem najednou. Na telefonu je připnutá úplně nahoře a jede
+  // v ní pomalý pás s názvy firem.
+  p('mobil-pas',            'Telefon — pruh nahoře',     'Všechny stránky (jen telefon)', 3200, 10),
+
   p('domov-nad-mapou',      'Úvod — nad obsahem',        'Úvodní strana', 2400),
   p('domov-po-mape',        'Úvod — pod hledáním',       'Úvodní strana', 2200),
   p('domov-mezi',           'Úvod — mezi sekcemi',       'Úvodní strana', 2000),
@@ -74,6 +81,9 @@ export const plochaPodleId = (id: string): Plocha | undefined =>
 
 export const cena = (plocha: Plocha, obdobi: Obdobi): number =>
   plocha.cena_mesic * OBDOBI[obdobi].nasobek
+
+/** Kolik kampaní se na dané ploše střídá. */
+export const kapacitaPlochy = (plocha: Plocha): number => plocha.kapacita ?? KAPACITA
 
 /** Ikony, ze kterých si firma vybírá, když nemá logo. Musí sedět s webem. */
 export const IKONY = [

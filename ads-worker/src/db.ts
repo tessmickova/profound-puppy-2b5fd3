@@ -1,7 +1,7 @@
 // Práce s databází. Držíme to na jednom místě, ať je vidět, jaká data
 // o inzerentech vůbec vznikají.
 
-import { KAPACITA, OBDOBI, type Obdobi } from './plochy'
+import { KAPACITA, OBDOBI, kapacitaPlochy, plochaPodleId, type Obdobi } from './plochy'
 
 export interface Prostredi {
   DB: D1Database
@@ -60,6 +60,8 @@ export function novyVs(): string {
 /** Kreativy, které se právě mají zobrazit na dané ploše. */
 export async function inzeratyProPlochu(env: Prostredi, plocha: string) {
   const dnes = dnesISO()
+  const def = plochaPodleId(plocha)
+  const kapacita = def ? kapacitaPlochy(def) : KAPACITA
   const { results } = await env.DB.prepare(
     `SELECT i.id, i.znacka, i.nadpis, i.text, i.cta, i.odkaz, i.ikona, i.logo_klic
        FROM inzeraty i
@@ -70,7 +72,7 @@ export async function inzeratyProPlochu(env: Prostredi, plocha: string) {
         AND (o.plati_do IS NULL OR o.plati_do >= ?2)
       ORDER BY o.vytvoreno
       LIMIT ?3`,
-  ).bind(plocha, dnes, KAPACITA).all<RadekInzeratu>()
+  ).bind(plocha, dnes, kapacita).all<RadekInzeratu>()
   return results ?? []
 }
 

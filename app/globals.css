@@ -1408,8 +1408,18 @@ h3.nadpis-sekce .nadpis-znak { width: 28px; height: 28px; border-radius: 9px; }
 }
 /* V pravém sloupci by se nabídka jinak vysypala mimo obrazovku. */
 .vyber-pilulka .vyber-nabidka { left: auto; right: 0; }
+/* Když je spoušť nízko nad spodní lištou, nabídka se rozbalí nahoru. */
+.vyber-nabidka.je-nahoru {
+  top: auto;
+  bottom: calc(100% + 5px);
+  animation-name: vyber-prichod-zdola;
+}
 @keyframes vyber-prichod {
   from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes vyber-prichod-zdola {
+  from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: none; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -1447,9 +1457,11 @@ h3.nadpis-sekce .nadpis-znak { width: 28px; height: 28px; border-radius: 9px; }
 .vyber-polozka.je-vybrana { font-weight: 600; color: #2b2723; }
 .vyber-polozka.je-vybrana svg { color: #d97757; }
 
-/* Na telefonu je nabídka širší a položky vyšší, ať se do nich dá trefit. */
+/* Na telefonu je nabídka širší a položky vyšší, ať se do nich dá trefit.
+   Výšku počítá komponenta z volného místa nad a pod spouští, proto tu
+   max-height nepřepisujeme. */
 @media (max-width: 640px) {
-  .vyber-nabidka { max-width: calc(100vw - 28px); max-height: 62vh; }
+  .vyber-nabidka { max-width: calc(100vw - 28px); }
   .vyber-polozka { padding: 10px 10px; font-size: 14px; }
 }
 
@@ -1670,3 +1682,126 @@ h1, h2, .vyhledavac-hlava h2 { text-wrap: balance; }
    jako by se vznášela někde uprostřed. */
 .nadpis-sekce { align-items: flex-start; }
 .nadpis-sekce .nadpis-znak { flex: none; margin-top: 2px; }
+
+/* ── Telefon: nejmenší popisky ───────────────────────────────────────────
+   Štítek „reklama“ v 8,5 px a jméno inzerenta v 10,5 px se na telefonu
+   nedaly přečíst. Na úzké ploše je místa dost, tak je zvětšíme. */
+@media (max-width: 640px) {
+  .reklama-uzka .reklama-stitek,
+  .reklama-stitek { font-size: 10px; padding: 1px 7px; letter-spacing: .04em; }
+  .reklama-uzka .reklama-znacka,
+  .reklama-znacka { font-size: 12px; }
+  .karta-stitek { font-size: 10.5px; padding: 2px 8px; }
+}
+
+/* ── Záložky ─────────────────────────────────────────────────────────────
+   Plné popisky se na telefon nevešly a poslední záložka mizela za okrajem —
+   vypadalo to jako useknutý obsah. Na úzké obrazovce proto ukazujeme
+   zkrácené popisky; čtečka obrazovky slyší z aria-label ten plný. */
+.tab-kratky { display: none; }
+@media (max-width: 719px) {
+  .tab-dlouhy { display: none; }
+  .tab-kratky { display: inline; }
+  .taby { justify-content: space-between; }
+  .tab { padding: 8px 11px; font-size: 13px; gap: 5px; }
+  /* Ikonu si nese jen právě otevřená záložka — jinak by se tři popisky
+     na šířku telefonu nevešly a poslední by mizela za okrajem. */
+  .tab:not(.je-aktivni) > svg { display: none; }
+}
+@media (max-width: 379px) {
+  .tab { padding: 7px 8px; font-size: 12.5px; }
+  .tab > svg { display: none; }
+}
+/* iPhone SE a spol. — poslední zúžení, aby pruh nepřetékal ani tady. */
+@media (max-width: 339px) {
+  .taby { padding: 3px; }
+  .tab { padding: 7px 5px; font-size: 11.5px; }
+}
+
+/* ── Reklamní pruh nahoře (jen telefon) ──────────────────────────────────
+   Připnutý úplně na vrchu, nad hlavičkou. Uvnitř jede pomalý pás s názvy
+   firem — každý je odkaz, takže celý pruh funguje jako CTA. Jede zhruba
+   čtyřikrát pomaleji než pásy jmen: jméno stačí zahlédnout, název firmy si
+   má člověk stihnout přečíst a klepnout na něj. */
+.reklamni-pas {
+  position: sticky;
+  top: 0;
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding-left: 10px;
+  border-bottom: 1px solid #e8dfd2;
+  background: #f3ecdf;
+}
+.reklamni-pas-stitek {
+  flex: none;
+  border-radius: 999px;
+  background: #fff;
+  padding: 3px 7px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: #8a7f71;
+}
+.reklamni-pas-okno {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 5%, #000 92%, transparent);
+}
+.reklamni-pas-stopa {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  width: max-content;
+  animation: reklamni-pas-jede 150s linear infinite;
+  will-change: transform;
+}
+@keyframes reklamni-pas-jede {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.reklamni-pas-box {
+  display: inline-flex;
+  /* Prst potřebuje aspoň 24 px na výšku (WCAG 2.2), i když je odkaz široký. */
+  align-items: center;
+  min-height: 26px;
+  gap: 7px;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.reklamni-pas-znacka {
+  font-family: var(--font-syne), system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -.01em;
+  color: #2b2723;
+}
+.reklamni-pas-cta {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #d97757;
+}
+.reklamni-pas-cta::after { content: ' →'; }
+/* Prst na pásu ho zastaví, ať se dá do odkazu trefit. */
+.reklamni-pas-okno:active .reklamni-pas-stopa,
+.reklamni-pas-stopa:focus-within { animation-play-state: paused; }
+
+/* Bez pohybu jen statický pruh, kterým se dá projet prstem. */
+@media (prefers-reduced-motion: reduce) {
+  .reklamni-pas-stopa { animation: none; }
+  .reklamni-pas-okno { overflow-x: auto; scrollbar-width: none; }
+  .reklamni-pas-okno::-webkit-scrollbar { display: none; }
+}
+
+/* Pruh patří jen na telefon — na velkém displeji jsou postranní sloupce. */
+@media (min-width: 640px) {
+  .reklamni-pas { display: none; }
+}
+@media (max-width: 639px) {
+  .hlavicka { top: 38px; }
+}

@@ -33,7 +33,7 @@ porovnává v konstantním čase.
 
 ## Nákupní tok
 
-1. **Výběr plochy.** Samoobsluha ukáže všech 30 ploch, kolik je na které volno
+1. **Výběr plochy.** Samoobsluha ukáže všech 31 ploch, kolik je na které volno
    a cenu za měsíc. Obsazená plocha se nedá vybrat.
 2. **Délka.** Měsíc, 6 měsíců (jeden měsíc zdarma) nebo rok (tři měsíce zdarma).
 3. **Inzerát.** Značka, nadpis (48 znaků), text (150 znaků), tlačítko a odkaz.
@@ -52,9 +52,10 @@ porovnává v konstantním čase.
 
 ## Ceník
 
-Cena vychází z toho, kolik lidí plochu uvidí. Za měsíc bez DPH: úvodní strana
-1 400–2 400 Kč, stránky dětí a zvířat 1 200–2 000 Kč, rodinný profil
-1 100–1 500 Kč, uložená jména 900–1 300 Kč, stránky zemí 800–1 200 Kč.
+Cena vychází z toho, kolik lidí plochu uvidí. Za měsíc bez DPH: pruh nahoře na
+telefonu 3 200 Kč, úvodní strana 1 400–2 400 Kč, stránky dětí a zvířat
+1 200–2 000 Kč, rodinný profil 1 100–1 500 Kč, uložená jména 900–1 300 Kč,
+stránky zemí 800–1 200 Kč.
 
 Násobky za období: měsíc ×1, půl roku ×5, rok ×9. Ceník je jedna tabulka
 v `src/plochy.ts` — mění se tam a nikde jinde.
@@ -74,8 +75,20 @@ Loga leží v objektovém úložišti, ne v databázi.
 ## Kapacita a sloty
 
 Na jedné ploše se střídají nejvýš **čtyři** kampaně (`KAPACITA` v `plochy.ts`),
-každá je vidět 30 sekund. Volné místo se počítá z aktivních objednávek
-i z těch, které čekají na platbu — jinak by se plocha prodala dvakrát.
+každá je vidět 30 sekund. Plocha si může říct o vlastní počet — pátý parametr
+u `p(...)`; čte se přes `kapacitaPlochy()`. Volné místo se počítá z aktivních
+objednávek i z těch, které čekají na platbu — jinak by se plocha prodala
+dvakrát.
+
+## Pruh nahoře na telefonu (`mobil-pas`)
+
+Jediná plocha, která běží na **všech** stránkách, a jediná, která se
+nepřeklápí: je připnutá úplně nahoře nad hlavičkou a jede v ní pomalý pás
+(150 s na smyčku, zhruba čtyřikrát pomaleji než pásy jmen). Vidět je z inzerátu
+jen **název firmy a text tlačítka** — celý blok je odkaz, takže pruh funguje
+jako CTA. Vejde se do něj **deset** kampaní najednou, proto stojí víc než
+ostatní plochy. Na displeji od 640 px se pruh vůbec nevykresluje, tam má
+reklama postranní sloupce.
 
 ## Bezpečnost
 

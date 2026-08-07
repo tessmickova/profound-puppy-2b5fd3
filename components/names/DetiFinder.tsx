@@ -177,16 +177,20 @@ export default function DetiFinder() {
   const taby = (
     <div className="taby mb-5">
       {([
-        { id: 'prochazet', nazev: 'Procházet jména', ikona: <BookOpen size={14} /> },
-        { id: 'shoda', nazev: 'Najít nejlepší shodu', ikona: <Sparkles size={14} /> },
-        { id: 'sourozenec', nazev: 'Ladí k sourozenci', ikona: <Users size={14} /> },
+        { id: 'prochazet', nazev: 'Procházet jména', kratky: 'Procházet', ikona: <BookOpen size={14} /> },
+        { id: 'shoda', nazev: 'Najít nejlepší shodu', kratky: 'Nejlepší shoda', ikona: <Sparkles size={14} /> },
+        { id: 'sourozenec', nazev: 'Ladí k sourozenci', kratky: 'Sourozenec', ikona: <Users size={14} /> },
       ] as const).map(t => (
         <button
           key={t.id}
           onClick={() => setRezim(t.id)}
           className={`tab ${rezim === t.id ? 'je-aktivni' : ''}`}
+          aria-label={t.nazev}
         >
-          {t.ikona} {t.nazev}
+          {t.ikona}
+          {/* Na telefon se plné popisky nevejdou — tam stačí zkrácené. */}
+          <span className="tab-dlouhy">{t.nazev}</span>
+          <span className="tab-kratky">{t.kratky}</span>
         </button>
       ))}
     </div>
