@@ -2,12 +2,11 @@
 
 // Dva jezdící pásy jmen. Horní se posouvá doprava, dolní doleva — protipohyb
 // dělá stránku živou, aniž by cokoli blikalo. Uvnitř je jen jméno, nic víc.
-// Sekce záměrně nemá nadpis: pásy mluví samy za sebe.
 //
 // Smyčka je nekonečná díky tomu, že se seznam vykreslí dvakrát za sebou
 // a animace posune pás přesně o polovinu jeho šířky.
 
-import { pasyJmen } from '@/lib/names/vCesku'
+import { pasyJmen, pasyZvirat } from '@/lib/names/vCesku'
 
 function Pas({ jmena, smer }: { jmena: string[]; smer: 'vpravo' | 'vlevo' }) {
   return (
@@ -21,10 +20,13 @@ function Pas({ jmena, smer }: { jmena: string[]; smer: 'vpravo' | 'vlevo' }) {
   )
 }
 
-export default function PasyJmen() {
-  const [horni, dolni] = pasyJmen()
+export default function PasyJmen({ druh = 'lide' }: { druh?: 'lide' | 'zvirata' }) {
+  const [horni, dolni] = druh === 'zvirata' ? pasyZvirat() : pasyJmen()
   return (
-    <section className="pasy mb-14" aria-label="Jména používaná v Česku">
+    <section
+      className={`pasy pasy-${druh} mb-14`}
+      aria-label={druh === 'zvirata' ? 'Jména mazlíčků používaná v Česku' : 'Jména používaná v Česku'}
+    >
       <Pas jmena={horni} smer="vpravo" />
       <Pas jmena={dolni} smer="vlevo" />
     </section>

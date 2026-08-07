@@ -58,3 +58,48 @@ export function pasyJmen(): [string[], string[]] {
   JMENA_V_CESKU.forEach((j, i) => (i % 2 === 0 ? horni : dolni).push(j))
   return [horni, dolni]
 }
+
+// ── jména mazlíčků, se kterými se v Česku potkáte na každé procházce ─────────
+// Sestaveno z jmen běžných u českých chovatelů a v inzerátech útulků;
+// míchá domácí klasiku s tím, co k nám přišlo z filmů a seriálů.
+
+const PSI_A_FENKY = [
+  'Ben', 'Rex', 'Max', 'Alík', 'Punťa', 'Baryk', 'Bobík', 'Cézar', 'Dick', 'Ajax',
+  'Aron', 'Argo', 'Bady', 'Blesk', 'Brok', 'Bruno', 'Bady', 'Cvalík', 'Dan',
+  'Endy', 'Fanda', 'Gaston', 'Hektor', 'Charlie', 'Jerry', 'Kajtar', 'Lord',
+  'Míša', 'Nero', 'Oskar', 'Pluto', 'Rocky', 'Sam', 'Tobík', 'Uran', 'Vilík',
+  'Zorro', 'Žeryk', 'Baron', 'Bobeš', 'Falco', 'Rambo', 'Sirius', 'Teddy',
+  'Ajda', 'Bára', 'Bella', 'Bety', 'Cira', 'Dina', 'Elza', 'Fenka', 'Gina',
+  'Hera', 'Cindy', 'Jessie', 'Kessy', 'Lucky', 'Maja', 'Nela', 'Orša', 'Perla',
+  'Rita', 'Sára', 'Tina', 'Uma', 'Vendy', 'Zita', 'Žofka', 'Amy', 'Daisy',
+  'Dixie', 'Ema', 'Chloe', 'Lassie', 'Laika', 'Nikita', 'Roxy', 'Stella',
+]
+
+const KOCKY_A_KOCOURI = [
+  'Mikeš', 'Mourek', 'Macek', 'Fousek', 'Bertík', 'Cyril', 'Damián', 'Felix',
+  'Garfield', 'Kocourek', 'Leon', 'Matýsek', 'Neo', 'Oliver', 'Pepík', 'Ryšek',
+  'Sam', 'Šedivák', 'Tom', 'Vašík', 'Zrzek', 'Bonifác', 'Jonáš', 'Kimi',
+  'Micka', 'Mína', 'Líza', 'Bára', 'Perlička', 'Aisha', 'Bella', 'Cilka',
+  'Dorka', 'Elsa', 'Fanynka', 'Gita', 'Hanka', 'Isis', 'Jitka', 'Kitty',
+  'Lucy', 'Máca', 'Nelly', 'Olivie', 'Pusinka', 'Róza',
+  'Sofie', 'Terezka', 'Ulita', 'Vendulka', 'Zuzi', 'Žofie', 'Mia', 'Luna',
+]
+
+const DALSI_MAZLICI = [
+  'Šemík', 'Ryzka', 'Bělka', 'Hvězda', 'Blesk', 'Vítr', 'Perla', 'Kaštan',
+  'Bobek', 'Ušák', 'Mrkvička', 'Chlupáček', 'Pampeliška', 'Kulička', 'Cukřík',
+  'Lóra', 'Kokeš', 'Žako', 'Ferda', 'Pepa', 'Amálka', 'Křupka', 'Fíček',
+  'Hopsalka', 'Oříšek', 'Sněhurka', 'Tlapka', 'Čmelda', 'Bublina', 'Pipin',
+]
+
+/** Zvířecí jména pro jezdící pásy — bez duplicit a bez prázdných hodnot. */
+export const ZVIRATA_V_CESKU: string[] = [
+  ...new Set([...PSI_A_FENKY, ...KOCKY_A_KOCOURI, ...DALSI_MAZLICI].filter(Boolean)),
+]
+
+export function pasyZvirat(): [string[], string[]] {
+  const horni: string[] = []
+  const dolni: string[] = []
+  ZVIRATA_V_CESKU.forEach((j, i) => (i % 2 === 0 ? horni : dolni).push(j))
+  return [horni, dolni]
+}

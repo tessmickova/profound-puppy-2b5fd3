@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import Shell from '@/components/names/Shell'
 import NameCard from '@/components/names/NameCard'
 import Rozvrzeni from '@/components/names/Rozvrzeni'
+import NadpisSekce from '@/components/names/NadpisSekce'
 import { jmenaZeme, KONTINENTY, ZEME, zemePodleKodu } from '@/lib/names/data'
 import { serad } from '@/lib/names/logic'
 import { jsonLdDrobky, jsonLdSeznam, WEB } from '@/lib/names/seo'
@@ -69,9 +70,11 @@ export default async function ZemeStranka({ params }: { params: Promise<{ kod: s
         const info = KATEGORIE_INFO[kat]
         return (
           <section key={kat} className="mb-10">
-            <h2 className="mb-3 [font-family:var(--font-syne)] text-2xl font-bold">
-              {info.emoji} {info.mnozne}
-            </h2>
+            <div className="mb-3">
+              <NadpisSekce druh={kat === 'kluk' || kat === 'holka' ? 'lide' : 'zvirata'}>
+                {info.mnozne}
+              </NadpisSekce>
+            </div>
             <div className="nastup mrizka-jmen">
               {skupina.map((j, i) => <NameCard key={j.id} jmeno={j} poradi={i + 1} />)}
             </div>

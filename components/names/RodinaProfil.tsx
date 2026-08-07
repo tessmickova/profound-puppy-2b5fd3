@@ -12,6 +12,7 @@ import type { Kategorie } from '@/lib/names/types'
 import { ROLE, useRodina } from '@/lib/names/rodina'
 import { Srdicko, Stitky } from './NameCard'
 import Rozvrzeni from './Rozvrzeni'
+import NadpisSekce from './NadpisSekce'
 
 const SKUPINY: { kat: Kategorie; nadpis: string }[] = [
   { kat: 'holka',  nadpis: 'Holčičky' },
@@ -146,9 +147,11 @@ export default function RodinaProfil() {
           </p>
           {doporuceni.map(({ kat, nadpis, shody }) => (
             <section key={kat} className="mb-8">
-              <h3 className="mb-3 [font-family:var(--font-syne)] text-xl font-bold">
-                {KATEGORIE_INFO[kat].emoji} {nadpis}
-              </h3>
+              <div className="mb-3">
+                <NadpisSekce druh={kat === 'kluk' || kat === 'holka' ? 'lide' : 'zvirata'} uroven={3}>
+                  {nadpis}
+                </NadpisSekce>
+              </div>
               <div className="nastup mrizka-jmen">
                 {shody.map((s, j) => <DoporuceniKarta key={s.jmeno.id} shoda={s} poradi={j + 1} />)}
               </div>

@@ -5,6 +5,8 @@ import Shell from '@/components/names/Shell'
 import NameCard from '@/components/names/NameCard'
 import Rozvrzeni from '@/components/names/Rozvrzeni'
 import PasyJmen from '@/components/names/PasyJmen'
+import NadpisSekce from '@/components/names/NadpisSekce'
+import type { Druh } from '@/components/names/NadpisSekce'
 import { JMENA, ZEME } from '@/lib/names/data'
 import { jeOriginal, jeTrendy, serad } from '@/lib/names/logic'
 import { CASTE_DOTAZY, jsonLdDotazy, jsonLdSeznam, WEB } from '@/lib/names/seo'
@@ -65,9 +67,10 @@ export default function Domov() {
           </p>
         </section>
 
-        <PasyJmen />
+        <PasyJmen druh="lide" />
 
         <Sekce
+          druh="lide"
           nadpis="Nejlíbivější dětská jména"
           popis="Žebříček napříč všemi zeměmi — od české klasiky po jižní temperament."
           jmena={topDeti}
@@ -75,6 +78,17 @@ export default function Domov() {
         />
 
         <Sekce
+          druh="lide"
+          nadpis="Populární trendy právě teď"
+          popis="Moderní jména, která letí nahoru — poznáte je podle štítku."
+          jmena={trendy}
+          odkaz={{ href: '/deti', text: 'filtrovat trendy' }}
+        />
+
+        <PasyJmen druh="zvirata" />
+
+        <Sekce
+          druh="zvirata"
           nadpis="Nejlíbivější zvířecí jména"
           popis="Jména, na která vaše zvíře uslyší a vy je budete rádi volat."
           jmena={topZvirata}
@@ -82,13 +96,7 @@ export default function Domov() {
         />
 
         <Sekce
-          nadpis="Populární trendy právě teď"
-          popis="Moderní jména, která letí nahoru — u dětí i zvířat je poznáte podle štítku."
-          jmena={trendy}
-          odkaz={{ href: '/deti', text: 'filtrovat trendy' }}
-        />
-
-        <Sekce
+          druh="zvirata"
           nadpis="Originální a pěkná"
           popis="Skryté poklady — jména, která nepotkáte na každém hřišti ani v každém parku."
           jmena={originaly}
@@ -129,8 +137,9 @@ export default function Domov() {
 }
 
 function Sekce({
-  nadpis, popis, jmena, odkaz,
+  druh, nadpis, popis, jmena, odkaz,
 }: {
+  druh: Druh
   nadpis: string
   popis: string
   jmena: typeof JMENA
@@ -138,8 +147,8 @@ function Sekce({
 }) {
   return (
     <section className="mb-12">
-      <div className="mb-1 flex flex-wrap items-baseline justify-between gap-2">
-        <h2 className="[font-family:var(--font-syne)] text-2xl font-bold">{nadpis}</h2>
+      <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
+        <NadpisSekce druh={druh}>{nadpis}</NadpisSekce>
         <Link href={odkaz.href} className="text-[13.5px] text-[#8a7f71] underline decoration-dotted hover:text-[#2b2723]">
           {odkaz.text} →
         </Link>

@@ -11,6 +11,7 @@ import type { Kategorie } from '@/lib/names/types'
 import { useOblibene } from '@/lib/names/oblibene'
 import NameCard from './NameCard'
 import Rozvrzeni from './Rozvrzeni'
+import NadpisSekce from './NadpisSekce'
 
 const PLOCHY = ['oblibene-1', 'oblibene-2', 'oblibene-3', 'oblibene-4', 'oblibene-5']
 const PORADI: Kategorie[] = ['pes', 'fenka', 'kocour', 'kocka', 'kun', 'kralik', 'papousek', 'krecek', 'kluk', 'holka']
@@ -49,9 +50,11 @@ export default function OblibeneSeznam() {
     <Rozvrzeni plochy={PLOCHY}>
       {skupiny.map(({ kat, jmena }) => (
         <section key={kat} className="mb-10">
-          <h2 className="mb-3 [font-family:var(--font-syne)] text-2xl font-bold">
-            {KATEGORIE_INFO[kat].emoji} {KATEGORIE_INFO[kat].mnozne}
-          </h2>
+          <div className="mb-3">
+            <NadpisSekce druh={kat === 'kluk' || kat === 'holka' ? 'lide' : 'zvirata'}>
+              {KATEGORIE_INFO[kat].mnozne}
+            </NadpisSekce>
+          </div>
           <div className="nastup mrizka-jmen">
             {jmena.map(j => <NameCard key={j.id} jmeno={j} />)}
           </div>

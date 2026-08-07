@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import Shell from '@/components/names/Shell'
 import ZvirataFinder from '@/components/names/ZvirataFinder'
+import PasyJmen from '@/components/names/PasyJmen'
+import NadpisSekce from '@/components/names/NadpisSekce'
 
 export const metadata: Metadata = {
   title: 'Jména pro zvířata — psi, kočky, koně a další | Svět jmen',
@@ -12,11 +14,13 @@ export const metadata: Metadata = {
 export default function ZvirataStranka() {
   return (
     <Shell>
-      <h1 className="mb-2 [font-family:var(--font-syne)] text-3xl font-extrabold">Jména pro zvířata</h1>
+      <div className="mb-2"><NadpisSekce druh="zvirata">Jména pro zvířata</NadpisSekce></div>
       <p className="mb-8 max-w-2xl text-[#6b6156]">
         Vyberte druh, plemeno nebo způsob života — a nechte filtr najít jméno, které vašemu
         zvířeti padne jako obojek na míru.
       </p>
+      <PasyJmen druh="zvirata" />
+
       <Suspense>
         <ZvirataFinder />
       </Suspense>

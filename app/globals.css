@@ -1055,3 +1055,43 @@
 }
 .filtr-tlacitko-mobil:hover { background: #fbe4dd !important; }
 .filtr-tlacitko-mobil .filtr-pocet { background: #d97757; }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   NADPISY — lidé a zvířata se liší ikonou i barvou
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.nadpis-sekce {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-family: var(--font-syne), system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: -.02em;
+}
+h2.nadpis-sekce { font-size: 23px; }
+h3.nadpis-sekce { font-size: 19px; }
+
+.nadpis-znak {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 11px;
+}
+h3.nadpis-sekce .nadpis-znak { width: 28px; height: 28px; border-radius: 9px; }
+
+/* lidé — chladnější, jemnější tón */
+.nadpis-lide .nadpis-znak { background: #e7ecf7; color: #4a5c7d; }
+.nadpis-lide { color: #2b2723; }
+
+/* zvířata — teplejší, hravější tón */
+.nadpis-zvirata .nadpis-znak { background: #f7e9d9; color: #a5683a; }
+.nadpis-zvirata { color: #2b2723; }
+
+/* Pásy jmen ladí barvou k tomu, čí jména vezou. */
+.pasy-lide .pas-box:nth-child(5n) { background: #eef2f9; border-color: #dde5f1; }
+.pasy-lide .pas-box:nth-child(7n) { color: #4a5c7d; }
+.pasy-zvirata .pas-box:nth-child(5n) { background: #f9efe2; border-color: #efdfca; }
+.pasy-zvirata .pas-box:nth-child(7n) { color: #a5683a; }
