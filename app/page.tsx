@@ -4,6 +4,7 @@ import { Baby, Cat, Dog, Sparkles, Users } from 'lucide-react'
 import Shell from '@/components/names/Shell'
 import NameCard from '@/components/names/NameCard'
 import Rozvrzeni from '@/components/names/Rozvrzeni'
+import PasyJmen from '@/components/names/PasyJmen'
 import { JMENA, ZEME } from '@/lib/names/data'
 import { jeOriginal, jeTrendy, serad } from '@/lib/names/logic'
 import { CASTE_DOTAZY, jsonLdDotazy, jsonLdSeznam, WEB } from '@/lib/names/seo'
@@ -11,8 +12,8 @@ import { CASTE_DOTAZY, jsonLdDotazy, jsonLdSeznam, WEB } from '@/lib/names/seo'
 export const metadata: Metadata = {
   title: 'Svět jmen — jména pro děti i zvířata podle zemí světa',
   description:
-    'Přes 750 jmen z 19 zemí: pro holčičky, kluky, psy, kočky i další zvířata. '
-    + 'Vyberte jméno, které ladí s příjmením, rodinou i plemenem.',
+    `Přes ${JMENA.length} jmen z ${ZEME.length} zemí: pro holčičky, kluky, psy, kočky i další `
+    + 'zvířata. Vyberte jméno, které ladí s příjmením, rodinou i plemenem.',
   alternates: { canonical: '/' },
   keywords: [
     'jména pro děti', 'jména pro psy', 'jména pro kočky', 'jak pojmenovat psa',
@@ -63,6 +64,8 @@ export default function Domov() {
             Máte doma víc jmen? <Link href="/rodina" className="font-semibold text-[#2b2723] underline decoration-[#e0c9b4] decoration-2 underline-offset-2 hover:decoration-[#d97757]">Založte rodinný profil</Link> a doporučíme další, která k nim ladí.
           </p>
         </section>
+
+        <PasyJmen />
 
         <Sekce
           nadpis="Nejlíbivější dětská jména"

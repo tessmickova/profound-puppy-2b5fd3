@@ -677,3 +677,66 @@
   line-height: 15px;
   text-align: center;
 }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   JEZDÍCÍ PÁSY JMEN — horní jede doprava, dolní doleva
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.pasy {
+  display: grid;
+  gap: 10px;
+  /* pás sahá přes celou šířku obsahu a po krajích se vytrácí */
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+.pas { overflow: hidden; }
+.pas-stopa {
+  display: flex;
+  gap: 8px;
+  width: max-content;
+  will-change: transform;
+}
+.pas-vpravo { animation: pas-doprava 110s linear infinite; }
+.pas-vlevo { animation: pas-doleva 96s linear infinite; }
+
+/* Seznam je vykreslený dvakrát, posun o polovinu proto navazuje beze švu. */
+@keyframes pas-doleva {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes pas-doprava {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+
+.pas-box {
+  flex: none;
+  padding: 9px 16px;
+  border: 1px solid #efe7da;
+  border-radius: 999px;
+  background: #fff;
+  font-family: var(--font-syne), system-ui, sans-serif;
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: -.01em;
+  color: #2b2723;
+  white-space: nowrap;
+  transition: border-color .18s ease, transform .18s ease;
+}
+/* Každé páté políčko dostane teplý podklad, ať pás není jednolitý. */
+.pas-box:nth-child(5n) { background: #f6ece2; border-color: #ecdfd0; }
+.pas-box:nth-child(7n) { color: #d97757; }
+
+/* Najetím myší se pás zastaví, aby si šlo jméno v klidu přečíst. */
+.pasy:hover .pas-stopa { animation-play-state: paused; }
+
+@media (max-width: 639px) {
+  .pas-box { padding: 7px 13px; font-size: 13.5px; }
+  .pas-vpravo { animation-duration: 78s; }
+  .pas-vlevo { animation-duration: 68s; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pas-stopa { animation: none; }
+  .pas { overflow-x: auto; }
+}

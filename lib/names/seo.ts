@@ -44,7 +44,7 @@ export const CASTE_DOTAZY: { otazka: string; odpoved: string }[] = [
   {
     otazka: 'Kolik jmen katalog obsahuje?',
     odpoved:
-      'Přes 750 jmen z 19 zemí na šesti kontinentech — pro holčičky, kluky, psy, '
+      'Přes 1000 jmen z 25 zemí na šesti kontinentech — pro holčičky, kluky, psy, '
       + 'fenky, kocoury, kočky, koně, králíky, papoušky i křečky. U každého jména '
       + 'je význam, oblíbenost, styl a délka.',
   },
