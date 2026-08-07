@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { KATEGORIE_INFO, POHLAVI_INFO } from '@/lib/names/types'
 import type { Jmeno } from '@/lib/names/types'
 import { jeMezinarodni, zemePodleKodu } from '@/lib/names/data'
@@ -43,14 +44,18 @@ export function Stitky({ jmeno }: { jmeno: Jmeno }) {
 
 export function Srdicko({ id, velke }: { id: string; velke?: boolean }) {
   const { je, prepni } = useOblibene()
+  const [poskoc, setPoskoc] = useState(false)
   const oblibene = je(id)
   return (
     <button
       type="button"
-      onClick={() => prepni(id)}
+      onClick={() => {
+        if (!oblibene) { setPoskoc(true); window.setTimeout(() => setPoskoc(false), 450) }
+        prepni(id)
+      }}
       aria-label={oblibene ? 'Odebrat z oblíbených' : 'Přidat do oblíbených'}
-      title={oblibene ? 'Odebrat z oblíbených' : 'Přidat do oblíbených'}
-      className={`${velke ? 'text-2xl' : 'text-lg'} leading-none transition-transform hover:scale-125 ${oblibene ? '' : 'opacity-45 hover:opacity-100'}`}
+      title={oblibene ? 'Odebrat z oblíbených' : 'Uložit mezi oblíbená'}
+      className={`${velke ? 'text-2xl' : 'text-lg'} ${poskoc ? 'srdce-poskoc' : ''} leading-none transition-transform hover:scale-125 ${oblibene ? '' : 'opacity-45 hover:opacity-100'}`}
     >
       {oblibene ? '❤️' : '🤍'}
     </button>
@@ -61,7 +66,7 @@ export default function NameCard({ jmeno, poradi }: { jmeno: Jmeno; poradi?: num
   const zeme = zemePodleKodu(jmeno.zeme)
   const kat = KATEGORIE_INFO[jmeno.kategorie]
   return (
-    <article className="flex flex-col gap-2 rounded-2xl border border-[#efe7da] bg-white p-4 shadow-sm transition-shadow hover:shadow-md">
+    <article className="karta-jmena flex flex-col gap-2 rounded-2xl border border-[#efe7da] bg-white p-4 shadow-sm">
       <div className="flex items-start justify-between gap-2">
         <h3 className="[font-family:var(--font-syne)] text-xl font-bold leading-tight">
           {poradi != null && <span className="mr-1 text-sm font-semibold text-[#c4b8a7]">{poradi}.</span>}

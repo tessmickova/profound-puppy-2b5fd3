@@ -11,7 +11,7 @@ import { KATEGORIE_INFO } from '@/lib/names/types'
 import type { Kategorie } from '@/lib/names/types'
 import { ROLE, useRodina } from '@/lib/names/rodina'
 import { Srdicko, Stitky } from './NameCard'
-import Reklama from './Reklama'
+import Rozvrzeni from './Rozvrzeni'
 
 const SKUPINY: { kat: Kategorie; nadpis: string }[] = [
   { kat: 'holka',  nadpis: 'Holčičky' },
@@ -25,7 +25,7 @@ const SKUPINY: { kat: Kategorie; nadpis: string }[] = [
 function DoporuceniKarta({ shoda, poradi }: { shoda: Shoda; poradi: number }) {
   const zeme = zemePodleKodu(shoda.jmeno.zeme)
   return (
-    <article className="rounded-2xl border border-[#efe7da] bg-white p-4 shadow-sm">
+    <article className="karta-jmena rounded-2xl border border-[#efe7da] bg-white p-4 shadow-sm">
       <div className="flex items-center justify-between gap-3">
         <h4 className="[font-family:var(--font-syne)] text-lg font-bold">
           <span className="mr-1.5 text-sm font-semibold text-[#c4b8a7]">{poradi}.</span>
@@ -72,7 +72,7 @@ export default function RodinaProfil() {
   }
 
   return (
-    <div>
+    <Rozvrzeni plochy={['rodina-1', 'rodina-2', 'rodina-3', 'rodina-4', 'rodina-5']}>
       <section className="mb-8 rounded-3xl border border-[#e8dfd2] bg-white p-6 shadow-sm">
         <h2 className="[font-family:var(--font-syne)] text-xl font-bold">Kdo už doma je</h2>
         <p className="mt-1 text-sm text-[#8a7f71]">
@@ -129,10 +129,6 @@ export default function RodinaProfil() {
         )}
       </section>
 
-      <div className="mb-8">
-        <Reklama plocha="rodina-1" varianta="pruh" />
-      </div>
-
       {clenove.length === 0 ? (
         <div className="rounded-3xl border border-dashed border-[#e8dfd2] p-12 text-center text-[#8a7f71]">
           <p className="text-4xl">👪</p>
@@ -148,20 +144,18 @@ export default function RodinaProfil() {
             Doporučení se počítají ze jmen, která už doma máte — podle stylu, původu, rytmu
             i toho, aby se nová jména s těmi současnými nepletla a nerýmovala.
           </p>
-          {doporuceni.map(({ kat, nadpis, shody }, i) => (
+          {doporuceni.map(({ kat, nadpis, shody }) => (
             <section key={kat} className="mb-8">
               <h3 className="mb-3 [font-family:var(--font-syne)] text-xl font-bold">
                 {KATEGORIE_INFO[kat].emoji} {nadpis}
               </h3>
-              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              <div className="nastup grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                 {shody.map((s, j) => <DoporuceniKarta key={s.jmeno.id} shoda={s} poradi={j + 1} />)}
-                {i < 3 && <Reklama plocha={`rodina-${i + 2}`} />}
               </div>
             </section>
           ))}
-          <Reklama plocha="rodina-5" varianta="pruh" />
         </>
       )}
-    </div>
+    </Rozvrzeni>
   )
 }

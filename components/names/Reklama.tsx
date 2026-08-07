@@ -3,6 +3,9 @@
 // Nativní reklamní plocha — vypadá jako běžná karta webu, po 5 s se překlopí
 // na další kreativu. Označení „sponzorováno" je povinné (zákon o regulaci
 // reklamy i DSA), proto zůstává vždy viditelné, jen nekřičí.
+//
+// Vzhled řídí třídy v globals.css, ne utility — díky tomu má úzká varianta
+// v postranním sloupci menší typografii bez duplikace stylů.
 
 import { useEffect, useRef, useState } from 'react'
 import {
@@ -21,8 +24,8 @@ export default function Reklama({
   plocha, varianta = 'karta',
 }: {
   plocha: string
-  /** 'karta' sedne do mřížky jmen, 'pruh' je na šířku obsahu */
-  varianta?: 'karta' | 'pruh'
+  /** 'karta' do mřížky, 'pruh' na šířku obsahu, 'uzka' do postranního sloupce */
+  varianta?: 'karta' | 'pruh' | 'uzka'
 }) {
   const inzeraty = inzeratyProPlochu(plocha)
   const [index, setIndex] = useState(0)
@@ -54,7 +57,7 @@ export default function Reklama({
 
   return (
     <aside
-      className={`reklama-plocha ${varianta === 'pruh' ? 'reklama-pruh' : ''}`}
+      className={`reklama-plocha ${varianta === 'pruh' ? 'reklama-pruh' : ''} ${varianta === 'uzka' ? 'reklama-uzka' : ''}`}
       aria-label="Sponzorovaný obsah"
       onMouseEnter={() => { pauza.current = true }}
       onMouseLeave={() => { pauza.current = false }}
@@ -62,39 +65,27 @@ export default function Reklama({
       onBlur={() => { pauza.current = false }}
     >
       <div className={`reklama-list ${preklapi ? 'je-preklopena' : ''}`}>
-        <div className="mb-2 flex items-center justify-between gap-2">
-          <span className="flex items-center gap-1.5 text-[#8a7f71]">
-            <Ikona size={15} strokeWidth={2} aria-hidden />
-            <span className="text-[11px] font-medium">{inzerat.znacka}</span>
+        <div className="reklama-hlava">
+          <span className="reklama-znacka">
+            <Ikona size={14} strokeWidth={2} aria-hidden />
+            <span>{inzerat.znacka}</span>
           </span>
-          <span className="rounded-full border border-[#e8dfd2] px-1.5 py-px text-[9px] uppercase tracking-wide text-[#a2988a]">
-            sponzorováno
+          <span className="reklama-stitek">
+            <span className="stitek-dlouhy">sponzorováno</span>
+            <span className="stitek-kratky">reklama</span>
           </span>
         </div>
 
-        <h3 className="[font-family:var(--font-syne)] text-base font-bold leading-tight text-[#2b2723]">
-          {inzerat.nadpis}
-        </h3>
-        <p className="mt-1 flex-1 text-[13px] leading-snug text-[#6b6156]">{inzerat.text}</p>
+        <h3 className="reklama-nadpis">{inzerat.nadpis}</h3>
+        <p className="reklama-text">{inzerat.text}</p>
 
-        <a
-          href={inzerat.odkaz}
-          rel="sponsored nofollow noopener"
-          className="mt-3 inline-flex w-fit items-center gap-1 rounded-full border border-[#e8dfd2] px-3 py-1.5 text-[13px] font-semibold text-[#2b2723] transition-colors hover:border-[#2b2723] hover:bg-[#faf6ef]"
-        >
+        <a href={inzerat.odkaz} rel="sponsored nofollow noopener" className="reklama-cta">
           {inzerat.cta} <span aria-hidden>→</span>
         </a>
 
         {inzeraty.length > 1 && (
-          <div className="mt-2.5 flex gap-1" aria-hidden>
-            {inzeraty.map((_, i) => (
-              <span
-                key={i}
-                className={`h-1 flex-1 rounded-full transition-colors ${
-                  i === index ? 'bg-[#d9a68f]' : 'bg-[#f0e7da]'
-                }`}
-              />
-            ))}
+          <div className="reklama-tecky" aria-hidden>
+            {inzeraty.map((_, i) => <span key={i} className={i === index ? 'je' : ''} />)}
           </div>
         )}
       </div>

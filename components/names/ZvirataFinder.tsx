@@ -22,7 +22,7 @@ import { KATEGORIE_INFO, VSECHNY_STYLY } from '@/lib/names/types'
 import type { Energie, Kategorie, PohlaviZvirete, Velikost } from '@/lib/names/types'
 import { useOblibene } from '@/lib/names/oblibene'
 import NameCard from './NameCard'
-import Reklama from './Reklama'
+import Rozvrzeni from './Rozvrzeni'
 import {
   AktivniFiltry, Chip, Chipy, PismenaMrizka, Posuvnik, Prepinac, Sekce, VyberZemi,
 } from './FiltrUI'
@@ -269,9 +269,6 @@ export default function ZvirataFinder() {
         <PismenaMrizka pismena={pismena.konec} vybrane={filtr.konciNa} onVyber={p => setFiltr({ ...filtr, konciNa: p })} />
       </Sekce>
 
-      <div className="pt-3">
-        <Reklama plocha="zvirata-filtr" />
-      </div>
     </aside>
   )
 
@@ -289,10 +286,8 @@ export default function ZvirataFinder() {
   }, [vysledky, abecedne])
 
   return (
-    <>
-      <Reklama plocha="zvirata-nad" varianta="pruh" />
-
-      <div className="mt-6 grid items-start gap-6 lg:grid-cols-[280px_1fr]">
+    <Rozvrzeni uzsi plochy={['zvirata-filtr', 'zvirata-nad', 'zvirata-v-mrizce', 'zvirata-pod', 'zvirata-bocni']}>
+      <div className="grid items-start gap-6 lg:grid-cols-[268px_1fr]">
         {panelOtevren && <div className="filtr-zaves" onClick={() => setPanelOtevren(false)} aria-hidden />}
         {panel}
 
@@ -357,29 +352,21 @@ export default function ZvirataFinder() {
             skupiny.map(([pismeno, jmena]) => (
               <div key={pismeno} className="mb-6">
                 <h3 className="mb-2 border-b border-[#e8dfd2] pb-1 [font-family:var(--font-syne)] text-2xl font-bold text-[#c4b8a7]">{pismeno}</h3>
-                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                <div className="nastup grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                   {jmena.map(j => <NameCard key={j.id} jmeno={j} />)}
                 </div>
               </div>
             ))
           ) : (
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-              {vysledky.slice(0, 11).map((j, i) => (
+            <div className="nastup grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              {vysledky.map((j, i) => (
                 <NameCard key={j.id} jmeno={j} poradi={razeni === 'doporucene' || razeni === 'popularita' ? i + 1 : undefined} />
-              ))}
-              {vysledky.length > 5 && <Reklama plocha="zvirata-v-mrizce" />}
-              {vysledky.slice(11).map((j, i) => (
-                <NameCard key={j.id} jmeno={j} poradi={razeni === 'doporucene' || razeni === 'popularita' ? i + 12 : undefined} />
               ))}
             </div>
           )}
 
-          <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            <Reklama plocha="zvirata-pod" />
-            <Reklama plocha="zvirata-bocni" />
-          </div>
         </section>
       </div>
-    </>
+    </Rozvrzeni>
   )
 }

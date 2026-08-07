@@ -1,10 +1,10 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { Baby, Cat, Dog, Sparkles, Users } from 'lucide-react'
 import Shell from '@/components/names/Shell'
-import WorldMap from '@/components/names/WorldMap'
 import NameCard from '@/components/names/NameCard'
-import Reklama from '@/components/names/Reklama'
-import { JMENA, KONTINENTY, ZEME } from '@/lib/names/data'
+import Rozvrzeni from '@/components/names/Rozvrzeni'
+import { JMENA, ZEME } from '@/lib/names/data'
 import { jeOriginal, jeTrendy, serad } from '@/lib/names/logic'
 import { CASTE_DOTAZY, jsonLdDotazy, jsonLdSeznam, WEB } from '@/lib/names/seo'
 
@@ -20,6 +20,13 @@ export const metadata: Metadata = {
   ],
 }
 
+const DLAZDICE = [
+  { href: '/deti?kategorie=holka', nazev: 'Pro holčičku', popis: 'Něžná i silná jména', Ikona: Baby, barva: '#f8dfe6' },
+  { href: '/deti?kategorie=kluk', nazev: 'Pro chlapečka', popis: 'Klasika i novinky', Ikona: Baby, barva: '#dfe9f8' },
+  { href: '/zvirata?kategorie=pes', nazev: 'Pro pejska', popis: 'Podle plemene i povahy', Ikona: Dog, barva: '#f6e6d3' },
+  { href: '/zvirata?kategorie=kocka', nazev: 'Pro kočičku', popis: 'Od Micky po Bastet', Ikona: Cat, barva: '#e4eede' },
+]
+
 export default function Domov() {
   const topZvirata = serad(JMENA.filter(j => !['kluk', 'holka'].includes(j.kategorie)), 'popularita').slice(0, 6)
   const topDeti = serad(JMENA.filter(j => ['kluk', 'holka'].includes(j.kategorie)), 'popularita').slice(0, 6)
@@ -28,113 +35,77 @@ export default function Domov() {
 
   return (
     <Shell>
-      <section className="mb-10 text-center">
-        <h1 className="[font-family:var(--font-syne)] text-4xl font-extrabold tracking-tight sm:text-5xl">
-          Najděte jméno, které <span className="text-[#d97757]">k vám patří</span>
-        </h1>
-        <p className="mx-auto mt-3 max-w-2xl text-[#6b6156]">
-          Nejlíbivější jména pro psy, fenky, kočky, kocoury i další zvířata — a taky pro holčičky
-          a kluky. Vybraná podle zemí celého světa, s významem, stylem a chytrým filtrem.
-        </p>
-        <div className="mt-5 flex flex-wrap justify-center gap-3">
-          <Link href="/zvirata" className="rounded-full bg-[#2b2723] px-5 py-2.5 text-sm font-semibold text-[#faf6ef] transition-transform hover:scale-105">
-            🐾 Jména pro zvířata
-          </Link>
-          <Link href="/deti" className="rounded-full bg-[#d97757] px-5 py-2.5 text-sm font-semibold text-white transition-transform hover:scale-105">
-            👶 Jména pro děti
-          </Link>
-        </div>
-      </section>
+      <Rozvrzeni plochy={['domov-nad-mapou', 'domov-po-mape', 'domov-mezi', 'domov-bocni', 'domov-pred-patickou']}>
+        <section className="hero-zare mb-10 text-center">
+          <p className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-[#efe0cc] bg-white px-3 py-1 text-[12.5px] font-medium text-[#8a6d2f]">
+            <Sparkles size={13} aria-hidden /> {JMENA.length} jmen z {ZEME.length} zemí — zdarma a bez registrace
+          </p>
+          <h1 className="[font-family:var(--font-syne)] text-[32px] font-extrabold leading-[1.08] tracking-tight sm:text-5xl">
+            Najděte jméno, které <span className="text-[#d97757]">k vám patří</span>
+          </h1>
+          <p className="mx-auto mt-3 max-w-xl text-[15px] leading-relaxed text-[#6b6156]">
+            Vybírat jméno má být radost, ne tabulka. Řekněte nám, koho čekáte —
+            a my vybereme jména, která sedí k vašemu příjmení, rodině i povaze.
+          </p>
+        </section>
 
-      <div className="mb-8">
-        <Reklama plocha="domov-nad-mapou" varianta="pruh" />
-      </div>
+        <section className="mb-14">
+          <div className="dlazdice nastup">
+            {DLAZDICE.map(({ href, nazev, popis, Ikona, barva }) => (
+              <Link key={href} href={href} style={{ ['--dlazdice-barva' as string]: barva }}>
+                <span className="dlazdice-ikona"><Ikona size={19} aria-hidden /></span>
+                <span className="dlazdice-nazev">{nazev}</span>
+                <span className="dlazdice-popis">{popis}</span>
+              </Link>
+            ))}
+          </div>
+          <p className="mt-4 text-center text-[13.5px] text-[#8a7f71]">
+            Máte doma víc jmen? <Link href="/rodina" className="font-semibold text-[#2b2723] underline decoration-[#e0c9b4] decoration-2 underline-offset-2 hover:decoration-[#d97757]">Založte rodinný profil</Link> a doporučíme další, která k nim ladí.
+          </p>
+        </section>
 
-      <section className="mb-10">
-        <h2 className="mb-4 [font-family:var(--font-syne)] text-2xl font-bold">Vyberte si na mapě</h2>
-        <WorldMap />
-      </section>
+        <Sekce
+          nadpis="Nejlíbivější dětská jména"
+          popis="Žebříček napříč všemi zeměmi — od české klasiky po jižní temperament."
+          jmena={topDeti}
+          odkaz={{ href: '/deti', text: 'všechna dětská jména' }}
+        />
 
-      <div className="mb-12 grid gap-3 sm:grid-cols-2">
-        <Reklama plocha="domov-po-mape" />
-        <Reklama plocha="domov-bocni" />
-      </div>
+        <Sekce
+          nadpis="Nejlíbivější zvířecí jména"
+          popis="Jména, na která vaše zvíře uslyší a vy je budete rádi volat."
+          jmena={topZvirata}
+          odkaz={{ href: '/zvirata', text: 'všechna zvířecí jména' }}
+        />
 
-      <section className="mb-14 grid gap-4 text-center sm:grid-cols-3">
-        <div className="rounded-3xl border border-[#e8dfd2] bg-white p-6">
-          <p className="[font-family:var(--font-syne)] text-3xl font-extrabold text-[#d97757]">{JMENA.length}</p>
-          <p className="text-sm text-[#6b6156]">pečlivě vybraných jmen s významem</p>
-        </div>
-        <div className="rounded-3xl border border-[#e8dfd2] bg-white p-6">
-          <p className="[font-family:var(--font-syne)] text-3xl font-extrabold text-[#d97757]">{ZEME.length}</p>
-          <p className="text-sm text-[#6b6156]">zemí na {KONTINENTY.length} kontinentech</p>
-        </div>
-        <div className="rounded-3xl border border-[#e8dfd2] bg-white p-6">
-          <p className="[font-family:var(--font-syne)] text-3xl font-extrabold text-[#d97757]">10</p>
-          <p className="text-sm text-[#6b6156]">kategorií — od psů a koček po koně a papoušky</p>
-        </div>
-      </section>
+        <Sekce
+          nadpis="Populární trendy právě teď"
+          popis="Moderní jména, která letí nahoru — u dětí i zvířat je poznáte podle štítku."
+          jmena={trendy}
+          odkaz={{ href: '/deti', text: 'filtrovat trendy' }}
+        />
 
-      <section className="mb-14">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="[font-family:var(--font-syne)] text-2xl font-bold">Nejlíbivější zvířecí jména</h2>
-          <Link href="/zvirata" className="text-sm text-[#8a7f71] underline decoration-dotted hover:text-[#2b2723]">všechna →</Link>
-        </div>
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          {topZvirata.map((j, i) => <NameCard key={j.id} jmeno={j} poradi={i + 1} />)}
-        </div>
-      </section>
+        <Sekce
+          nadpis="Originální a pěkná"
+          popis="Skryté poklady — jména, která nepotkáte na každém hřišti ani v každém parku."
+          jmena={originaly}
+          odkaz={{ href: '/deti', text: 'objevit další' }}
+        />
 
-      <section className="mb-14">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="[font-family:var(--font-syne)] text-2xl font-bold">📈 Populární trendy právě teď</h2>
-          <Link href="/zvirata" className="text-sm text-[#8a7f71] underline decoration-dotted hover:text-[#2b2723]">filtrovat trendy →</Link>
-        </div>
-        <p className="mb-4 max-w-2xl text-sm text-[#6b6156]">Moderní jména, která právě letí nahoru — u zvířat i dětí je poznáte podle štítku 📈.</p>
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          {trendy.slice(0, 5).map((j, i) => <NameCard key={j.id} jmeno={j} poradi={i + 1} />)}
-          <Reklama plocha="domov-mezi" />
-        </div>
-      </section>
-
-      <section className="mb-14">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="[font-family:var(--font-syne)] text-2xl font-bold">💎 Originální a pěkná</h2>
-          <Link href="/deti" className="text-sm text-[#8a7f71] underline decoration-dotted hover:text-[#2b2723]">objevit další →</Link>
-        </div>
-        <p className="mb-4 max-w-2xl text-sm text-[#6b6156]">Skryté poklady — jména, která nepotkáte na každém hřišti ani v každém parku, a přesto krásně znějí.</p>
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          {originaly.map((j, i) => <NameCard key={j.id} jmeno={j} poradi={i + 1} />)}
-        </div>
-      </section>
-
-      <section>
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="[font-family:var(--font-syne)] text-2xl font-bold">Nejlíbivější dětská jména</h2>
-          <Link href="/deti" className="text-sm text-[#8a7f71] underline decoration-dotted hover:text-[#2b2723]">všechna + hledání shody →</Link>
-        </div>
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          {topDeti.map((j, i) => <NameCard key={j.id} jmeno={j} poradi={i + 1} />)}
-        </div>
-      </section>
-
-      <section className="mt-14">
-        <h2 className="mb-4 [font-family:var(--font-syne)] text-2xl font-bold">Časté otázky o výběru jména</h2>
-        <div className="grid gap-3">
-          {CASTE_DOTAZY.map(d => (
-            <details key={d.otazka} className="rounded-2xl border border-[#e8dfd2] bg-white p-4">
-              <summary className="cursor-pointer [font-family:var(--font-syne)] text-base font-bold">
-                {d.otazka}
-              </summary>
-              <p className="mt-2 text-sm leading-relaxed text-[#6b6156]">{d.odpoved}</p>
-            </details>
-          ))}
-        </div>
-      </section>
-
-      <div className="mt-12">
-        <Reklama plocha="domov-pred-patickou" varianta="pruh" />
-      </div>
+        <section className="mt-14">
+          <h2 className="mb-4 [font-family:var(--font-syne)] text-2xl font-bold">Časté otázky o výběru jména</h2>
+          <div className="grid gap-2.5">
+            {CASTE_DOTAZY.map(d => (
+              <details key={d.otazka} className="rounded-2xl border border-[#e8dfd2] bg-white p-4 transition-colors hover:border-[#d9cfbe]">
+                <summary className="cursor-pointer [font-family:var(--font-syne)] text-[15.5px] font-bold">
+                  {d.otazka}
+                </summary>
+                <p className="mt-2 text-sm leading-relaxed text-[#6b6156]">{d.odpoved}</p>
+              </details>
+            ))}
+          </div>
+        </section>
+      </Rozvrzeni>
 
       <script
         type="application/ld+json"
@@ -151,5 +122,29 @@ export default function Domov() {
         }}
       />
     </Shell>
+  )
+}
+
+function Sekce({
+  nadpis, popis, jmena, odkaz,
+}: {
+  nadpis: string
+  popis: string
+  jmena: typeof JMENA
+  odkaz: { href: string; text: string }
+}) {
+  return (
+    <section className="mb-12">
+      <div className="mb-1 flex flex-wrap items-baseline justify-between gap-2">
+        <h2 className="[font-family:var(--font-syne)] text-2xl font-bold">{nadpis}</h2>
+        <Link href={odkaz.href} className="text-[13.5px] text-[#8a7f71] underline decoration-dotted hover:text-[#2b2723]">
+          {odkaz.text} →
+        </Link>
+      </div>
+      <p className="mb-4 max-w-2xl text-[13.5px] text-[#8a7f71]">{popis}</p>
+      <div className="nastup grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        {jmena.map((j, i) => <NameCard key={j.id} jmeno={j} poradi={i + 1} />)}
+      </div>
+    </section>
   )
 }

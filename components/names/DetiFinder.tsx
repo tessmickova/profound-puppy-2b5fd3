@@ -21,7 +21,7 @@ import { KATEGORIE_INFO, MESICE_NAZVY, VSECHNY_STYLY } from '@/lib/names/types'
 import type { Energie, Kategorie, Styl } from '@/lib/names/types'
 import { useOblibene } from '@/lib/names/oblibene'
 import NameCard, { Srdicko, Stitky } from './NameCard'
-import Reklama from './Reklama'
+import Rozvrzeni from './Rozvrzeni'
 import {
   AktivniFiltry, Chip, Chipy, PismenaMrizka, Posuvnik, Prepinac, Sekce, VyberZemi,
 } from './FiltrUI'
@@ -34,7 +34,7 @@ function ShodaKarta({ shoda, poradi }: { shoda: Shoda; poradi: number }) {
   const zeme = zemePodleKodu(shoda.jmeno.zeme)
   const num = numerologie(shoda.jmeno.jmeno)
   return (
-    <article className="rounded-2xl border border-[#efe7da] bg-white p-4 shadow-sm">
+    <article className="karta-jmena rounded-2xl border border-[#efe7da] bg-white p-4 shadow-sm">
       <div className="flex items-center justify-between gap-3">
         <h3 className="[font-family:var(--font-syne)] text-xl font-bold">
           <span className="mr-1.5 text-sm font-semibold text-[#c4b8a7]">{poradi}.</span>
@@ -188,10 +188,11 @@ export default function DetiFinder() {
     </div>
   )
 
+  const PLOCHY = ['deti-filtr', 'deti-nad', 'deti-v-mrizce', 'deti-pod', 'deti-bocni']
+
   return (
-    <>
-      <Reklama plocha="deti-nad" varianta="pruh" />
-      <div className="mt-6">{taby}</div>
+    <Rozvrzeni uzsi plochy={PLOCHY}>
+      {taby}
 
       {rezim === 'prochazet' && (
         <div className="grid items-start gap-6 lg:grid-cols-[280px_1fr]">
@@ -284,7 +285,6 @@ export default function DetiFinder() {
               <PismenaMrizka pismena={pismena.konec} vybrane={filtr.konciNa} onVyber={p => setFiltr({ ...filtr, konciNa: p })} />
             </Sekce>
 
-            <div className="pt-3"><Reklama plocha="deti-filtr" /></div>
           </aside>
 
           <section>
@@ -333,23 +333,17 @@ export default function DetiFinder() {
               skupiny.map(([pismeno, jmena]) => (
                 <div key={pismeno} className="mb-6">
                   <h3 className="mb-2 border-b border-[#e8dfd2] pb-1 [font-family:var(--font-syne)] text-2xl font-bold text-[#c4b8a7]">{pismeno}</h3>
-                  <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                  <div className="nastup grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                     {jmena.map(j => <NameCard key={j.id} jmeno={j} />)}
                   </div>
                 </div>
               ))
             ) : (
-              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                {vysledky.slice(0, 11).map((j, i) => <NameCard key={j.id} jmeno={j} poradi={razeni === 'popularita' ? i + 1 : undefined} />)}
-                {vysledky.length > 5 && <Reklama plocha="deti-v-mrizce" />}
-                {vysledky.slice(11).map((j, i) => <NameCard key={j.id} jmeno={j} poradi={razeni === 'popularita' ? i + 12 : undefined} />)}
+              <div className="nastup grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                {vysledky.map((j, i) => <NameCard key={j.id} jmeno={j} poradi={razeni === 'popularita' ? i + 1 : undefined} />)}
               </div>
             )}
 
-            <div className="mt-6 grid gap-3 sm:grid-cols-2">
-              <Reklama plocha="deti-pod" />
-              <Reklama plocha="deti-bocni" />
-            </div>
           </section>
         </div>
       )}
@@ -411,7 +405,6 @@ export default function DetiFinder() {
               <VyberZemi zeme={ZEME} vybrane={zemeShody} onPrepni={k => setZemeShody(prepni(zemeShody, k))} onVymaz={() => setZemeShody([])} />
             </Sekce>
 
-            <Reklama plocha="deti-filtr" />
           </aside>
 
           <section>
@@ -428,14 +421,8 @@ export default function DetiFinder() {
               {mesic && <>znamení: <strong>{ZNAMENI_MESICE[mesic]}</strong> · </>}
               u každého jména uvádíme i číslo jména a případný svátek
             </p>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {shody.slice(0, 6).map((s, i) => <ShodaKarta key={s.jmeno.id} shoda={s} poradi={i + 1} />)}
-              <Reklama plocha="deti-v-mrizce" />
-              {shody.slice(6).map((s, i) => <ShodaKarta key={s.jmeno.id} shoda={s} poradi={i + 7} />)}
-            </div>
-            <div className="mt-6 grid gap-3 sm:grid-cols-2">
-              <Reklama plocha="deti-pod" />
-              <Reklama plocha="deti-bocni" />
+            <div className="nastup grid gap-3 sm:grid-cols-2">
+              {shody.map((s, i) => <ShodaKarta key={s.jmeno.id} shoda={s} poradi={i + 1} />)}
             </div>
           </section>
         </div>
@@ -464,7 +451,6 @@ export default function DetiFinder() {
               <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-[#8a7f71]">Příjmení (nepovinné)</span>
               <input value={prijmeni} onChange={e => setPrijmeni(e.target.value)} placeholder="např. Nováková" className="w-full rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-4 py-2 text-[13px] outline-none focus:border-[#2b2723]" />
             </label>
-            <Reklama plocha="deti-filtr" />
           </aside>
 
           <section>
@@ -478,20 +464,14 @@ export default function DetiFinder() {
                   <strong className="[font-family:var(--font-syne)] text-lg text-[#2b2723]">Top {sourozenci.length}</strong> jmen,
                   která ladí se jménem <strong>{sourozenec.trim()}</strong>
                 </p>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {sourozenci.slice(0, 6).map((s, i) => <ShodaKarta key={s.jmeno.id} shoda={s} poradi={i + 1} />)}
-                  <Reklama plocha="deti-v-mrizce" />
-                  {sourozenci.slice(6).map((s, i) => <ShodaKarta key={s.jmeno.id} shoda={s} poradi={i + 7} />)}
+                <div className="nastup grid gap-3 sm:grid-cols-2">
+                  {sourozenci.map((s, i) => <ShodaKarta key={s.jmeno.id} shoda={s} poradi={i + 1} />)}
                 </div>
               </>
             )}
-            <div className="mt-6 grid gap-3 sm:grid-cols-2">
-              <Reklama plocha="deti-pod" />
-              <Reklama plocha="deti-bocni" />
-            </div>
           </section>
         </div>
       )}
-    </>
+    </Rozvrzeni>
   )
 }

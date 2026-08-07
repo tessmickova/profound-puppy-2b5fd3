@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import Shell from '@/components/names/Shell'
 import NameCard from '@/components/names/NameCard'
-import Reklama from '@/components/names/Reklama'
+import Rozvrzeni from '@/components/names/Rozvrzeni'
 import { jmenaZeme, KONTINENTY, ZEME, zemePodleKodu } from '@/lib/names/data'
 import { serad } from '@/lib/names/logic'
 import { jsonLdDrobky, jsonLdSeznam, WEB } from '@/lib/names/seo'
@@ -37,8 +37,9 @@ export default async function ZemeStranka({ params }: { params: Promise<{ kod: s
 
   return (
     <Shell>
+      <Rozvrzeni plochy={['zeme-1', 'zeme-2', 'zeme-3', 'zeme-4', 'zeme-5']}>
       <nav className="mb-6 text-sm text-[#8a7f71]">
-        <Link href="/" className="underline decoration-dotted hover:text-[#2b2723]">Mapa světa</Link>
+        <Link href="/" className="underline decoration-dotted hover:text-[#2b2723]">Úvod</Link>
         <span className="mx-2">/</span>
         <span>{kontinent?.nazev}</span>
         <span className="mx-2">/</span>
@@ -54,40 +55,29 @@ export default async function ZemeStranka({ params }: { params: Promise<{ kod: s
         </p>
         <div className="mt-5 flex flex-wrap justify-center gap-3">
           <Link href={`/zvirata?zeme=${zeme.kod}`} className="rounded-full bg-[#2b2723] px-4 py-2 text-sm font-semibold text-[#faf6ef]">
-            🐾 Filtrovat zvířecí jména
+            Filtrovat zvířecí jména
           </Link>
           <Link href={`/deti?zeme=${zeme.kod}`} className="rounded-full bg-[#d97757] px-4 py-2 text-sm font-semibold text-white">
-            👶 Filtrovat dětská jména
+            Filtrovat dětská jména
           </Link>
         </div>
       </header>
 
-      <div className="mb-10">
-        <Reklama plocha="zeme-1" varianta="pruh" />
-      </div>
-
-      {PORADI_KATEGORII.map((kat, poradiKat) => {
+      {PORADI_KATEGORII.map(kat => {
         const skupina = serad(jmena.filter(j => j.kategorie === kat), 'popularita')
         if (!skupina.length) return null
         const info = KATEGORIE_INFO[kat]
-        // mezi kategorie prokládáme nativní plochy, ať nejsou všechny u sebe
-        const plocha = ['zeme-2', 'zeme-3', 'zeme-4'][Math.floor(poradiKat / 3)]
         return (
           <section key={kat} className="mb-10">
             <h2 className="mb-3 [font-family:var(--font-syne)] text-2xl font-bold">
               {info.emoji} {info.mnozne}
             </h2>
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="nastup grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {skupina.map((j, i) => <NameCard key={j.id} jmeno={j} poradi={i + 1} />)}
-              {poradiKat % 3 === 0 && plocha && <Reklama plocha={plocha} />}
             </div>
           </section>
         )
       })}
-
-      <div className="mb-6">
-        <Reklama plocha="zeme-5" varianta="pruh" />
-      </div>
 
       <script
         type="application/ld+json"
@@ -108,6 +98,8 @@ export default async function ZemeStranka({ params }: { params: Promise<{ kod: s
           )),
         }}
       />
+
+      </Rozvrzeni>
 
       <div className="mt-12 flex flex-wrap justify-center gap-2">
         {ZEME.filter(z => z.kod !== zeme.kod).map(z => (

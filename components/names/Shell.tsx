@@ -2,14 +2,14 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Baby, Heart, Map, PawPrint, Users } from 'lucide-react'
+import { Baby, Heart, House, PawPrint, Users } from 'lucide-react'
 import { useOblibene } from '@/lib/names/oblibene'
 import { useRodina } from '@/lib/names/rodina'
 
 const POLOZKY = [
-  { href: '/', nazev: 'Mapa světa', kratce: 'Mapa', Ikona: Map },
-  { href: '/zvirata', nazev: 'Jména pro zvířata', kratce: 'Zvířata', Ikona: PawPrint },
+  { href: '/', nazev: 'Úvod', kratce: 'Úvod', Ikona: House },
   { href: '/deti', nazev: 'Jména pro děti', kratce: 'Děti', Ikona: Baby },
+  { href: '/zvirata', nazev: 'Jména pro zvířata', kratce: 'Zvířata', Ikona: PawPrint },
 ]
 
 export default function Shell({ children }: { children: React.ReactNode }) {
@@ -71,7 +71,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
       <main className="mx-auto max-w-6xl px-3 pb-20 pt-6 sm:px-4 sm:pt-8">{children}</main>
 
       <footer className="border-t border-[#e8dfd2] py-8 text-center text-[13px] text-[#8a7f71]">
-        <p>Svět jmen — nejlíbivější jména pro zvířata i děti podle zemí.</p>
+        <p>Svět jmen — vybírat jméno má být radost. Zdarma, bez registrace, bez sbírání údajů.</p>
         <p className="mt-1">
           <Link href="/aurora" className="underline decoration-dotted hover:text-[#2b2723]">AuroraDog — sledování polární záře</Link>
         </p>
