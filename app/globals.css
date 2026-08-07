@@ -634,3 +634,46 @@
 .reklama-uzka .stitek-dlouhy { display: none; }
 .reklama-uzka .stitek-kratky { display: inline; }
 .reklama-uzka .reklama-stitek { font-size: 8.5px; padding: 1px 5px; letter-spacing: .03em; }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   SPODNÍ LIŠTA — hlavní navigace na telefonu
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.spodni-lista {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 50;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  border-top: 1px solid #e8dfd2;
+  background: rgba(250, 246, 239, .96);
+  backdrop-filter: blur(8px);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.spodni-lista a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 2px 7px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #8a7f71;
+  text-decoration: none;
+  transition: color .15s;
+}
+.spodni-lista a.je-aktivni { color: #d97757; }
+.spodni-lista a:active { background: #f3ecdf; }
+.lista-pocet {
+  position: absolute;
+  top: -5px;
+  right: -8px;
+  min-width: 15px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: #d97757;
+  color: #fff;
+  font-size: 9px;
+  line-height: 15px;
+  text-align: center;
+}
