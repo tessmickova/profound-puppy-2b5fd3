@@ -6,6 +6,7 @@ import { Baby, Heart, House, PawPrint, Users } from 'lucide-react'
 import { useOblibene } from '@/lib/names/oblibene'
 import { useRodina } from '@/lib/names/rodina'
 import Paticka from './Paticka'
+import DetailPanel from './DetailPanel'
 
 // Navigace je dvojí: v hlavičce na velkých displejích, jako spodní lišta
 // na telefonu. Obojí ukazuje stejných pět míst, aby se uživatel neztratil.
@@ -86,6 +87,8 @@ export default function Shell({ children }: { children: React.ReactNode }) {
       <main className="mx-auto max-w-6xl px-3 pt-6 sm:px-4 sm:pt-8">{children}</main>
 
       <Paticka />
+
+      <DetailPanel />
 
       {/* spodní lišta — hlavní navigace na telefonu */}
       <nav className="spodni-lista sm:hidden" aria-label="Hlavní navigace">

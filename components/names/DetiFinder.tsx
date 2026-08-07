@@ -333,13 +333,13 @@ export default function DetiFinder() {
               skupiny.map(([pismeno, jmena]) => (
                 <div key={pismeno} className="mb-6">
                   <h3 className="mb-2 border-b border-[#e8dfd2] pb-1 [font-family:var(--font-syne)] text-2xl font-bold text-[#c4b8a7]">{pismeno}</h3>
-                  <div className="nastup grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                  <div className="nastup mrizka-jmen">
                     {jmena.map(j => <NameCard key={j.id} jmeno={j} />)}
                   </div>
                 </div>
               ))
             ) : (
-              <div className="nastup grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              <div className="nastup mrizka-jmen">
                 {vysledky.map((j, i) => <NameCard key={j.id} jmeno={j} poradi={razeni === 'popularita' ? i + 1 : undefined} />)}
               </div>
             )}

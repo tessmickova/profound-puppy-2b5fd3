@@ -740,3 +740,219 @@
   .pas-stopa { animation: none; }
   .pas { overflow-x: auto; }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   KARTA JMÉNA — jen jméno, zbytek je v panelu
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.karta-klikatelna {
+  cursor: pointer;
+  gap: 10px;
+  padding: 16px;
+}
+.karta-klikatelna:focus-visible {
+  outline: 2px solid #d97757;
+  outline-offset: 2px;
+}
+.karta-radek {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+.karta-jmeno {
+  font-family: var(--font-syne), system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -.02em;
+  margin: 0;
+  /* dlouhá jména raději zmenšíme, než abychom je lámali uprostřed */
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+.karta-jmeno:has(+ *) { min-width: 0; }
+.karta-poradi {
+  margin-right: 5px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #c4b8a7;
+}
+.karta-spodek {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+}
+.karta-puvod {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 14px;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   PANEL S DETAILEM — vysune se zprava
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.detail-zaves {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: rgba(43, 39, 35, .38);
+  animation: zaves-nastup .2s ease both;
+}
+@keyframes zaves-nastup { from { opacity: 0 } to { opacity: 1 } }
+
+.detail-panel {
+  position: fixed;
+  inset: 0 0 0 auto;
+  z-index: 71;
+  display: flex;
+  flex-direction: column;
+  width: min(420px, 100%);
+  background: #faf6ef;
+  border-left: 1px solid #e8dfd2;
+  box-shadow: -14px 0 44px rgba(43, 39, 35, .18);
+  animation: panel-vysun .26s cubic-bezier(.22, .68, .36, 1) both;
+}
+@keyframes panel-vysun {
+  from { transform: translateX(100%) }
+  to { transform: none }
+}
+
+.detail-hlava {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 20px 14px;
+  border-bottom: 1px solid #e8dfd2;
+}
+.detail-zavrit {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #e8dfd2;
+  border-radius: 999px;
+  background: #fff;
+  color: #6b6156;
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.detail-zavrit:hover { border-color: #2b2723; color: #2b2723; }
+
+.detail-telo {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px 20px 24px;
+}
+.detail-sekce { margin-bottom: 22px; }
+.detail-sekce:last-child { margin-bottom: 0; }
+.detail-sekce > h3 {
+  margin: 0 0 8px;
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: #a2988a;
+}
+
+.detail-postrehy { display: grid; gap: 9px; margin: 0; }
+.detail-postrehy > div {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 10px;
+  align-items: baseline;
+}
+.detail-postrehy dt {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #8a7f71;
+}
+.detail-postrehy dd {
+  margin: 0;
+  font-size: 13.5px;
+  color: #2b2723;
+}
+.detail-tip { color: #8a7f71; }
+
+.detail-cislo {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: #f6ece2;
+  border: 1px solid #ecdfd0;
+  font-family: var(--font-syne), system-ui, sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: #d97757;
+}
+
+.detail-pata {
+  padding: 14px 20px;
+  padding-bottom: calc(14px + env(safe-area-inset-bottom));
+  border-top: 1px solid #e8dfd2;
+  background: #fff;
+}
+.detail-srdce {
+  width: 100%;
+  border: 1px solid #e8dfd2;
+  border-radius: 999px;
+  background: #faf6ef;
+  padding: 11px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2b2723;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.detail-srdce:hover { border-color: #d97757; }
+.detail-srdce.je-ulozene { background: #fdeeea; border-color: #edc4b6; }
+
+/* Na telefonu panel vyjede zespoda a nechá kus stránky vidět. */
+@media (max-width: 639px) {
+  .detail-panel {
+    inset: auto 0 0 0;
+    width: 100%;
+    max-height: 88vh;
+    border-left: none;
+    border-top: 1px solid #e8dfd2;
+    border-radius: 22px 22px 0 0;
+    animation-name: panel-zespoda;
+  }
+  @keyframes panel-zespoda {
+    from { transform: translateY(100%) }
+    to { transform: none }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .detail-panel, .detail-zaves { animation: none; }
+}
+
+/* Mřížka karet jmen — karty jsou malé, tak se jich vejde víc vedle sebe. */
+.mrizka-jmen {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+}
+@media (min-width: 640px) {
+  .mrizka-jmen { gap: 12px; grid-template-columns: repeat(auto-fill, minmax(162px, 1fr)); }
+}
+
+/* Spodní řádek karty: původ, štítek a srdíčko na jedné lince. */
+.karta-stitek {
+  border-radius: 999px;
+  padding: 2px 7px;
+  font-size: 10px;
+  font-weight: 700;
+}
+.karta-spodek .karta-puvod { flex: none; }

@@ -52,7 +52,7 @@ export default function OblibeneSeznam() {
           <h2 className="mb-3 [font-family:var(--font-syne)] text-2xl font-bold">
             {KATEGORIE_INFO[kat].emoji} {KATEGORIE_INFO[kat].mnozne}
           </h2>
-          <div className="nastup grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="nastup mrizka-jmen">
             {jmena.map(j => <NameCard key={j.id} jmeno={j} />)}
           </div>
         </section>

@@ -145,7 +145,7 @@ function Sekce({
         </Link>
       </div>
       <p className="mb-4 max-w-2xl text-[13.5px] text-[#8a7f71]">{popis}</p>
-      <div className="nastup grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="nastup mrizka-jmen">
         {jmena.map((j, i) => <NameCard key={j.id} jmeno={j} poradi={i + 1} />)}
       </div>
     </section>

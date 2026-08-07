@@ -72,7 +72,7 @@ export default async function ZemeStranka({ params }: { params: Promise<{ kod: s
             <h2 className="mb-3 [font-family:var(--font-syne)] text-2xl font-bold">
               {info.emoji} {info.mnozne}
             </h2>
-            <div className="nastup grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="nastup mrizka-jmen">
               {skupina.map((j, i) => <NameCard key={j.id} jmeno={j} poradi={i + 1} />)}
             </div>
           </section>

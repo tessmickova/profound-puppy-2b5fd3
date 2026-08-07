@@ -549,3 +549,78 @@ export function najdiNejlepsiShody(jmena: Jmeno[], vstup: VstupShody, limit = 12
     .sort((a, b) => b.skore - a.skore || kolator.compare(a.jmeno.jmeno, b.jmeno.jmeno))
     .slice(0, limit)
 }
+
+// ── rychlá analýza jména pro vysouvací panel ─────────────────────────────────
+
+export interface Postreh {
+  /** krátký nadpis — jedno až dvě slova */
+  popisek: string
+  /** heslovitá hodnota, ne věta */
+  hodnota: string
+  /** volitelné doplnění, proč to stojí za zmínku */
+  tip?: string
+}
+
+const VYSLOVNOST_TEZKA = /[řžščťďňů]/i
+
+/** Heslovité postřehy o jménu — to, co člověk chce vědět na první pohled. */
+export function rychlaAnalyza(j: Jmeno, jeVCesku: boolean): Postreh[] {
+  const postrehy: Postreh[] = []
+
+  postrehy.push({
+    popisek: 'Délka',
+    hodnota: `${j.slabiky} ${j.slabiky === 1 ? 'slabika' : j.slabiky <= 4 ? 'slabiky' : 'slabik'} · ${j.delka} písmen`,
+    tip: j.slabiky <= 2 ? 'krátká jména se snadno volají' : undefined,
+  })
+
+  const konec = j.jmeno[j.jmeno.length - 1]
+  postrehy.push({
+    popisek: 'Zvuk',
+    hodnota: /[aáeéěiíoóuúůyý]/i.test(konec) ? `končí samohláskou „${konec}"` : `končí souhláskou „${konec}"`,
+    tip: /[aáeéěiíoóuúůyý]/i.test(konec) ? 'zní měkce a nese se do dálky' : 'působí pevně a rázně',
+  })
+
+  postrehy.push({
+    popisek: 'Výslovnost',
+    hodnota: VYSLOVNOST_TEZKA.test(j.jmeno)
+      ? 'v cizině se s ním zapotí'
+      : /^[a-zA-Zá-žÁ-Ž]+$/.test(j.jmeno) ? 'zvládne ji i cizinec' : 'vyžaduje cvik',
+  })
+
+  postrehy.push({
+    popisek: 'Oblíbenost',
+    hodnota: j.popularita >= 90 ? 'velmi vysoká'
+      : j.popularita >= 80 ? 'vysoká'
+      : j.popularita >= 70 ? 'střední' : 'nižší',
+    tip: j.popularita >= 88 ? 've třídě nejspíš nebude samo'
+      : j.popularita <= 80 ? 'nepotkáte ho na každém rohu' : undefined,
+  })
+
+  postrehy.push({ popisek: 'Povaha jména', hodnota: j.energie })
+  postrehy.push({ popisek: 'Styl', hodnota: j.styly.join(', ') })
+
+  if (j.velikost) {
+    postrehy.push({ popisek: 'Sedne plemeni', hodnota: `${j.velikost} vzrůstu` })
+  }
+  if (j.pohlavi === 'unisex') {
+    postrehy.push({ popisek: 'Pohlaví', hodnota: 'sedne samci i samičce' })
+  }
+  if (j.svatek) {
+    postrehy.push({ popisek: 'Jmeniny', hodnota: j.svatek })
+  }
+  if (j.unisex) {
+    postrehy.push({ popisek: 'Unisex', hodnota: 'pro kluky i holčičky' })
+  }
+  if (jeVCesku) {
+    postrehy.push({ popisek: 'V Česku', hodnota: 'běžně se tu vyskytuje' })
+  }
+  if (dobreSeVola(j)) {
+    postrehy.push({ popisek: 'Volání', hodnota: 'zvíře na něj dobře slyší', tip: 'krátké a končí samohláskou' })
+  }
+  const kolize = povelKolize(j)
+  if (kolize) {
+    postrehy.push({ popisek: 'Pozor', hodnota: `plete se s povelem „${kolize}"` })
+  }
+
+  return postrehy
+}

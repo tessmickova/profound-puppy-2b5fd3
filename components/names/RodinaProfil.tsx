@@ -149,7 +149,7 @@ export default function RodinaProfil() {
               <h3 className="mb-3 [font-family:var(--font-syne)] text-xl font-bold">
                 {KATEGORIE_INFO[kat].emoji} {nadpis}
               </h3>
-              <div className="nastup grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              <div className="nastup mrizka-jmen">
                 {shody.map((s, j) => <DoporuceniKarta key={s.jmeno.id} shoda={s} poradi={j + 1} />)}
               </div>
             </section>
