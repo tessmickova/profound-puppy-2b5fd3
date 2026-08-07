@@ -2,8 +2,9 @@
 // (stejné karty, stejná paleta) — žádné blikající bannery. Každá plocha se
 // po 5 sekundách překlopí na další kreativu.
 //
-// Toto jsou ukázková data. Ostrý provoz je nahradí odpovědí z reklamního
-// serveru; tvar `Inzerat` zůstává stejný, takže stačí vyměnit zdroj.
+// Toto jsou ukázková data pro vývoj a náhled. V ostrém provozu je nahradí
+// odpověď reklamní služby (viz `reklamniServer.ts`) — tvar `Inzerat` je
+// v obou případech stejný.
 
 export type ReklamniPlocha =
   | 'domov-nad-mapou' | 'domov-po-mape' | 'domov-mezi' | 'domov-pred-patickou' | 'domov-bocni'
@@ -23,8 +24,10 @@ export interface Inzerat {
   odkaz: string
   /** jméno inzerenta, zobrazuje se drobně u štítku */
   znacka: string
-  /** klíč ikony (lucide) */
-  ikona: string
+  /** klíč ikony (lucide) — použije se, když inzerent nemá logo */
+  ikona: string | null
+  /** adresa loga inzerenta; má přednost před ikonou */
+  logo?: string | null
 }
 
 const PSI: Inzerat[] = [

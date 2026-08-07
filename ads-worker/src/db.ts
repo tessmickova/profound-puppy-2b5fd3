@@ -1,0 +1,129 @@
+// Práce s databází. Držíme to na jednom místě, ať je vidět, jaká data
+// o inzerentech vůbec vznikají.
+
+import { KAPACITA, OBDOBI, type Obdobi } from './plochy'
+
+export interface Prostredi {
+  DB: D1Database
+  LOGA: R2Bucket
+  POVOLENE_ORIGINY: string
+  BANKOVNI_UCET: string
+  PROVOZOVATEL: string
+  PROVOZOVATEL_ICO: string
+  PROVOZOVATEL_EMAIL: string
+  ADMIN_TOKEN?: string
+}
+
+export interface RadekInzeratu {
+  id: string
+  znacka: string
+  nadpis: string
+  text: string
+  cta: string
+  odkaz: string
+  ikona: string | null
+  logo_klic: string | null
+}
+
+export interface RadekObjednavky {
+  id: string
+  inzerent_id: string
+  plocha: string
+  obdobi: string
+  cena_kc: number
+  vs: string
+  stav: string
+  token: string
+  plati_od: string | null
+  plati_do: string | null
+  vytvoreno: string
+}
+
+/** Náhodný identifikátor. Krátký, ale dost dlouhý na to, aby se neuhodl. */
+export function novyId(delka = 12): string {
+  const abeceda = 'abcdefghijkmnopqrstuvwxyz23456789'
+  const bajty = crypto.getRandomValues(new Uint8Array(delka))
+  return Array.from(bajty, b => abeceda[b % abeceda.length]).join('')
+}
+
+export const dnesISO = (posun = 0): string => {
+  const d = new Date(Date.now() + posun * 86_400_000)
+  return d.toISOString().slice(0, 10)
+}
+
+/** Variabilní symbol: devět číslic odvozených z náhody, ať se nepletou. */
+export function novyVs(): string {
+  const b = crypto.getRandomValues(new Uint32Array(1))[0]
+  return String(100_000_000 + (b % 899_999_999))
+}
+
+/** Kreativy, které se právě mají zobrazit na dané ploše. */
+export async function inzeratyProPlochu(env: Prostredi, plocha: string) {
+  const dnes = dnesISO()
+  const { results } = await env.DB.prepare(
+    `SELECT i.id, i.znacka, i.nadpis, i.text, i.cta, i.odkaz, i.ikona, i.logo_klic
+       FROM inzeraty i
+       JOIN objednavky o ON o.id = i.objednavka_id
+      WHERE o.plocha = ?1
+        AND o.stav = 'aktivni'
+        AND (o.plati_od IS NULL OR o.plati_od <= ?2)
+        AND (o.plati_do IS NULL OR o.plati_do >= ?2)
+      ORDER BY o.vytvoreno
+      LIMIT ?3`,
+  ).bind(plocha, dnes, KAPACITA).all<RadekInzeratu>()
+  return results ?? []
+}
+
+/** Kolik kampaní na ploše drží místo — aktivní i zaplacení čekatelé. */
+export async function obsazenost(env: Prostredi): Promise<Record<string, number>> {
+  const dnes = dnesISO()
+  const { results } = await env.DB.prepare(
+    `SELECT plocha, COUNT(*) AS pocet
+       FROM objednavky
+      WHERE stav IN ('aktivni', 'ceka_na_platbu')
+        AND (plati_do IS NULL OR plati_do >= ?1)
+      GROUP BY plocha`,
+  ).bind(dnes).all<{ plocha: string; pocet: number }>()
+
+  const mapa: Record<string, number> = {}
+  for (const r of results ?? []) mapa[r.plocha] = r.pocet
+  return mapa
+}
+
+export async function objednavkaPodleTokenu(env: Prostredi, token: string) {
+  return env.DB.prepare('SELECT * FROM objednavky WHERE token = ?1')
+    .bind(token).first<RadekObjednavky>()
+}
+
+/** Spočítá konec platnosti od data zahájení. */
+export function platiDo(od: string, obdobi: Obdobi): string {
+  const d = new Date(`${od}T00:00:00Z`)
+  d.setUTCDate(d.getUTCDate() + OBDOBI[obdobi].dnu)
+  return d.toISOString().slice(0, 10)
+}
+
+/**
+ * Zhasne prošlé kampaně. Volá se z denního cronu — slot se tím sám uvolní
+ * a v samoobsluze se objeví jako volný.
+ */
+export async function zhasniProsle(env: Prostredi): Promise<number> {
+  const dnes = dnesISO()
+  const vysledek = await env.DB.prepare(
+    `UPDATE objednavky SET stav = 'vyprsela'
+      WHERE stav = 'aktivni' AND plati_do IS NOT NULL AND plati_do < ?1`,
+  ).bind(dnes).run()
+  return vysledek.meta.changes ?? 0
+}
+
+/**
+ * Zruší objednávky, které nikdo nezaplatil do sedmi dnů. Bez toho by
+ * nezaplacené rezervace blokovaly sloty napořád.
+ */
+export async function zrusNezaplacene(env: Prostredi): Promise<number> {
+  const hranice = dnesISO(-7)
+  const vysledek = await env.DB.prepare(
+    `UPDATE objednavky SET stav = 'zrusena'
+      WHERE stav = 'ceka_na_platbu' AND substr(vytvoreno, 1, 10) < ?1`,
+  ).bind(hranice).run()
+  return vysledek.meta.changes ?? 0
+}

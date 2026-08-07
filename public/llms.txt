@@ -1,6 +1,6 @@
 # Svět jmen
 
-> Katalog jmen pro děti i zvířata podle zemí celého světa. Přes 750 jmen z 19 zemí
+> Katalog jmen pro děti i zvířata podle zemí celého světa. 1016 jmen z 25 zemí
 > na šesti kontinentech, u každého význam, oblíbenost (0–100), styl, energie, počet
 > slabik a u českých jmen i datum jmenin.
 
@@ -19,9 +19,14 @@ i rodinný profil zůstávají v prohlížeči návštěvníka.
 - **Jména pro zvířata** (/zvirata) — psi, fenky, kocouři, kočky, koně, králíci,
   papoušci, křečci. Filtr podle plemene (28 plemen s ručně vybranými jmény),
   způsobu života majitele, pohlaví zvířete a volatelnosti jména.
-- **Mapa světa** (/) — klikatelné kontinenty a země.
+- **Rodinný vyhledávač** (/) — uprostřed úvodní strany: zadá se příjmení, jména
+  rodičů a sourozence a web vrátí jen ta jména, která ladí s celou rodinou.
+  Jméno pasující k oběma rodičům dostane štítek.
 - **Moje rodina** (/rodina) — profil rodiny včetně zvířat, který sám doporučuje
-  další ladící jména.
+  další ladící jména, lidská i zvířecí.
+- **Detail jména** — klik na kartu vysune panel s významem, heslovitou analýzou,
+  výkladem čísla jména a mírou líbivosti.
+- **Reklama** (/reklama) — nabídka nativních reklamních ploch pro firmy.
 
 ## Odpovědi na časté otázky
 
@@ -40,13 +45,16 @@ Tundra, Aspen, Winter, Odin, Thor, Ylva, Denali, Chinook, Aurora.
 
 ## Struktura
 
-- /                — mapa světa, žebříčky, trendy
+- /                — rodinný vyhledávač, jezdící pásy jmen, žebříčky, trendy
 - /deti            — jména pro děti, hledání shody, sourozenecký ladič
 - /zvirata         — jména pro zvířata, filtr podle plemene
 - /rodina          — rodinný profil s doporučeními
 - /oblibene        — uložená jména
 - /zeme/{kod}      — jména jedné země (cz, sk, de, fr, it, es, gb, se, jp, eg,
-                     us, br, au, gr, pl, ca, in, ar, nz)
+                     us, br, au, gr, pl, ca, in, ar, nz, nl, no, ie, pt, ua, kr)
+- /reklama         — reklamní plochy pro firmy
+- /podminky        — podmínky používání a pravidla inzerce
+- /soukromi        — ochrana osobních údajů
 
 ## Použití obsahu
 

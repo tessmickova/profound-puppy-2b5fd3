@@ -1,0 +1,359 @@
+// Samoobsluha pro firmy: vyberou plochu, délku kampaně, naklikají inzerát,
+// hned vidí, jak bude na webu vypadat, a odešlou objednávku.
+//
+// Stránka je schválně jeden soubor bez závislostí — reklamní služba má být
+// co nejjednodušší, aby neměla co pokazit.
+
+import type { Prostredi } from './db'
+
+const esc = (s: string) =>
+  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+
+export function samoobsluha(env: Prostredi): string {
+  const web = (env.POVOLENE_ORIGINY ?? '').split(',')[0]?.trim() || 'https://jmenaprodeti.cz'
+  const kontakt = env.PROVOZOVATEL_EMAIL ?? ''
+
+  return `<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Reklama na Světě jmen — vyberte si plochu</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23d97757'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --papir:#faf6ef; --karta:#fff; --linka:#e8dfd2; --text:#2b2723;
+    --tlumene:#8a7f71; --akcent:#d97757; --akcent-tmavy:#c4633f;
+  }
+  * { box-sizing:border-box; }
+  body {
+    margin:0; background:var(--papir); color:var(--text);
+    font:16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .obal { max-width:1080px; margin:0 auto; padding:32px 20px 64px; }
+  h1 { font-size:clamp(28px,5vw,40px); line-height:1.15; margin:0 0 8px; letter-spacing:-.02em; }
+  h2 { font-size:20px; margin:0 0 4px; }
+  .podnadpis { color:var(--tlumene); max-width:60ch; margin:0 0 32px; }
+  .krok { background:var(--karta); border:1px solid var(--linka); border-radius:20px; padding:20px; margin-bottom:16px; }
+  .krok > p { color:var(--tlumene); font-size:14px; margin:0 0 16px; }
+  .cislo {
+    display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px;
+    border-radius:9px; background:var(--text); color:var(--papir); font-size:14px; font-weight:700; margin-right:8px;
+  }
+  .hlava-kroku { display:flex; align-items:center; margin-bottom:2px; }
+  /* Ploch je třicet — ať kvůli nim nemusí nikdo scrollovat přes celou stránku. */
+  .rolovaci { max-height:340px; overflow-y:auto; border:1px solid var(--linka); border-radius:14px; }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  th, td { text-align:left; padding:9px 10px; border-bottom:1px solid var(--linka); }
+  tbody tr:last-child td { border-bottom:0; }
+  th {
+    position:sticky; top:0; z-index:1; background:var(--karta);
+    color:var(--tlumene); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.04em;
+    box-shadow:0 1px 0 var(--linka);
+  }
+  tbody tr { cursor:pointer; }
+  tbody tr:hover { background:var(--papir); }
+  tbody tr.je-vybrana { background:#fdf1ec; }
+  tbody tr.obsazena { opacity:.45; cursor:not-allowed; }
+  .volno { font-variant-numeric:tabular-nums; }
+  .obdobi { display:flex; flex-wrap:wrap; gap:10px; }
+  .obdobi label {
+    flex:1 1 180px; border:1px solid var(--linka); border-radius:14px; padding:12px 14px; cursor:pointer;
+  }
+  .obdobi label:has(input:checked) { border-color:var(--akcent); background:#fdf1ec; }
+  .obdobi input { margin-right:8px; }
+  .obdobi .cena { display:block; font-size:20px; font-weight:700; margin-top:4px; }
+  .obdobi .sleva { color:var(--akcent); font-size:12px; }
+  .pole { display:block; margin-bottom:14px; }
+  .pole span { display:block; font-size:13px; font-weight:600; margin-bottom:4px; }
+  .pole em { font-style:normal; color:var(--tlumene); font-weight:400; }
+  input[type=text], input[type=email], input[type=url], textarea, select {
+    width:100%; font:inherit; font-size:15px; padding:9px 12px; border:1px solid var(--linka);
+    border-radius:12px; background:var(--papir); color:var(--text);
+  }
+  textarea { resize:vertical; min-height:74px; }
+  input:focus, textarea:focus, select:focus { outline:2px solid var(--akcent); outline-offset:1px; }
+  .dvojice { display:grid; grid-template-columns:1fr 1fr; gap:0 14px; }
+  @media (max-width:640px) { .dvojice { grid-template-columns:1fr; } }
+  .ikony { display:flex; flex-wrap:wrap; gap:6px; }
+  .ikony button {
+    font:inherit; font-size:13px; padding:5px 11px; border-radius:999px; cursor:pointer;
+    border:1px solid var(--linka); background:var(--papir); color:var(--text);
+  }
+  .ikony button[aria-pressed=true] { border-color:var(--text); background:var(--text); color:var(--papir); }
+  .nahled { position:sticky; top:16px; }
+  .rozvrzeni { display:grid; grid-template-columns:1fr 300px; gap:16px; align-items:start; }
+  @media (max-width:900px) { .rozvrzeni { grid-template-columns:1fr; } .nahled { position:static; } }
+  .reklama {
+    background:var(--karta); border:1px solid var(--linka); border-radius:18px; padding:14px;
+  }
+  .reklama .hlava { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px; }
+  .reklama .znacka { display:flex; align-items:center; gap:6px; font-size:12px; font-weight:600; color:var(--tlumene); }
+  .reklama .znacka img { width:18px; height:18px; object-fit:contain; border-radius:4px; }
+  .reklama .stitek { font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:#b0a595; }
+  .reklama h3 { margin:0 0 4px; font-size:16px; line-height:1.3; }
+  .reklama p { margin:0 0 10px; font-size:13px; color:#6b6156; }
+  .reklama .cta { font-size:13px; font-weight:700; color:var(--akcent-tmavy); }
+  .odeslat {
+    font:inherit; font-weight:700; font-size:16px; width:100%; padding:14px; border:0; cursor:pointer;
+    border-radius:999px; background:var(--akcent); color:#fff;
+  }
+  .odeslat:disabled { opacity:.45; cursor:not-allowed; }
+  .souhlas { display:flex; gap:10px; font-size:13px; color:var(--tlumene); margin:0 0 14px; }
+  .hlaska { border-radius:14px; padding:12px 14px; font-size:14px; margin-bottom:14px; }
+  .hlaska.chyba { background:#fdecea; color:#8f2f28; }
+  .hlaska.ok { background:#eef6ee; color:#2f6b39; }
+  .shrnuti { background:var(--papir); border:1px dashed var(--linka); border-radius:14px; padding:14px; font-size:14px; }
+  .shrnuti dl { display:grid; grid-template-columns:auto 1fr; gap:4px 12px; margin:0; }
+  .shrnuti dt { color:var(--tlumene); }
+  .shrnuti dd { margin:0; font-weight:600; }
+  footer { margin-top:40px; font-size:13px; color:var(--tlumene); }
+  footer a { color:var(--tlumene); }
+  .schovano { display:none; }
+</style>
+</head>
+<body>
+<div class="obal">
+  <h1>Reklama, která vypadá jako zbytek webu</h1>
+  <p class="podnadpis">
+    Žádné blikající bannery. Váš inzerát se zobrazí jako běžná karta Světa jmen —
+    lidem, kteří právě vybírají jméno pro dítě nebo zvíře. Vyberte si plochu,
+    naklikejte text a hned uvidíte, jak to bude vypadat.
+  </p>
+
+  <div class="rozvrzeni">
+    <div>
+      <section class="krok">
+        <div class="hlava-kroku"><span class="cislo">1</span><h2>Vyberte plochu</h2></div>
+        <p>Na každé ploše se střídají nejvýš čtyři inzeráty, každý je vidět pět sekund.</p>
+        <div id="tabulka">Načítám volné plochy…</div>
+      </section>
+
+      <section class="krok" id="krok-obdobi" hidden>
+        <div class="hlava-kroku"><span class="cislo">2</span><h2>Na jak dlouho</h2></div>
+        <p>Ceny jsou bez DPH. Kampaň se po skončení sama vypne a slot se uvolní — nic se neobnovuje automaticky, takže vám nic nebude tiše ubíhat.</p>
+        <div class="obdobi" id="obdobi"></div>
+      </section>
+
+      <section class="krok" id="krok-inzerat" hidden>
+        <div class="hlava-kroku"><span class="cislo">3</span><h2>Jak má inzerát vypadat</h2></div>
+        <p>Formát je daný, aby reklama nerušila. Vyplňte texty a vpravo hned uvidíte výsledek.</p>
+
+        <label class="pole"><span>Značka <em>— jak se jmenujete u inzerátu</em></span>
+          <input type="text" id="znacka" maxlength="32" placeholder="Známkárna.cz"></label>
+        <label class="pole"><span>Nadpis <em>— nejvýš 48 znaků</em></span>
+          <input type="text" id="nadpis" maxlength="48" placeholder="Gravírovaná známka na obojek"></label>
+        <label class="pole"><span>Text <em>— nejvýš 150 znaků</em></span>
+          <textarea id="text" maxlength="150" placeholder="Jméno i telefon vyrytý do nerezu. Vyrobíme do druhého dne."></textarea></label>
+        <div class="dvojice">
+          <label class="pole"><span>Text tlačítka</span>
+            <input type="text" id="cta" maxlength="24" placeholder="Vybrat známku"></label>
+          <label class="pole"><span>Odkaz</span>
+            <input type="url" id="odkaz" placeholder="https://…"></label>
+        </div>
+
+        <div class="pole"><span>Ikona <em>— po zaplacení můžete místo ní nahrát logo</em></span>
+          <div class="ikony" id="ikony"></div>
+        </div>
+      </section>
+
+      <section class="krok" id="krok-firma" hidden>
+        <div class="hlava-kroku"><span class="cislo">4</span><h2>Fakturační údaje</h2></div>
+        <p>Potřebujeme jen tohle — nic dalšího o vás neevidujeme.</p>
+        <div class="dvojice">
+          <label class="pole"><span>Firma</span><input type="text" id="firma" maxlength="80"></label>
+          <label class="pole"><span>IČO <em>— nepovinné</em></span><input type="text" id="ico" maxlength="12"></label>
+        </div>
+        <label class="pole"><span>E-mail <em>— sem pošleme pokyny k platbě</em></span>
+          <input type="email" id="email" maxlength="120"></label>
+
+        <p class="souhlas">
+          <input type="checkbox" id="souhlas">
+          <label for="souhlas">Souhlasím s <a href="${esc(web)}/podminky" target="_blank" rel="noopener">obchodními podmínkami</a>
+            a beru na vědomí <a href="${esc(web)}/soukromi" target="_blank" rel="noopener">zpracování osobních údajů</a>.</label>
+        </p>
+        <div id="hlaska"></div>
+        <button class="odeslat" id="odeslat" disabled>Odeslat objednávku</button>
+      </section>
+
+      <section class="krok schovano" id="krok-hotovo">
+        <div class="hlava-kroku"><span class="cislo">✓</span><h2>Objednávka je u nás</h2></div>
+        <div id="pokyny"></div>
+      </section>
+    </div>
+
+    <aside class="nahled">
+      <div class="krok">
+        <h2 style="font-size:14px;color:var(--tlumene);margin-bottom:10px;">Náhled na webu</h2>
+        <div class="reklama">
+          <div class="hlava">
+            <span class="znacka"><span id="n-ikona">✦</span><span id="n-znacka">Vaše značka</span></span>
+            <span class="stitek">sponzorováno</span>
+          </div>
+          <h3 id="n-nadpis">Nadpis inzerátu</h3>
+          <p id="n-text">Dvě věty o tom, co nabízíte. Klidně konkrétně — lidé sem chodí něco vybírat.</p>
+          <span class="cta"><span id="n-cta">Text tlačítka</span> →</span>
+        </div>
+        <div class="shrnuti" id="shrnuti" style="margin-top:14px;">
+          <dl>
+            <dt>Plocha</dt><dd id="s-plocha">—</dd>
+            <dt>Délka</dt><dd id="s-obdobi">—</dd>
+            <dt>Cena</dt><dd id="s-cena">—</dd>
+          </dl>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <footer>
+    <p>Otázky posílejte na <a href="mailto:${esc(kontakt)}">${esc(kontakt)}</a>.
+      Provozovatel: ${esc(env.PROVOZOVATEL ?? '')}${env.PROVOZOVATEL_ICO ? `, IČO ${esc(env.PROVOZOVATEL_ICO)}` : ''}.</p>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var IKONY_ZNAKY = {
+    'bone':'🦴','dog':'🐕','cat':'🐈','house':'🏠','shield-check':'🛡️','star':'★','baby':'👶',
+    'sparkles':'✦','type':'A','users':'👪','globe':'🌍','calendar':'📅','languages':'文'
+  };
+  var stav = { plocha:null, obdobi:null, ikona:'sparkles', ceny:null };
+  var $ = function (id) { return document.getElementById(id); };
+
+  function korun(n) { return n.toLocaleString('cs-CZ') + ' Kč'; }
+
+  fetch('/api/sloty').then(function (r) { return r.json(); }).then(function (d) {
+    var radky = d.plochy.map(function (p) {
+      var plno = p.volno === 0;
+      return '<tr data-id="' + p.id + '" class="' + (plno ? 'obsazena' : '') + '">' +
+        '<td><strong>' + p.nazev + '</strong><br><span style="color:var(--tlumene);font-size:12px">' + p.stranka + '</span></td>' +
+        '<td class="volno">' + (plno ? 'obsazeno' : p.volno + ' z ' + d.kapacita) + '</td>' +
+        '<td>' + korun(p.ceny.mesic) + ' / měsíc</td></tr>';
+    }).join('');
+    $('tabulka').innerHTML = '<div class="rolovaci"><table><thead><tr><th>Plocha</th><th>Volno</th><th>Od</th></tr></thead><tbody>' + radky + '</tbody></table></div>';
+    stav.ceny = {};
+    d.plochy.forEach(function (p) { stav.ceny[p.id] = { ceny: p.ceny, nazev: p.nazev, volno: p.volno }; });
+
+    $('tabulka').addEventListener('click', function (e) {
+      var tr = e.target.closest('tr[data-id]');
+      if (!tr || tr.classList.contains('obsazena')) return;
+      Array.prototype.forEach.call(document.querySelectorAll('tr.je-vybrana'), function (x) { x.classList.remove('je-vybrana'); });
+      tr.classList.add('je-vybrana');
+      stav.plocha = tr.dataset.id;
+      $('s-plocha').textContent = stav.ceny[stav.plocha].nazev;
+      vykresliObdobi(d.obdobi);
+      $('krok-obdobi').hidden = false;
+      $('krok-inzerat').hidden = false;
+      $('krok-firma').hidden = false;
+      prekresli();
+    });
+
+    var ikony = d.ikony.map(function (k) {
+      return '<button type="button" data-ikona="' + k + '" aria-pressed="' + (k === stav.ikona) + '">' +
+        (IKONY_ZNAKY[k] || '✦') + '</button>';
+    }).join('');
+    $('ikony').innerHTML = ikony;
+    $('ikony').addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-ikona]');
+      if (!b) return;
+      stav.ikona = b.dataset.ikona;
+      Array.prototype.forEach.call($('ikony').children, function (x) {
+        x.setAttribute('aria-pressed', String(x === b));
+      });
+      prekresli();
+    });
+  }).catch(function () {
+    $('tabulka').innerHTML = '<p class="hlaska chyba">Seznam ploch se teď nepodařilo načíst. Zkuste to prosím za chvíli.</p>';
+  });
+
+  function vykresliObdobi(obdobi) {
+    var c = stav.ceny[stav.plocha].ceny;
+    var mesicne = c.mesic;
+    var popisky = { mesic:'', pulrok:'jeden měsíc zdarma', rok:'tři měsíce zdarma' };
+    $('obdobi').innerHTML = obdobi.map(function (o) {
+      return '<label><input type="radio" name="obdobi" value="' + o.id + '">' + o.nazev +
+        '<span class="cena">' + korun(c[o.id]) + '</span>' +
+        (popisky[o.id] ? '<span class="sleva">' + popisky[o.id] + '</span>' : '<span class="sleva">&nbsp;</span>') +
+        '</label>';
+    }).join('');
+    $('obdobi').addEventListener('change', function (e) {
+      stav.obdobi = e.target.value;
+      var nazvy = { mesic:'měsíc', pulrok:'6 měsíců', rok:'rok' };
+      $('s-obdobi').textContent = nazvy[stav.obdobi];
+      $('s-cena').textContent = korun(c[stav.obdobi]) + ' bez DPH';
+      prekresli();
+    });
+    void mesicne;
+  }
+
+  ['znacka','nadpis','text','cta','odkaz','email','firma','souhlas'].forEach(function (id) {
+    $(id).addEventListener('input', prekresli);
+    $(id).addEventListener('change', prekresli);
+  });
+
+  function prekresli() {
+    $('n-znacka').textContent = $('znacka').value || 'Vaše značka';
+    $('n-nadpis').textContent = $('nadpis').value || 'Nadpis inzerátu';
+    $('n-text').textContent = $('text').value || 'Dvě věty o tom, co nabízíte. Klidně konkrétně — lidé sem chodí něco vybírat.';
+    $('n-cta').textContent = $('cta').value || 'Text tlačítka';
+    $('n-ikona').textContent = IKONY_ZNAKY[stav.ikona] || '✦';
+    $('odeslat').disabled = !(
+      stav.plocha && stav.obdobi &&
+      $('znacka').value.trim().length > 1 &&
+      $('nadpis').value.trim().length > 5 &&
+      $('text').value.trim().length > 19 &&
+      $('cta').value.trim().length > 2 &&
+      /^https?:\\/\\//.test($('odkaz').value.trim()) &&
+      $('firma').value.trim().length > 1 &&
+      /^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/.test($('email').value.trim()) &&
+      $('souhlas').checked
+    );
+  }
+
+  $('odeslat').addEventListener('click', function () {
+    $('odeslat').disabled = true;
+    $('hlaska').innerHTML = '';
+    fetch('/api/objednavka', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        plocha: stav.plocha, obdobi: stav.obdobi, ikona: stav.ikona,
+        firma: $('firma').value, ico: $('ico').value, email: $('email').value,
+        znacka: $('znacka').value, nadpis: $('nadpis').value, text: $('text').value,
+        cta: $('cta').value, odkaz: $('odkaz').value, souhlas: $('souhlas').checked
+      })
+    }).then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+      .then(function (v) {
+        if (!v.ok) {
+          $('hlaska').innerHTML = '<p class="hlaska chyba">' + (v.d.chyba || 'Objednávku se nepodařilo uložit.') + '</p>';
+          $('odeslat').disabled = false;
+          return;
+        }
+        var d = v.d;
+        $('krok-firma').hidden = true;
+        $('krok-obdobi').hidden = true;
+        $('krok-inzerat').hidden = true;
+        $('krok-hotovo').classList.remove('schovano');
+        $('pokyny').innerHTML =
+          '<p class="hlaska ok">Máme ji. Kampaň spustíme, jakmile dorazí platba — obvykle do druhého pracovního dne.</p>' +
+          '<div class="shrnuti"><dl>' +
+          '<dt>Plocha</dt><dd>' + d.plocha + '</dd>' +
+          '<dt>Délka</dt><dd>' + d.obdobi + '</dd>' +
+          '<dt>Částka</dt><dd>' + korun(d.cena_kc) + ' bez DPH</dd>' +
+          '<dt>Účet</dt><dd>' + d.platba.ucet + '</dd>' +
+          '<dt>Variabilní symbol</dt><dd>' + d.platba.vs + '</dd>' +
+          '</dl></div>' +
+          '<p style="font-size:14px;margin-top:14px">Stav kampaně i nahrání loga najdete na téhle adrese — uložte si ji, je to zároveň váš přístup:<br>' +
+          '<code style="word-break:break-all">' + location.origin + '/api/objednavka/' + d.token + '</code></p>';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }).catch(function () {
+        $('hlaska').innerHTML = '<p class="hlaska chyba">Spojení se nepodařilo navázat. Zkuste to prosím znovu.</p>';
+        $('odeslat').disabled = false;
+      });
+  });
+})();
+</script>
+</body>
+</html>`
+}

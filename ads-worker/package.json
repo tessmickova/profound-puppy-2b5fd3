@@ -1,0 +1,17 @@
+{
+  "name": "svetjmen-ads",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:schema": "wrangler d1 execute svetjmen-ads --remote --file=./schema.sql",
+    "db:schema:local": "wrangler d1 execute svetjmen-ads --local --file=./schema.sql",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260801.1",
+    "typescript": "^5.9.3",
+    "wrangler": "^4.28.0"
+  }
+}

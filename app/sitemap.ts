@@ -10,6 +10,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: '/zvirata', priority: 0.9, changeFrequency: 'weekly' as const },
     { url: '/rodina', priority: 0.7, changeFrequency: 'monthly' as const },
     { url: '/oblibene', priority: 0.4, changeFrequency: 'monthly' as const },
+    { url: '/reklama', priority: 0.3, changeFrequency: 'yearly' as const },
+    { url: '/podminky', priority: 0.2, changeFrequency: 'yearly' as const },
+    { url: '/soukromi', priority: 0.2, changeFrequency: 'yearly' as const },
   ]
   return [
     ...staticke.map(s => ({ url: `${WEB.url}${s.url}`, lastModified: dnes, changeFrequency: s.changeFrequency, priority: s.priority })),

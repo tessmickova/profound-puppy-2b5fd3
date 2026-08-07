@@ -1,0 +1,33 @@
+# Reklamní služba Světa jmen — běží samostatně, aby výpadek reklam
+# nepoložil web se jmény.
+
+name = "svetjmen-ads"
+main = "src/index.ts"
+compatibility_date = "2026-08-01"
+
+# Denně po půlnoci zhasneme prošlé kampaně a uvolníme jejich sloty.
+[triggers]
+crons = ["10 0 * * *"]
+
+# Objednávky, inzeráty a sloty
+[[d1_databases]]
+binding = "DB"
+database_name = "svetjmen-ads"
+database_id = "VYPLNIT_PO_VYTVORENI"
+
+# Loga inzerentů
+[[r2_buckets]]
+binding = "LOGA"
+bucket_name = "svetjmen-ads-loga"
+
+[vars]
+# Odkud smí web volat API. Víc domén oddělte čárkou.
+POVOLENE_ORIGINY = "https://jmenaprodeti.cz,https://www.jmenaprodeti.cz,http://localhost:3000"
+# Bankovní spojení do pokynů k platbě
+BANKOVNI_UCET = "VYPLNIT/0000"
+PROVOZOVATEL = "VYPLNIT s.r.o."
+PROVOZOVATEL_ICO = "00000000"
+PROVOZOVATEL_EMAIL = "reklama@jmenaprodeti.cz"
+
+# Tajemství (nastavit přes `wrangler secret put`, ne sem):
+#   ADMIN_TOKEN — token pro schvalování a správu kampaní

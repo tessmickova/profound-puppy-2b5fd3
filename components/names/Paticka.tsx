@@ -17,6 +17,13 @@ const NASTROJE = [
   { href: '/oblibene', text: 'Uložená jména', param: '' },
 ]
 
+const PRAVNI_ODKAZY = [
+  { href: '/reklama', text: 'Reklama na webu' },
+  { href: '/podminky', text: 'Podmínky' },
+  { href: '/soukromi', text: 'Ochrana údajů' },
+  { href: '/aurora', text: 'AuroraDog' },
+]
+
 export default function Paticka() {
   return (
     <footer className="mt-16 border-t border-[#e8dfd2] bg-[#f6f0e6]">
@@ -77,9 +84,15 @@ export default function Paticka() {
 
         <div className="mt-9 flex flex-wrap items-center justify-between gap-3 border-t border-[#e8dfd2] pt-5 text-[12.5px] text-[#8a7f71]">
           <p>Svět jmen — vybírat jméno má být radost. Zdarma, bez registrace, bez sbírání údajů.</p>
-          <Link href="/aurora" className="underline decoration-dotted hover:text-[#2b2723]">
-            AuroraDog — sledování polární záře
-          </Link>
+          <ul className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
+            {PRAVNI_ODKAZY.map(o => (
+              <li key={o.href}>
+                <Link href={o.href} className="underline decoration-dotted hover:text-[#2b2723]">
+                  {o.text}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </footer>

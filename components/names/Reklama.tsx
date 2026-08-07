@@ -6,13 +6,17 @@
 //
 // Vzhled řídí třídy v globals.css, ne utility — díky tomu má úzká varianta
 // v postranním sloupci menší typografii bez duplikace stylů.
+//
+// Kreativy chodí ze samostatné reklamní služby. Když neodpoví, plocha se
+// nevykreslí vůbec — web se jmény tím není nijak dotčený.
 
 import { useEffect, useRef, useState } from 'react'
 import {
   Baby, Bone, Calendar, Cat, Dog, Globe, House, Languages, ShieldCheck,
   Sparkles, Star, Type, Users, type LucideIcon,
 } from 'lucide-react'
-import { INTERVAL_MS, inzeratyProPlochu } from '@/lib/names/reklamy'
+import { INTERVAL_MS, inzeratyProPlochu, type Inzerat } from '@/lib/names/reklamy'
+import { ADRESA_REKLAM, nactiInzeraty } from '@/lib/names/reklamniServer'
 
 const IKONY: Record<string, LucideIcon> = {
   bone: Bone, dog: Dog, house: House, 'shield-check': ShieldCheck, cat: Cat,
@@ -27,10 +31,22 @@ export default function Reklama({
   /** 'karta' do mřížky, 'pruh' na šířku obsahu, 'uzka' do postranního sloupce */
   varianta?: 'karta' | 'pruh' | 'uzka'
 }) {
-  const inzeraty = inzeratyProPlochu(plocha)
+  // Bez nastavené služby jedeme na ukázkových kreativách (vývoj a náhled).
+  const [inzeraty, setInzeraty] = useState<Inzerat[]>(
+    () => (ADRESA_REKLAM ? [] : inzeratyProPlochu(plocha)),
+  )
   const [index, setIndex] = useState(0)
   const [preklapi, setPreklapi] = useState(false)
   const pauza = useRef(false)
+
+  useEffect(() => {
+    if (!ADRESA_REKLAM) return
+    let zive = true
+    nactiInzeraty(plocha).then(nove => {
+      if (zive && nove && nove.length > 0) setInzeraty(nove)
+    })
+    return () => { zive = false }
+  }, [plocha])
 
   useEffect(() => {
     if (inzeraty.length < 2) return
@@ -52,8 +68,11 @@ export default function Reklama({
     return () => window.clearInterval(id)
   }, [inzeraty.length])
 
-  const inzerat = inzeraty[index]
-  const Ikona = IKONY[inzerat.ikona] ?? Sparkles
+  // Prázdná plocha = žádná reklama. Radši nic než díra v rozvržení.
+  if (inzeraty.length === 0) return null
+
+  const inzerat = inzeraty[index % inzeraty.length]
+  const Ikona = IKONY[inzerat.ikona ?? ''] ?? Sparkles
 
   return (
     <aside
@@ -67,7 +86,11 @@ export default function Reklama({
       <div className={`reklama-list ${preklapi ? 'je-preklopena' : ''}`}>
         <div className="reklama-hlava">
           <span className="reklama-znacka">
-            <Ikona size={14} strokeWidth={2} aria-hidden />
+            {/* Logo jde přes obyčejný <img> — leží na cizí adrese (reklamní službě),
+                kterou optimalizátor obrázků stejně nezpracuje. */}
+            {inzerat.logo
+              ? <img src={inzerat.logo} alt="" width={16} height={16} className="reklama-logo" loading="lazy" />
+              : <Ikona size={14} strokeWidth={2} aria-hidden />}
             <span>{inzerat.znacka}</span>
           </span>
           <span className="reklama-stitek">

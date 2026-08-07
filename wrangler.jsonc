@@ -1,0 +1,30 @@
+// Nasazení webu Svět jmen (a s ním i AuroraDog na /aurora).
+//
+// Reklamy tady schválně nejsou — mají vlastní nasazení v ads-worker/,
+// aby jejich výpadek nikdy nepoložil web.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "svetjmen",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-08-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    // Veřejná adresa webu — používá ji sitemap, robots a JSON-LD.
+    "NEXT_PUBLIC_URL": "https://jmenaprodeti.cz",
+    // Adresa reklamní služby. Prázdná hodnota = reklamy se nevykreslí.
+    "NEXT_PUBLIC_ADS_API": "https://reklama.jmenaprodeti.cz",
+    "NEXT_PUBLIC_PROVOZOVATEL": "VYPLNIT s.r.o.",
+    "NEXT_PUBLIC_ICO": "00000000",
+    "NEXT_PUBLIC_KONTAKT": "info@jmenaprodeti.cz",
+    "NEXT_PUBLIC_KONTAKT_REKLAMA": "reklama@jmenaprodeti.cz"
+  }
+  // Tajemství (Supabase, NASA, Telegram, WhatsApp, CRON_SECRET — všechno pro
+  // AuroraDog) se nastavují přes `wrangler secret put`, nikdy sem.
+}

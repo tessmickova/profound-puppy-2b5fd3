@@ -562,6 +562,14 @@
   font-weight: 500;
 }
 .reklama-znacka > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Logo inzerenta místo ikony — držíme ho v přesně stejné stopě, ať plocha nepodskočí. */
+.reklama-logo {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  border-radius: 4px;
+}
 .reklama-stitek {
   flex: none;
   border: 1px solid #e8dfd2;
@@ -1095,3 +1103,66 @@ h3.nadpis-sekce .nadpis-znak { width: 28px; height: 28px; border-radius: 9px; }
 .pasy-lide .pas-box:nth-child(7n) { color: #4a5c7d; }
 .pasy-zvirata .pas-box:nth-child(5n) { background: #f9efe2; border-color: #efdfca; }
 .pasy-zvirata .pas-box:nth-child(7n) { color: #a5683a; }
+
+/* ── Právní stránky ──────────────────────────────────────────────────────
+   Čitelný sloupec textu. Podmínky nikdo nečte rád, tak ať to aspoň netlačí
+   na oči — velké řádkování, krátká míra, nadpisy jasně oddělené. */
+.pravni-text {
+  max-width: 68ch;
+  margin: 0 auto;
+  color: #4a423a;
+  line-height: 1.7;
+}
+.pravni-text h1 {
+  font-family: var(--font-syne), system-ui, sans-serif;
+  font-size: clamp(28px, 5vw, 38px);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -.02em;
+  color: #2b2723;
+}
+.pravni-text h2 {
+  font-family: var(--font-syne), system-ui, sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #2b2723;
+  margin-top: 34px;
+  margin-bottom: 6px;
+}
+.pravni-text h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #2b2723;
+  margin-top: 22px;
+  margin-bottom: 4px;
+}
+.pravni-text p { margin: 0 0 12px; }
+.pravni-text ul { margin: 0 0 12px; padding-left: 0; list-style: none; }
+.pravni-text li { position: relative; padding-left: 18px; margin-bottom: 7px; }
+.pravni-text li::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: .68em;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: #d9c9b3;
+}
+.pravni-text a { color: #b3542f; text-decoration: underline; text-underline-offset: 2px; }
+.pravni-text strong { color: #2b2723; }
+.pravni-datum { font-size: 13px; color: #8a7f71; margin-top: 6px !important; }
+.pravni-uvod {
+  margin-top: 22px !important;
+  border-left: 3px solid #e8dfd2;
+  padding: 2px 0 2px 16px;
+  font-size: 17px;
+  color: #3a332c;
+}
+.pravni-odkaz {
+  margin-top: 34px !important;
+  border-top: 1px solid #e8dfd2;
+  padding-top: 14px;
+  font-size: 14px;
+  color: #8a7f71;
+}
