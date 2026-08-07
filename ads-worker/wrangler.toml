@@ -22,7 +22,7 @@ bucket_name = "svetjmen-ads-loga"
 
 [vars]
 # Odkud smí web volat API. Víc domén oddělte čárkou.
-POVOLENE_ORIGINY = "https://jmenaprodeti.cz,https://www.jmenaprodeti.cz,http://localhost:3000"
+POVOLENE_ORIGINY = "https://jmenaprodeti.cz,https://www.jmenaprodeti.cz,https://svetjmen.tereza-holtzerova.workers.dev,http://localhost:3000"
 # Bankovní spojení do pokynů k platbě
 BANKOVNI_UCET = "VYPLNIT/0000"
 PROVOZOVATEL = "VYPLNIT s.r.o."
