@@ -696,8 +696,8 @@
   width: max-content;
   will-change: transform;
 }
-.pas-vpravo { animation: pas-doprava 110s linear infinite; }
-.pas-vlevo { animation: pas-doleva 96s linear infinite; }
+.pas-vpravo { animation: pas-doprava 190s linear infinite; }
+.pas-vlevo { animation: pas-doleva 168s linear infinite; }
 
 /* Seznam je vykreslený dvakrát, posun o polovinu proto navazuje beze švu. */
 @keyframes pas-doleva {
@@ -732,8 +732,8 @@
 
 @media (max-width: 639px) {
   .pas-box { padding: 7px 13px; font-size: 13.5px; }
-  .pas-vpravo { animation-duration: 78s; }
-  .pas-vlevo { animation-duration: 68s; }
+  .pas-vpravo { animation-duration: 135s; }
+  .pas-vlevo { animation-duration: 118s; }
 }
 
 @media (prefers-reduced-motion: reduce) {
