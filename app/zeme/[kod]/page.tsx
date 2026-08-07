@@ -7,7 +7,7 @@ import Rozvrzeni from '@/components/names/Rozvrzeni'
 import NadpisSekce from '@/components/names/NadpisSekce'
 import { jmenaZeme, KONTINENTY, ZEME, zemePodleKodu } from '@/lib/names/data'
 import { serad } from '@/lib/names/logic'
-import { jsonLdDrobky, jsonLdSeznam, WEB } from '@/lib/names/seo'
+import { jsonLdDrobky, jsonLdSeznam, jsonLdSlovnik, WEB } from '@/lib/names/seo'
 import { KATEGORIE_INFO } from '@/lib/names/types'
 import type { Kategorie } from '@/lib/names/types'
 
@@ -96,6 +96,18 @@ export default async function ZemeStranka({ params }: { params: Promise<{ kod: s
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(jsonLdSeznam(
             `Jména z ${zeme.nazev}`,
+            `${WEB.url}/zeme/${zeme.kod}`,
+            jmena.map(j => ({ jmeno: j.jmeno, vyznam: j.vyznam })),
+          )),
+        }}
+      />
+      {/* Slovník jméno → význam. Jazykový model si z jedné stránky odnese
+          konkrétní dvojice, ne jen seznam slov. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLdSlovnik(
+            `Jména z ${zeme.nazev} a jejich význam`,
             `${WEB.url}/zeme/${zeme.kod}`,
             jmena.map(j => ({ jmeno: j.jmeno, vyznam: j.vyznam })),
           )),

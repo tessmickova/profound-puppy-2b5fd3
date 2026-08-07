@@ -126,7 +126,7 @@ export function samoobsluha(env: Prostredi): string {
     <div>
       <section class="krok">
         <div class="hlava-kroku"><span class="cislo">1</span><h2>Vyberte plochu</h2></div>
-        <p>Na každé ploše se střídají nejvýš čtyři inzeráty, každý je vidět pět sekund.</p>
+        <p>Na každé ploše se střídají nejvýš čtyři inzeráty, každý je vidět půl minuty.</p>
         <div id="tabulka">Načítám volné plochy…</div>
       </section>
 

@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Orbitron, Syne, IBM_Plex_Mono } from 'next/font/google'
 import { Toaster } from 'react-hot-toast'
-import { jsonLdWeb, WEB } from '@/lib/names/seo'
+import { jsonLdProvozovatel, jsonLdWeb, WEB } from '@/lib/names/seo'
 import './globals.css'
 
 const orbitron = Orbitron({ subsets: ['latin'], variable: '--font-orbitron', weight: ['400','700','900'] })
@@ -52,6 +52,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWeb()) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdProvozovatel()) }}
         />
         {children}
         <Toaster

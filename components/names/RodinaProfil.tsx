@@ -4,13 +4,12 @@
 // další lidská i zvířecí jména, která k současným ladí.
 
 import { useMemo, useState } from 'react'
-import { JMENA, zemePodleKodu } from '@/lib/names/data'
+import { JMENA } from '@/lib/names/data'
 import { najdiProRodinu } from '@/lib/names/logic'
-import type { Shoda } from '@/lib/names/logic'
-import { KATEGORIE_INFO } from '@/lib/names/types'
 import type { Kategorie } from '@/lib/names/types'
 import { ROLE, useRodina } from '@/lib/names/rodina'
-import { Srdicko, Stitky } from './NameCard'
+import ShodaKarta from './ShodaKarta'
+import VolbaPodrobnosti from './VolbaPodrobnosti'
 import Rozvrzeni from './Rozvrzeni'
 import NadpisSekce from './NadpisSekce'
 
@@ -23,49 +22,26 @@ const SKUPINY: { kat: Kategorie; nadpis: string }[] = [
   { kat: 'kocka',  nadpis: 'Kočky' },
 ]
 
-function DoporuceniKarta({ shoda, poradi }: { shoda: Shoda; poradi: number }) {
-  const zeme = zemePodleKodu(shoda.jmeno.zeme)
-  return (
-    <article className="karta-jmena rounded-2xl border border-[#efe7da] bg-white p-4 shadow-sm">
-      <div className="flex items-center justify-between gap-3">
-        <h4 className="[font-family:var(--font-syne)] text-lg font-bold">
-          <span className="mr-1.5 text-sm font-semibold text-[#c4b8a7]">{poradi}.</span>
-          {shoda.jmeno.jmeno}
-          <span className="ml-2 text-sm">{zeme?.vlajka}</span>
-        </h4>
-        <div className="flex items-center gap-2">
-          <span>
-            <span className="[font-family:var(--font-syne)] text-xl font-extrabold text-[#d97757]">{shoda.skore}</span>
-            <span className="text-[10px] text-[#8a7f71]"> /100</span>
-          </span>
-          <Srdicko id={shoda.jmeno.id} />
-        </div>
-      </div>
-      <div className="mt-1 flex flex-wrap gap-1.5 empty:hidden">
-        <Stitky jmeno={shoda.jmeno} />
-      </div>
-      <p className="mt-1.5 text-xs text-[#6b6156]">{shoda.jmeno.vyznam}</p>
-      {shoda.duvody.length > 0 && (
-        <ul className="mt-2 space-y-1 text-[11px] text-[#8a7f71]">
-          {shoda.duvody.slice(0, 3).map((d, i) => (
-            <li key={i} className="flex gap-1.5"><span aria-hidden>•</span>{d}</li>
-          ))}
-        </ul>
-      )}
-    </article>
-  )
-}
+/** Kolik jmen na kategorii ukázat — dá se rozbalit až na všechna. */
+const STUPNE = [6, 12, 24, Infinity]
 
 export default function RodinaProfil() {
   const { clenove, pridej, odeber } = useRodina()
   const [jmeno, setJmeno] = useState('')
   const [role, setRole] = useState('maminka')
 
+  const [stupen, setStupen] = useState(0)
+
   const jmenaClenu = useMemo(() => clenove.map(c => c.jmeno), [clenove])
   const doporuceni = useMemo(
-    () => SKUPINY.map(s => ({ ...s, shody: najdiProRodinu(JMENA, jmenaClenu, s.kat, 6) })),
+    () => SKUPINY.map(s => ({
+      ...s,
+      shody: najdiProRodinu(JMENA, jmenaClenu, s.kat, Infinity),
+    })),
     [jmenaClenu],
   )
+  const kolik = STUPNE[stupen]
+  const jeVsechno = stupen === STUPNE.length - 1
 
   const pridat = () => {
     pridej(jmeno, role)
@@ -141,10 +117,13 @@ export default function RodinaProfil() {
       ) : (
         <>
           <h2 className="mb-1 [font-family:var(--font-syne)] text-2xl font-bold">Kdo by k vám ještě ladil</h2>
-          <p className="mb-6 text-sm text-[#8a7f71]">
+          <p className="mb-4 text-sm text-[#8a7f71]">
             Doporučení se počítají ze jmen, která už doma máte — podle stylu, původu, rytmu
             i toho, aby se nová jména s těmi současnými nepletla a nerýmovala.
           </p>
+          <div className="mb-6 rounded-2xl border border-[#e8dfd2] bg-white p-4">
+            <VolbaPodrobnosti />
+          </div>
           {doporuceni.map(({ kat, nadpis, shody }) => (
             <section key={kat} className="mb-8">
               <div className="mb-3">
@@ -152,11 +131,28 @@ export default function RodinaProfil() {
                   {nadpis}
                 </NadpisSekce>
               </div>
-              <div className="nastup mrizka-jmen">
-                {shody.map((s, j) => <DoporuceniKarta key={s.jmeno.id} shoda={s} poradi={j + 1} />)}
+              <div className="nastup grid gap-3 sm:grid-cols-2">
+                {shody.slice(0, kolik).map((s, j) => <ShodaKarta key={s.jmeno.id} shoda={s} poradi={j + 1} />)}
               </div>
             </section>
           ))}
+          <div className="dalsi-pruh">
+            {!jeVsechno && (
+              <button type="button" className="dalsi-tlacitko" onClick={() => setStupen(s => s + 1)}>
+                Zobrazit víc jmen v každé kategorii
+              </button>
+            )}
+            {stupen > 0 && (
+              <button type="button" className="dalsi-vse" onClick={() => setStupen(0)}>
+                Zase zkrátit
+              </button>
+            )}
+            <p className="dalsi-pocet">
+              {jeVsechno
+                ? 'Vidíte všechna jména, která k vaší rodině ladí.'
+                : `V každé kategorii je vidět ${kolik} jmen.`}
+            </p>
+          </div>
         </>
       )}
     </Rozvrzeni>

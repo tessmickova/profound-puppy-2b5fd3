@@ -1,6 +1,6 @@
 'use client'
 
-// Nativní reklamní plocha — vypadá jako běžná karta webu, po 5 s se překlopí
+// Nativní reklamní plocha — vypadá jako běžná karta webu, po 30 s se překlopí
 // na další kreativu. Označení „sponzorováno" je povinné (zákon o regulaci
 // reklamy i DSA), proto zůstává vždy viditelné, jen nekřičí.
 //

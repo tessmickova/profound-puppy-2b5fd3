@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 }
 
 const KROKY = [
-  { c: '1', h: 'Vyberete plochu', t: 'Vidíte, které plochy jsou volné a co která stojí. Na jedné se střídají nejvýš čtyři inzeráty.' },
+  { c: '1', h: 'Vyberete plochu', t: 'Vidíte, které plochy jsou volné a co která stojí. Na jedné se střídají nejvýš čtyři inzeráty, každý je vidět půl minuty.' },
   { c: '2', h: 'Naklikáte inzerát', t: 'Značka nebo logo, nadpis, dvě věty, tlačítko a odkaz. Formát je daný, náhled vidíte hned vedle.' },
   { c: '3', h: 'Zaplatíte převodem', t: 'Kampaň spustíme po připsání platby, nejpozději následující pracovní den.' },
   { c: '4', h: 'Na konci sama zhasne', t: 'Nic se neobnovuje automaticky. Plocha se uvolní a nabídne dalšímu — nebo si ji vezmete znovu.' },

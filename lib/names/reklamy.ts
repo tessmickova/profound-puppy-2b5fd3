@@ -1,6 +1,6 @@
 // Nativní reklamní plochy. Kreativy záměrně vypadají jako ostatní obsah webu
 // (stejné karty, stejná paleta) — žádné blikající bannery. Každá plocha se
-// po 5 sekundách překlopí na další kreativu.
+// po 30 sekundách překlopí na další kreativu.
 //
 // Toto jsou ukázková data pro vývoj a náhled. V ostrém provozu je nahradí
 // odpověď reklamní služby (viz `reklamniServer.ts`) — tvar `Inzerat` je
@@ -57,7 +57,7 @@ const OBECNE: Inzerat[] = [
   { id: 'r-obec-4', nadpis: 'Jazykový kurz pro rodiče', text: 'Chcete jméno, které zvládnou i v cizině? Naučte se ho správně vyslovit.', cta: 'Vyzkoušet lekci', odkaz: '#', znacka: 'Lingvo', ikona: 'languages' },
 ]
 
-/** Kreativy pro každou plochu — plocha se po 5 s překlopí na další. */
+/** Kreativy pro každou plochu — plocha se po 30 s překlopí na další. */
 export const REKLAMY: Record<string, Inzerat[]> = {
   'domov-nad-mapou': OBECNE,
   'domov-po-mape': [...DETI, ...OBECNE].slice(0, 4),
@@ -85,4 +85,4 @@ export const REKLAMY: Record<string, Inzerat[]> = {
 export const inzeratyProPlochu = (plocha: string): Inzerat[] => REKLAMY[plocha] ?? OBECNE
 
 /** Jak dlouho je jedna kreativa vidět, než se plocha překlopí. */
-export const INTERVAL_MS = 5000
+export const INTERVAL_MS = 30_000

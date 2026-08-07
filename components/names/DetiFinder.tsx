@@ -10,17 +10,19 @@ import {
   Heart, Palette, Ruler, Search, SlidersHorizontal, Sparkles, TrendingUp, Type,
   Users, X, Zap,
 } from 'lucide-react'
-import { JMENA, jeMezinarodni, ZEME, zemePodleKodu } from '@/lib/names/data'
+import { JMENA, jeMezinarodni, ZEME } from '@/lib/names/data'
 import {
   filtruj, jeHit, jeOriginal, jeTrendy, kolator, monogram, najdiKSourozenci,
-  najdiNejlepsiShody, numerologie, PRAZDNY_FILTR, RAZENI_MOZNOSTI, serad,
+  najdiNejlepsiShody, PRAZDNY_FILTR, RAZENI_MOZNOSTI, serad,
   ZNAMENI_MESICE,
 } from '@/lib/names/logic'
-import type { Filtr, Razeni, Shoda } from '@/lib/names/logic'
+import type { Filtr, Razeni } from '@/lib/names/logic'
 import { KATEGORIE_INFO, MESICE_NAZVY, VSECHNY_STYLY } from '@/lib/names/types'
 import type { Energie, Kategorie, Styl } from '@/lib/names/types'
 import { useOblibene } from '@/lib/names/oblibene'
-import NameCard, { Srdicko, Stitky } from './NameCard'
+import NameCard from './NameCard'
+import ShodaKarta from './ShodaKarta'
+import VolbaPodrobnosti from './VolbaPodrobnosti'
 import Rozvrzeni from './Rozvrzeni'
 import RodinnyVyhledavac from './RodinnyVyhledavac'
 import {
@@ -31,52 +33,41 @@ const ENERGIE: Energie[] = ['klidná', 'vyvážená', 'živá']
 const prepni = <T,>(pole: T[], hodnota: T): T[] =>
   pole.includes(hodnota) ? pole.filter(x => x !== hodnota) : [...pole, hodnota]
 
-function ShodaKarta({ shoda, poradi }: { shoda: Shoda; poradi: number }) {
-  const zeme = zemePodleKodu(shoda.jmeno.zeme)
-  const num = numerologie(shoda.jmeno.jmeno)
-  return (
-    <article className="karta-jmena rounded-2xl border border-[#efe7da] bg-white p-4 shadow-sm">
-      <div className="flex items-center justify-between gap-3">
-        <h3 className="[font-family:var(--font-syne)] text-xl font-bold">
-          <span className="mr-1.5 text-sm font-semibold text-[#c4b8a7]">{poradi}.</span>
-          {shoda.jmeno.jmeno}
-          <span className="ml-2 text-base">{zeme?.vlajka}</span>
-        </h3>
-        <div className="flex items-center gap-2">
-          <div className="text-right">
-            <span className="[font-family:var(--font-syne)] text-2xl font-extrabold text-[#d97757]">{shoda.skore}</span>
-            <span className="text-xs text-[#8a7f71]"> /100</span>
-          </div>
-          <Srdicko id={shoda.jmeno.id} velke />
-        </div>
-      </div>
-      <div className="mt-1 h-2 overflow-hidden rounded-full bg-[#f3ecdf]">
-        <div className="h-full rounded-full bg-gradient-to-r from-[#e7a15c] to-[#d97757]" style={{ width: `${shoda.skore}%` }} />
-      </div>
-      <div className="mt-1.5 flex flex-wrap gap-1.5 empty:hidden">
-        {shoda.rodinnyStitek && (
-          <span className="rounded-full bg-[#fbe7e2] px-2 py-0.5 text-[11px] font-semibold text-[#b3563a]" title={shoda.rodinnyStitek.popis}>
-            {shoda.rodinnyStitek.text}
-          </span>
-        )}
-        <Stitky jmeno={shoda.jmeno} />
-      </div>
-      <p className="mt-2 text-sm text-[#6b6156]">{shoda.jmeno.vyznam}</p>
-      {shoda.jmeno.domacky && shoda.jmeno.domacky.length > 0 && (
-        <p className="mt-1 text-xs text-[#8a7f71]">doma: {shoda.jmeno.domacky.join(', ')}</p>
-      )}
-      <p className="mt-1 text-xs text-[#8a7f71]" title="Číslo jména podle pythagorejské numerologie">
-        číslo jména {num.cislo} — {num.vyznam}
-        {shoda.jmeno.svatek && <span className="ml-2">svátek {shoda.jmeno.svatek}</span>}
+/** O kolik jmen se seznam prodlouží jedním kliknutím. */
+const DAVKA = 12
+
+/**
+ * Když se z prvních dvanácti nelíbí ani jedno, musí být kam pokračovat.
+ * Ukazuje se pruh s počtem a dvěma tlačítky — po dávce, nebo rovnou vše.
+ */
+function DalsiVysledky({
+  zobrazeno, celkem, onVic, onVse,
+}: {
+  zobrazeno: number
+  celkem: number
+  onVic: () => void
+  onVse: () => void
+}) {
+  if (celkem <= zobrazeno) {
+    return (
+      <p className="dalsi-pocet mt-6">
+        To je všech {celkem} jmen, která podmínkám odpovídají.
       </p>
-      {shoda.duvody.length > 0 && (
-        <ul className="mt-2 space-y-1 text-xs text-[#8a7f71]">
-          {shoda.duvody.slice(0, 5).map((d, i) => (
-            <li key={i} className="flex gap-1.5"><span aria-hidden>•</span>{d}</li>
-          ))}
-        </ul>
-      )}
-    </article>
+    )
+  }
+  const zbyva = celkem - zobrazeno
+  return (
+    <div className="dalsi-pruh">
+      <button type="button" className="dalsi-tlacitko" onClick={onVic}>
+        Zobrazit dalších {Math.min(DAVKA, zbyva)}
+      </button>
+      <button type="button" className="dalsi-vse" onClick={onVse}>
+        Zobrazit všech {celkem}
+      </button>
+      <p className="dalsi-pocet">
+        Vidíte {zobrazeno} z {celkem}. Pořadí je podle shody — čím dál, tím volnější výběr.
+      </p>
+    </div>
   )
 }
 
@@ -128,14 +119,27 @@ export default function DetiFinder() {
     }
   }, [detska])
 
-  const shody = useMemo(
-    () => najdiNejlepsiShody(detska, { pohlavi, prijmeni, mesic, styly: stylyShody, zeme: zemeShody, maminka, tatinek, sourozenec }),
+  // Nejdřív spočítáme pořadí všech kandidátů a teprve pak z něj ukrojíme,
+  // kolik jich má být vidět. Kliknutí na „další" tak nic nepřepočítává.
+  const [limitShody, setLimitShody] = useState(DAVKA)
+  const [limitSourozenci, setLimitSourozenci] = useState(DAVKA)
+
+  const vsechnyShody = useMemo(
+    () => najdiNejlepsiShody(detska, { pohlavi, prijmeni, mesic, styly: stylyShody, zeme: zemeShody, maminka, tatinek, sourozenec }, Infinity),
     [detska, pohlavi, prijmeni, mesic, stylyShody, zemeShody, maminka, tatinek, sourozenec],
   )
-  const sourozenci = useMemo(
-    () => najdiKSourozenci(detska, { pohlavi, sourozenec, prijmeni }),
+  const vsichniSourozenci = useMemo(
+    () => najdiKSourozenci(detska, { pohlavi, sourozenec, prijmeni }, Infinity),
     [detska, pohlavi, sourozenec, prijmeni],
   )
+
+  // Změna zadání vrací seznam na začátek — jinak by po úpravě příjmení
+  // zůstalo rozbaleno pět set jmen.
+  useEffect(() => { setLimitShody(DAVKA) }, [pohlavi, prijmeni, mesic, stylyShody, zemeShody, maminka, tatinek, sourozenec])
+  useEffect(() => { setLimitSourozenci(DAVKA) }, [pohlavi, sourozenec, prijmeni])
+
+  const shody = useMemo(() => vsechnyShody.slice(0, limitShody), [vsechnyShody, limitShody])
+  const sourozenci = useMemo(() => vsichniSourozenci.slice(0, limitSourozenci), [vsichniSourozenci, limitSourozenci])
   const inicialy = prijmeni.trim() && shody.length ? monogram(shody[0].jmeno.jmeno, prijmeni) : null
 
   useEffect(() => {
@@ -392,25 +396,34 @@ export default function DetiFinder() {
               <VyberZemi zeme={ZEME} vybrane={zemeShody} onPrepni={k => setZemeShody(prepni(zemeShody, k))} onVymaz={() => setZemeShody([])} />
             </Sekce>
 
+            <div className="border-t border-[#f0e8dc] pt-4">
+              <VolbaPodrobnosti />
+            </div>
           </aside>
 
           <section>
             <p className="mb-1 text-sm text-[#6b6156]">
-              <strong className="[font-family:var(--font-syne)] text-lg text-[#2b2723]">Top {shody.length}</strong> nejlepších shod
+              <strong className="[font-family:var(--font-syne)] text-lg text-[#2b2723]">{vsechnyShody.length}</strong> jmen seřazených podle shody
               {prijmeni.trim() && <> pro příjmení <strong>{prijmeni.trim()}</strong></>}
               {(maminka.trim() || tatinek.trim() || sourozenec.trim()) && (
                 <>, ladící se jmény <strong>{[maminka.trim(), tatinek.trim(), sourozenec.trim()].filter(Boolean).join(', ')}</strong></>
               )}
               {mesic && <>, narození v měsíci <strong>{MESICE_NAZVY[mesic - 1]}</strong></>}
             </p>
-            <p className="mb-4 text-xs text-[#8a7f71]">
-              {inicialy && <>Monogram top shody: <strong>{inicialy.text}</strong>{inicialy.varovani && <span className="text-[#9a6b1f]"> — {inicialy.varovani}</span>} · </>}
-              {mesic && <>znamení: <strong>{ZNAMENI_MESICE[mesic]}</strong> · </>}
-              u každého jména uvádíme i číslo jména a případný svátek
+            <p className="mb-4 text-xs text-[#8a7f71] empty:hidden">
+              {inicialy && <>Monogram top shody: <strong>{inicialy.text}</strong>{inicialy.varovani && <span className="text-[#9a6b1f]"> — {inicialy.varovani}</span>}</>}
+              {inicialy && mesic ? ' · ' : ''}
+              {mesic && <>znamení: <strong>{ZNAMENI_MESICE[mesic]}</strong></>}
             </p>
             <div className="nastup grid gap-3 sm:grid-cols-2">
               {shody.map((s, i) => <ShodaKarta key={s.jmeno.id} shoda={s} poradi={i + 1} />)}
             </div>
+            <DalsiVysledky
+              zobrazeno={shody.length}
+              celkem={vsechnyShody.length}
+              onVic={() => setLimitShody(n => n + DAVKA)}
+              onVse={() => setLimitShody(vsechnyShody.length)}
+            />
           </section>
         </div>
         </>
@@ -436,13 +449,22 @@ export default function DetiFinder() {
               </div>
             ) : (
               <>
-                <p className="mb-4 text-sm text-[#6b6156]">
-                  <strong className="[font-family:var(--font-syne)] text-lg text-[#2b2723]">Top {sourozenci.length}</strong> jmen,
+                <p className="mb-3 text-sm text-[#6b6156]">
+                  <strong className="[font-family:var(--font-syne)] text-lg text-[#2b2723]">{vsichniSourozenci.length}</strong> jmen,
                   která ladí se jménem <strong>{sourozenec.trim()}</strong>
                 </p>
+                <div className="mb-4 rounded-2xl border border-[#e8dfd2] bg-white p-4">
+                  <VolbaPodrobnosti />
+                </div>
                 <div className="nastup grid gap-3 sm:grid-cols-2">
                   {sourozenci.map((s, i) => <ShodaKarta key={s.jmeno.id} shoda={s} poradi={i + 1} />)}
                 </div>
+                <DalsiVysledky
+                  zobrazeno={sourozenci.length}
+                  celkem={vsichniSourozenci.length}
+                  onVic={() => setLimitSourozenci(n => n + DAVKA)}
+                  onVse={() => setLimitSourozenci(vsichniSourozenci.length)}
+                />
               </>
             )}
           </section>

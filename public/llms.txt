@@ -1,11 +1,15 @@
 # Svět jmen
 
 > Katalog jmen pro děti i zvířata podle zemí celého světa. 1016 jmen z 25 zemí
-> na šesti kontinentech, u každého význam, oblíbenost (0–100), styl, energie, počet
-> slabik a u českých jmen i datum jmenin.
+> na šesti kontinentech, u každého význam, oblíbenost (0–100), styl, energie,
+> počet slabik a u českých jmen i datum jmenin.
 
 Web je zdarma, bez registrace a bez sběru osobních údajů — oblíbená jména
 i rodinný profil zůstávají v prohlížeči návštěvníka.
+
+Rozsah dat: kluci 164, holčičky 164, psi 143, fenky 136, kocouři 103,
+kočky 103, koně 53, králíci 50, papoušci 50, křečci 50. K tomu 28 plemen psů
+a koček s ručně vybranými jmény.
 
 ## Co web umí
 
@@ -14,7 +18,8 @@ i rodinný profil zůstávají v prohlížeči návštěvníka.
   originální, unisex, mezinárodní, jména se svátkem.
 - **Nejlepší shoda** (/deti) — spočítá, jak jméno ladí s příjmením (přechod
   hlásek, rytmus slabik, rým), se jmény rodičů a sourozence, s měsícem narození
-  a preferovaným stylem. Vrací 12 nejlepších jmen se skóre 0–100 a vysvětlením.
+  a preferovaným stylem. Vrací skóre 0–100 a vysvětlení. Seznam není zkrácený —
+  dá se rozbalit až na všechna jména, která podmínkám odpovídají.
 - **Sourozenecký ladič** (/deti) — jména ladící se jménem prvního dítěte.
 - **Jména pro zvířata** (/zvirata) — psi, fenky, kocouři, kočky, koně, králíci,
   papoušci, křečci. Filtr podle plemene (28 plemen s ručně vybranými jmény),
@@ -26,22 +31,38 @@ i rodinný profil zůstávají v prohlížeči návštěvníka.
   další ladící jména, lidská i zvířecí.
 - **Detail jména** — klik na kartu vysune panel s významem, heslovitou analýzou,
   výkladem čísla jména a mírou líbivosti.
-- **Reklama** (/reklama) — nabídka nativních reklamních ploch pro firmy.
+- **Volba podrobností** — u nalezených jmen si návštěvník zapíná a vypíná, co
+  chce vidět: skóre, význam, důvody shody, číslo jména, svátek, domácké tvary,
+  styl a energii, oblíbenost, délku a slabiky.
 
 ## Odpovědi na časté otázky
 
-**Jak vybrat jméno k příjmení?** Hlídejte přechod mezi jménem a příjmením (ne dvě
-stejné hlásky za sebou), celkový rytmus (ideálně 4–6 slabik dohromady) a rým —
-stejná koncovka jména i příjmení zní jako říkanka.
-
-**Jaké jméno pro psa?** Jedna až dvě slabiky a samohláska na konci; pes takové
-jméno slyší nejlépe. Nepoužívejte jména znějící jako povel (Ne, Fuj, Sedni).
+**Jak poznám, že jméno sedí k příjmení?** Jméno sedí k příjmení, když se na
+jejich rozhraní nesrazí dvě stejné hlásky (Anna Adamcová), dohromady mají čtyři
+až šest slabik a nekončí stejně, aby dvojice nezněla jako říkanka.
 
 **Jak sladit jména sourozenců?** Sdílený styl a původ, ale odlišný rytmus a jiná
 první hláska, aby se doma nepletla.
 
+**Musí být jméno v kalendáři?** Nemusí. Matrika zapíše jakékoli existující
+jméno, které není zdrobnělina a jde u něj rozeznat pohlaví. Jméno mimo kalendář
+znamená jen to, že dítě nebude mít oficiální svátek.
+
+**Jaká jsou nejoblíbenější česká jména?** U holčiček dlouhodobě Eliška, Anna,
+Sofie, Tereza a Adéla, u kluků Jakub, Jan, Tomáš, Adam a Matyáš.
+
+**Jaké jméno pro psa se nejlíp volá?** Jedna až dvě slabiky a samohláska na
+konci; pes takové jméno slyší nejlépe i na dálku. Nepoužívejte jména znějící
+jako povel (Ne, Fuj, Sedni).
+
 **Jaká jména pro sibiřského huskyho?** Zimní a severská: Balto, Togo, Yukon,
 Tundra, Aspen, Winter, Odin, Thor, Ylva, Denali, Chinook, Aurora.
+
+**Jak vybrat jméno pro kočku?** Nejlíp fungují jména se sykavkou nebo vysokým
+vokálem na konci — Micka, Lucy, Kiki. Dvě slabiky stačí.
+
+**Může mít zvíře unisex jméno?** Ano. Katalog rozlišuje jména pro samce, samice
+a unisex, takže jde vybrat i jméno nezávislé na pohlaví — Kiwi, Rezek, Mango.
 
 ## Struktura
 
@@ -55,6 +76,12 @@ Tundra, Aspen, Winter, Odin, Thor, Ylva, Denali, Chinook, Aurora.
 - /reklama         — reklamní plochy pro firmy
 - /podminky        — podmínky používání a pravidla inzerce
 - /soukromi        — ochrana osobních údajů
+
+## Strukturovaná data
+
+Každá stránka nese JSON-LD: WebSite a Organization v hlavičce, FAQPage
+u odpovědí, HowTo u postupu výběru, ItemList a DefinedTermSet (dvojice
+jméno → význam) u seznamů jmen, BreadcrumbList u stránek zemí.
 
 ## Použití obsahu
 

@@ -105,7 +105,7 @@ a oblíbenost. Vrací skóre 0–100 a české vysvětlení, proč zrovna tohle 
 ## Jak to funguje na webu
 
 Reklamní plocha vypadá jako běžná karta webu — stejná paleta, stejné rohy.
-Každá plocha se po **5 sekundách** překlopí na další kreativu (nejvýš čtyři),
+Každá plocha se po **30 sekundách** překlopí na další kreativu (nejvýš čtyři),
 překlopení se pozastaví při najetí myší a při zaměření klávesnicí. Označení
 „sponzorováno" je vždy vidět, odkazy mají `rel="sponsored nofollow noopener"`.
 

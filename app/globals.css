@@ -1166,3 +1166,182 @@ h3.nadpis-sekce .nadpis-znak { width: 28px; height: 28px; border-radius: 9px; }
   font-size: 14px;
   color: #8a7f71;
 }
+
+/* ── Karta shody ─────────────────────────────────────────────────────────
+   Pevné pořadí řádků a pevné výšky. Karty vedle sebe pak vypadají stejně
+   bez ohledu na to, kolik má které jméno štítků. */
+.karta-shoda {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #efe7da;
+  border-radius: 16px;
+  background: #fff;
+  padding: 14px 16px 16px;
+  box-shadow: 0 1px 2px rgba(43, 39, 35, .04);
+}
+.shoda-hlava {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 30px;
+}
+.shoda-jmeno {
+  font-family: var(--font-syne), system-ui, sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #2b2723;
+  min-width: 0;
+}
+.shoda-poradi { margin-right: 6px; font-size: 13px; font-weight: 600; color: #c4b8a7; }
+.shoda-vlajka { margin-left: 7px; font-size: 15px; }
+.shoda-vpravo { display: flex; flex: none; align-items: center; gap: 8px; }
+.shoda-skore {
+  font-family: var(--font-syne), system-ui, sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: #d97757;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.shoda-ze-sta { font-family: inherit; font-size: 11px; font-weight: 600; color: #a2988a; }
+
+/* Proužek skóre — vždy stejně tenký. Nikdy `flex: 1`, jinak si vezme
+   všechno zbylé místo v kartě (nebo naopak žádné) a karty se rozejdou. */
+.shoda-draha {
+  flex: none;
+  height: 5px;
+  margin-top: 8px;
+  border-radius: 999px;
+  background: #f3ecdf;
+  overflow: hidden;
+}
+.shoda-vypln {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #e7a15c, #d97757);
+}
+
+.shoda-stitky { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.stitek-rodina {
+  border-radius: 999px;
+  background: #fbe7e2;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #b3563a;
+}
+.shoda-vyznam { margin-top: 8px; font-size: 13.5px; line-height: 1.5; color: #6b6156; }
+.shoda-drobnosti { margin-top: 6px; font-size: 12px; line-height: 1.5; color: #8a7f71; }
+.shoda-duvody { margin-top: 9px; display: grid; gap: 4px; font-size: 12px; color: #8a7f71; }
+.shoda-duvody li { position: relative; padding-left: 13px; line-height: 1.45; }
+.shoda-duvody li::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: .62em;
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: #d9c9b3;
+}
+
+/* ── Volba podrobností ───────────────────────────────────────────────── */
+.podrobnosti-hlava {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.podrobnosti-chipy { display: flex; flex-wrap: wrap; gap: 6px; }
+.podrobnost-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid #e8dfd2;
+  border-radius: 999px;
+  background: #faf6ef;
+  padding: 4px 11px;
+  font-size: 12.5px;
+  color: #6b6156;
+  cursor: pointer;
+  transition: border-color .15s ease, background .15s ease, color .15s ease;
+}
+.podrobnost-chip:hover { border-color: #c4b8a7; }
+.podrobnost-chip[aria-pressed='true'] {
+  border-color: #2b2723;
+  background: #2b2723;
+  color: #faf6ef;
+}
+.podrobnost-chip .fajfka { font-size: 10px; opacity: .8; }
+
+/* ── Načtení dalších výsledků ────────────────────────────────────────── */
+.dalsi-pruh {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid #e8dfd2;
+}
+.dalsi-tlacitko {
+  border-radius: 999px;
+  background: #2b2723;
+  padding: 11px 26px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #faf6ef;
+  cursor: pointer;
+}
+.dalsi-tlacitko:hover { background: #43392f; }
+.dalsi-vse {
+  border: 1px solid #e8dfd2;
+  border-radius: 999px;
+  background: #fff;
+  padding: 11px 22px;
+  font-size: 14px;
+  color: #6b6156;
+  cursor: pointer;
+}
+.dalsi-vse:hover { border-color: #2b2723; color: #2b2723; }
+.dalsi-pocet { flex-basis: 100%; text-align: center; font-size: 12.5px; color: #8a7f71; }
+
+/* ── Krátké odpovědi ─────────────────────────────────────────────────────
+   Odpověď stojí hned pod otázkou a je krátká — tak se dá citovat celá,
+   ať už ji čte člověk nebo jazykový model. */
+.odpovedi {
+  margin-top: 42px;
+  border-top: 1px solid #e8dfd2;
+  padding-top: 26px;
+}
+.odpovedi-nadpis {
+  font-family: var(--font-syne), system-ui, sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #2b2723;
+  margin-bottom: 16px;
+}
+.odpovedi-mrizka {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+.odpoved {
+  border: 1px solid #eee5d8;
+  border-radius: 16px;
+  background: #fff;
+  padding: 16px 18px;
+}
+.odpoved h3 {
+  font-family: var(--font-syne), system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: #2b2723;
+  margin-bottom: 6px;
+}
+.odpoved p { font-size: 13.5px; line-height: 1.6; color: #6b6156; }

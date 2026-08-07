@@ -74,7 +74,7 @@ Loga leží v objektovém úložišti, ne v databázi.
 ## Kapacita a sloty
 
 Na jedné ploše se střídají nejvýš **čtyři** kampaně (`KAPACITA` v `plochy.ts`),
-každá je vidět pět sekund. Volné místo se počítá z aktivních objednávek
+každá je vidět 30 sekund. Volné místo se počítá z aktivních objednávek
 i z těch, které čekají na platbu — jinak by se plocha prodala dvakrát.
 
 ## Bezpečnost
