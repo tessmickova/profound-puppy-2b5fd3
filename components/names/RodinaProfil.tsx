@@ -11,6 +11,7 @@ import { KATEGORIE_INFO } from '@/lib/names/types'
 import type { Kategorie } from '@/lib/names/types'
 import { ROLE, useRodina } from '@/lib/names/rodina'
 import { Srdicko, Stitky } from './NameCard'
+import Reklama from './Reklama'
 
 const SKUPINY: { kat: Kategorie; nadpis: string }[] = [
   { kat: 'holka',  nadpis: 'Holčičky' },
@@ -128,6 +129,10 @@ export default function RodinaProfil() {
         )}
       </section>
 
+      <div className="mb-8">
+        <Reklama plocha="rodina-1" varianta="pruh" />
+      </div>
+
       {clenove.length === 0 ? (
         <div className="rounded-3xl border border-dashed border-[#e8dfd2] p-12 text-center text-[#8a7f71]">
           <p className="text-4xl">👪</p>
@@ -143,16 +148,18 @@ export default function RodinaProfil() {
             Doporučení se počítají ze jmen, která už doma máte — podle stylu, původu, rytmu
             i toho, aby se nová jména s těmi současnými nepletla a nerýmovala.
           </p>
-          {doporuceni.map(({ kat, nadpis, shody }) => (
+          {doporuceni.map(({ kat, nadpis, shody }, i) => (
             <section key={kat} className="mb-8">
               <h3 className="mb-3 [font-family:var(--font-syne)] text-xl font-bold">
                 {KATEGORIE_INFO[kat].emoji} {nadpis}
               </h3>
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                {shody.map((s, i) => <DoporuceniKarta key={s.jmeno.id} shoda={s} poradi={i + 1} />)}
+                {shody.map((s, j) => <DoporuceniKarta key={s.jmeno.id} shoda={s} poradi={j + 1} />)}
+                {i < 3 && <Reklama plocha={`rodina-${i + 2}`} />}
               </div>
             </section>
           ))}
+          <Reklama plocha="rodina-5" varianta="pruh" />
         </>
       )}
     </div>

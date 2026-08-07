@@ -1,40 +1,32 @@
 'use client'
 
-// Jména pro děti: procházení s filtrem + „nejlepší shoda" podle příjmení,
-// měsíce narození, stylu a země. U shody vracíme jen nejlepší výsledky.
+// Jména pro děti: procházení s kompaktním filtrem, hledání nejlepší shody
+// (příjmení, rodina, měsíc) a sourozenecký ladič.
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
+import {
+  ArrowDownAZ, Baby, BookOpen, Calendar, Circle, Dices, Flame, Gem, Globe,
+  Heart, Palette, Ruler, Search, SlidersHorizontal, Sparkles, TrendingUp, Type,
+  Users, X, Zap,
+} from 'lucide-react'
 import { JMENA, jeMezinarodni, ZEME, zemePodleKodu } from '@/lib/names/data'
 import {
   filtruj, jeHit, jeOriginal, jeTrendy, kolator, monogram, najdiKSourozenci,
   najdiNejlepsiShody, numerologie, PRAZDNY_FILTR, RAZENI_MOZNOSTI, serad,
   ZNAMENI_MESICE,
 } from '@/lib/names/logic'
-import { useOblibene } from '@/lib/names/oblibene'
 import type { Filtr, Razeni, Shoda } from '@/lib/names/logic'
 import { KATEGORIE_INFO, MESICE_NAZVY, VSECHNY_STYLY } from '@/lib/names/types'
 import type { Energie, Kategorie, Styl } from '@/lib/names/types'
+import { useOblibene } from '@/lib/names/oblibene'
 import NameCard, { Srdicko, Stitky } from './NameCard'
+import Reklama from './Reklama'
+import {
+  AktivniFiltry, Chip, Chipy, PismenaMrizka, Posuvnik, Prepinac, Sekce, VyberZemi,
+} from './FiltrUI'
 
 const ENERGIE: Energie[] = ['klidná', 'vyvážená', 'živá']
-
-function Chip({ aktivni, onClick, children }: { aktivni: boolean; onClick: () => void; children: React.ReactNode }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`rounded-full border px-3 py-1 text-sm transition-colors ${
-        aktivni
-          ? 'border-[#2b2723] bg-[#2b2723] text-[#faf6ef]'
-          : 'border-[#e8dfd2] bg-white text-[#6b6156] hover:border-[#c4b8a7]'
-      }`}
-    >
-      {children}
-    </button>
-  )
-}
-
 const prepni = <T,>(pole: T[], hodnota: T): T[] =>
   pole.includes(hodnota) ? pole.filter(x => x !== hodnota) : [...pole, hodnota]
 
@@ -57,27 +49,24 @@ function ShodaKarta({ shoda, poradi }: { shoda: Shoda; poradi: number }) {
           <Srdicko id={shoda.jmeno.id} velke />
         </div>
       </div>
+      <div className="mt-1 h-2 overflow-hidden rounded-full bg-[#f3ecdf]">
+        <div className="h-full rounded-full bg-gradient-to-r from-[#e7a15c] to-[#d97757]" style={{ width: `${shoda.skore}%` }} />
+      </div>
       <div className="mt-1.5 flex flex-wrap gap-1.5 empty:hidden">
         {shoda.rodinnyStitek && (
-          <span
-            className="rounded-full bg-[#fbe7e2] px-2 py-0.5 text-[11px] font-semibold text-[#b3563a]"
-            title={shoda.rodinnyStitek.popis}
-          >
+          <span className="rounded-full bg-[#fbe7e2] px-2 py-0.5 text-[11px] font-semibold text-[#b3563a]" title={shoda.rodinnyStitek.popis}>
             {shoda.rodinnyStitek.text}
           </span>
         )}
         <Stitky jmeno={shoda.jmeno} />
-      </div>
-      <div className="mt-1 h-2 overflow-hidden rounded-full bg-[#f3ecdf]">
-        <div className="h-full rounded-full bg-gradient-to-r from-[#e7a15c] to-[#d97757]" style={{ width: `${shoda.skore}%` }} />
       </div>
       <p className="mt-2 text-sm text-[#6b6156]">{shoda.jmeno.vyznam}</p>
       {shoda.jmeno.domacky && shoda.jmeno.domacky.length > 0 && (
         <p className="mt-1 text-xs text-[#8a7f71]">doma: {shoda.jmeno.domacky.join(', ')}</p>
       )}
       <p className="mt-1 text-xs text-[#8a7f71]" title="Číslo jména podle pythagorejské numerologie">
-        🔢 číslo jména {num.cislo} — {num.vyznam}
-        {shoda.jmeno.svatek && <span className="ml-2">📅 svátek {shoda.jmeno.svatek}</span>}
+        číslo jména {num.cislo} — {num.vyznam}
+        {shoda.jmeno.svatek && <span className="ml-2">svátek {shoda.jmeno.svatek}</span>}
       </p>
       {shoda.duvody.length > 0 && (
         <ul className="mt-2 space-y-1 text-xs text-[#8a7f71]">
@@ -94,7 +83,6 @@ export default function DetiFinder() {
   const params = useSearchParams()
   const [rezim, setRezim] = useState<'prochazet' | 'shoda' | 'sourozenec'>('prochazet')
 
-  // ── procházení ──
   const [filtr, setFiltr] = useState<Filtr>(() => ({
     ...PRAZDNY_FILTR,
     kategorie: params.get('kategorie') === 'holka' ? ['holka'] : params.get('kategorie') === 'kluk' ? ['kluk'] : [],
@@ -102,9 +90,10 @@ export default function DetiFinder() {
   }))
   const [razeni, setRazeni] = useState<Razeni>('popularita')
   const [rychle, setRychle] = useState<string[]>([])
+  const [nahodne, setNahodne] = useState<string | null>(null)
+  const [panelOtevren, setPanelOtevren] = useState(false)
   const { ids: oblibena } = useOblibene()
 
-  // ── nejlepší shoda ──
   const [pohlavi, setPohlavi] = useState<'kluk' | 'holka'>('holka')
   const [prijmeni, setPrijmeni] = useState('')
   const [mesic, setMesic] = useState<number | null>(null)
@@ -113,7 +102,6 @@ export default function DetiFinder() {
   const [sourozenec, setSourozenec] = useState('')
   const [maminka, setMaminka] = useState('')
   const [tatinek, setTatinek] = useState('')
-  const [nahodne, setNahodne] = useState<string | null>(null)
 
   const detska = useMemo(() => JMENA.filter(j => j.kategorie === 'kluk' || j.kategorie === 'holka'), [])
 
@@ -130,30 +118,43 @@ export default function DetiFinder() {
     return serad(kandidati, razeni)
   }, [detska, filtr, razeni, rychle, oblibena])
 
-  const dostupnaPismena = useMemo(() => {
-    const set = new Set(detska.map(j => j.jmeno[0].toUpperCase()))
-    return [...set].sort((a, b) => kolator.compare(a, b))
+  const pismena = useMemo(() => {
+    const zac = new Set(detska.map(j => j.jmeno[0].toUpperCase()))
+    const kon = new Set(detska.map(j => j.jmeno[j.jmeno.length - 1].toUpperCase()))
+    return {
+      zacatek: [...zac].sort((a, b) => kolator.compare(a, b)),
+      konec: [...kon].sort((a, b) => kolator.compare(a, b)),
+    }
   }, [detska])
 
   const shody = useMemo(
-    () => najdiNejlepsiShody(detska, {
-      pohlavi, prijmeni, mesic, styly: stylyShody, zeme: zemeShody,
-      maminka, tatinek, sourozenec,
-    }),
+    () => najdiNejlepsiShody(detska, { pohlavi, prijmeni, mesic, styly: stylyShody, zeme: zemeShody, maminka, tatinek, sourozenec }),
     [detska, pohlavi, prijmeni, mesic, stylyShody, zemeShody, maminka, tatinek, sourozenec],
   )
-
   const sourozenci = useMemo(
     () => najdiKSourozenci(detska, { pohlavi, sourozenec, prijmeni }),
     [detska, pohlavi, sourozenec, prijmeni],
   )
-
-  const koncovaPismena = useMemo(() => {
-    const set = new Set(detska.map(j => j.jmeno[j.jmeno.length - 1].toUpperCase()))
-    return [...set].sort((a, b) => kolator.compare(a, b))
-  }, [detska])
-
   const inicialy = prijmeni.trim() && shody.length ? monogram(shody[0].jmeno.jmeno, prijmeni) : null
+
+  useEffect(() => {
+    if (!panelOtevren) return
+    const esc = (e: KeyboardEvent) => { if (e.key === 'Escape') setPanelOtevren(false) }
+    window.addEventListener('keydown', esc)
+    return () => window.removeEventListener('keydown', esc)
+  }, [panelOtevren])
+
+  const aktivni = [
+    ...filtr.kategorie.map(k => ({ klic: `k-${k}`, popis: KATEGORIE_INFO[k].mnozne, zrus: () => setFiltr(f => ({ ...f, kategorie: prepni(f.kategorie, k) })) })),
+    ...filtr.zeme.map(z => ({ klic: `z-${z}`, popis: ZEME.find(x => x.kod === z)?.nazev ?? z, zrus: () => setFiltr(f => ({ ...f, zeme: prepni(f.zeme, z) })) })),
+    ...filtr.styly.map(s => ({ klic: `s-${s}`, popis: s, zrus: () => setFiltr(f => ({ ...f, styly: prepni(f.styly, s) })) })),
+    ...filtr.energie.map(e => ({ klic: `e-${e}`, popis: e, zrus: () => setFiltr(f => ({ ...f, energie: prepni(f.energie, e) })) })),
+    ...rychle.map(r => ({ klic: `r-${r}`, popis: r, zrus: () => setRychle(prepni(rychle, r)) })),
+    ...(filtr.pismeno ? [{ klic: 'pis', popis: `začíná ${filtr.pismeno}`, zrus: () => setFiltr(f => ({ ...f, pismeno: null })) }] : []),
+    ...(filtr.konciNa ? [{ klic: 'kon', popis: `končí ${filtr.konciNa}`, zrus: () => setFiltr(f => ({ ...f, konciNa: null })) }] : []),
+    ...(filtr.maxDelka ? [{ klic: 'del', popis: `do ${filtr.maxDelka} písmen`, zrus: () => setFiltr(f => ({ ...f, maxDelka: null })) }] : []),
+    ...(filtr.maxSlabiky ? [{ klic: 'sla', popis: `do ${filtr.maxSlabiky} slabik`, zrus: () => setFiltr(f => ({ ...f, maxSlabiky: null })) }] : []),
+  ]
 
   const abecedne = razeni === 'abecedne' || razeni === 'abecedne-z'
   const skupiny = useMemo(() => {
@@ -167,188 +168,157 @@ export default function DetiFinder() {
     return [...mapa.entries()]
   }, [vysledky, abecedne])
 
+  const taby = (
+    <div className="mb-5 inline-flex flex-wrap rounded-full border border-[#e8dfd2] bg-white p-1">
+      {([
+        { id: 'prochazet', nazev: 'Procházet jména', ikona: <BookOpen size={14} /> },
+        { id: 'shoda', nazev: 'Najít nejlepší shodu', ikona: <Sparkles size={14} /> },
+        { id: 'sourozenec', nazev: 'Ladí k sourozenci', ikona: <Users size={14} /> },
+      ] as const).map(t => (
+        <button
+          key={t.id}
+          onClick={() => setRezim(t.id)}
+          className={`inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-[13.5px] font-semibold transition-colors ${
+            rezim === t.id ? 'bg-[#2b2723] text-[#faf6ef]' : 'text-[#6b6156]'
+          }`}
+        >
+          {t.ikona} {t.nazev}
+        </button>
+      ))}
+    </div>
+  )
+
   return (
-    <div>
-      <div className="mb-6 inline-flex rounded-full border border-[#e8dfd2] bg-white p-1">
-        <button
-          onClick={() => setRezim('prochazet')}
-          className={`rounded-full px-4 py-1.5 text-sm font-medium ${rezim === 'prochazet' ? 'bg-[#2b2723] text-[#faf6ef]' : 'text-[#6b6156]'}`}
-        >
-          📖 Procházet jména
-        </button>
-        <button
-          onClick={() => setRezim('shoda')}
-          className={`rounded-full px-4 py-1.5 text-sm font-medium ${rezim === 'shoda' ? 'bg-[#2b2723] text-[#faf6ef]' : 'text-[#6b6156]'}`}
-        >
-          💘 Najít nejlepší shodu
-        </button>
-        <button
-          onClick={() => setRezim('sourozenec')}
-          className={`rounded-full px-4 py-1.5 text-sm font-medium ${rezim === 'sourozenec' ? 'bg-[#2b2723] text-[#faf6ef]' : 'text-[#6b6156]'}`}
-        >
-          👫 Ladí k sourozenci
-        </button>
-      </div>
+    <>
+      <Reklama plocha="deti-nad" varianta="pruh" />
+      <div className="mt-6">{taby}</div>
 
-      {rezim === 'prochazet' ? (
-        <div className="grid gap-8 lg:grid-cols-[300px,1fr]">
-          <aside className="space-y-5 self-start rounded-3xl border border-[#e8dfd2] bg-white p-5 shadow-sm lg:sticky lg:top-20">
-            <div className="flex items-center justify-between">
-              <h2 className="[font-family:var(--font-syne)] text-lg font-bold">Filtr</h2>
-              <button onClick={() => { setFiltr(PRAZDNY_FILTR); setRychle([]) }} className="text-xs text-[#8a7f71] underline decoration-dotted hover:text-[#2b2723]">
-                Vymazat vše
-              </button>
-            </div>
-
-            <input
-              type="search"
-              value={filtr.hledat}
-              onChange={e => setFiltr({ ...filtr, hledat: e.target.value })}
-              placeholder="Hledat jméno či význam…"
-              className="w-full rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-4 py-2 text-sm outline-none focus:border-[#2b2723]"
-            />
-
-            <div>
-              <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-[#8a7f71]">Rychlé výběry</p>
-              <div className="flex flex-wrap gap-1.5">
-                <Chip aktivni={rychle.includes('srdce')} onClick={() => setRychle(prepni(rychle, 'srdce'))}>❤️ oblíbená</Chip>
-                <Chip aktivni={rychle.includes('hit')} onClick={() => setRychle(prepni(rychle, 'hit'))}>🔥 hity</Chip>
-                <Chip aktivni={rychle.includes('trendy')} onClick={() => setRychle(prepni(rychle, 'trendy'))}>📈 trendy</Chip>
-                <Chip aktivni={rychle.includes('original')} onClick={() => setRychle(prepni(rychle, 'original'))}>💎 originální</Chip>
-                <Chip aktivni={rychle.includes('unisex')} onClick={() => setRychle(prepni(rychle, 'unisex'))}>⚪ unisex</Chip>
-                <Chip aktivni={rychle.includes('mezinarodni')} onClick={() => setRychle(prepni(rychle, 'mezinarodni'))}>🌍 mezinárodní</Chip>
-                <Chip aktivni={rychle.includes('svatek')} onClick={() => setRychle(prepni(rychle, 'svatek'))}>📅 s českým svátkem</Chip>
+      {rezim === 'prochazet' && (
+        <div className="grid items-start gap-6 lg:grid-cols-[280px_1fr]">
+          {panelOtevren && <div className="filtr-zaves" onClick={() => setPanelOtevren(false)} aria-hidden />}
+          <aside className={`filtr-panel space-y-1 self-start rounded-3xl border border-[#e8dfd2] bg-white p-4 shadow-sm lg:sticky lg:top-20 ${panelOtevren ? 'je-otevreny' : ''}`}>
+            <div className="flex items-center justify-between pb-1">
+              <h2 className="flex items-center gap-1.5 [font-family:var(--font-syne)] text-base font-bold">
+                <SlidersHorizontal size={16} aria-hidden /> Filtr
+                {aktivni.length > 0 && <span className="filtr-pocet">{aktivni.length}</span>}
+              </h2>
+              <div className="flex items-center gap-2">
+                <button onClick={() => { setFiltr(PRAZDNY_FILTR); setRychle([]) }} className="text-[12px] text-[#8a7f71] underline decoration-dotted hover:text-[#2b2723]">
+                  Vymazat
+                </button>
+                <button onClick={() => setPanelOtevren(false)} className="filtr-tlacitko-mobil rounded-full border border-[#e8dfd2] p-1" aria-label="Zavřít filtr">
+                  <X size={14} />
+                </button>
               </div>
             </div>
 
-            <div>
-              <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-[#8a7f71]">Pro koho</p>
-              <div className="flex flex-wrap gap-1.5">
-                {(['kluk', 'holka'] as Kategorie[]).map(k => (
-                  <Chip key={k} aktivni={filtr.kategorie.includes(k)} onClick={() => setFiltr({ ...filtr, kategorie: prepni(filtr.kategorie, k) })}>
-                    {KATEGORIE_INFO[k].emoji} {KATEGORIE_INFO[k].mnozne}
-                  </Chip>
-                ))}
-              </div>
+            <div className="relative">
+              <Search size={14} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#a2988a]" aria-hidden />
+              <input
+                type="search"
+                value={filtr.hledat}
+                onChange={e => setFiltr({ ...filtr, hledat: e.target.value })}
+                placeholder="Hledat jméno, význam či zdrobněninu…"
+                className="w-full rounded-full border border-[#e8dfd2] bg-[#faf6ef] py-2 pl-9 pr-3 text-[13px] outline-none focus:border-[#2b2723]"
+              />
             </div>
 
-            <div>
-              <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-[#8a7f71]">Země</p>
-              <div className="flex flex-wrap gap-1.5">
-                {ZEME.map(z => (
-                  <Chip key={z.kod} aktivni={filtr.zeme.includes(z.kod)} onClick={() => setFiltr({ ...filtr, zeme: prepni(filtr.zeme, z.kod) })}>
-                    {z.vlajka} {z.nazev}
-                  </Chip>
-                ))}
-              </div>
-            </div>
+            <Sekce nazev="Pro koho" ikona={<Baby size={13} />} pocet={filtr.kategorie.length} vychoziOtevrena>
+              <Prepinac<'vse' | 'holka' | 'kluk'>
+                hodnota={filtr.kategorie.length === 1 ? (filtr.kategorie[0] as 'holka' | 'kluk') : 'vse'}
+                onZmena={h => setFiltr({ ...filtr, kategorie: h === 'vse' ? [] : [h] })}
+                moznosti={[
+                  { id: 'holka', nazev: 'holčičky' },
+                  { id: 'kluk', nazev: 'kluci' },
+                  { id: 'vse', nazev: 'obojí' },
+                ]}
+              />
+            </Sekce>
 
-            <div>
-              <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-[#8a7f71]">Styl</p>
-              <div className="flex flex-wrap gap-1.5">
+            <Sekce nazev="Rychlé výběry" ikona={<Sparkles size={13} />} pocet={rychle.length} vychoziOtevrena>
+              <Chipy>
+                <Chip aktivni={rychle.includes('srdce')} onClick={() => setRychle(prepni(rychle, 'srdce'))}><Heart size={12} /> oblíbená</Chip>
+                <Chip aktivni={rychle.includes('hit')} onClick={() => setRychle(prepni(rychle, 'hit'))}><Flame size={12} /> hity</Chip>
+                <Chip aktivni={rychle.includes('trendy')} onClick={() => setRychle(prepni(rychle, 'trendy'))}><TrendingUp size={12} /> trendy</Chip>
+                <Chip aktivni={rychle.includes('original')} onClick={() => setRychle(prepni(rychle, 'original'))}><Gem size={12} /> originální</Chip>
+                <Chip aktivni={rychle.includes('unisex')} onClick={() => setRychle(prepni(rychle, 'unisex'))}><Circle size={12} /> unisex</Chip>
+                <Chip aktivni={rychle.includes('mezinarodni')} onClick={() => setRychle(prepni(rychle, 'mezinarodni'))}><Globe size={12} /> mezinárodní</Chip>
+                <Chip aktivni={rychle.includes('svatek')} onClick={() => setRychle(prepni(rychle, 'svatek'))}><Calendar size={12} /> se svátkem</Chip>
+              </Chipy>
+            </Sekce>
+
+            <Sekce nazev="Země" ikona={<Globe size={13} />} pocet={filtr.zeme.length}>
+              <VyberZemi
+                zeme={ZEME}
+                vybrane={filtr.zeme}
+                onPrepni={kod => setFiltr({ ...filtr, zeme: prepni(filtr.zeme, kod) })}
+                onVymaz={() => setFiltr({ ...filtr, zeme: [] })}
+              />
+            </Sekce>
+
+            <Sekce nazev="Styl a energie" ikona={<Palette size={13} />} pocet={filtr.styly.length + filtr.energie.length}>
+              <Chipy>
                 {VSECHNY_STYLY.map(s => (
-                  <Chip key={s} aktivni={filtr.styly.includes(s)} onClick={() => setFiltr({ ...filtr, styly: prepni(filtr.styly, s) })}>
-                    {s}
-                  </Chip>
+                  <Chip key={s} aktivni={filtr.styly.includes(s)} onClick={() => setFiltr({ ...filtr, styly: prepni(filtr.styly, s) })}>{s}</Chip>
                 ))}
-              </div>
-            </div>
-
-            <div>
-              <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-[#8a7f71]">Energie jména</p>
-              <div className="flex flex-wrap gap-1.5">
+              </Chipy>
+              <p className="mb-1 mt-3 text-[11px] font-semibold uppercase tracking-wide text-[#a2988a]">Energie</p>
+              <Chipy>
                 {ENERGIE.map(e => (
-                  <Chip key={e} aktivni={filtr.energie.includes(e)} onClick={() => setFiltr({ ...filtr, energie: prepni(filtr.energie, e) })}>
-                    {e}
-                  </Chip>
+                  <Chip key={e} aktivni={filtr.energie.includes(e)} onClick={() => setFiltr({ ...filtr, energie: prepni(filtr.energie, e) })}>{e}</Chip>
                 ))}
-              </div>
-            </div>
+              </Chipy>
+            </Sekce>
 
-            <div className="grid grid-cols-2 gap-3">
-              <label className="block text-xs font-semibold uppercase tracking-wide text-[#8a7f71]">
-                Max. délka
-                <select
-                  value={filtr.maxDelka ?? ''}
-                  onChange={e => setFiltr({ ...filtr, maxDelka: e.target.value ? Number(e.target.value) : null })}
-                  className="mt-1 w-full rounded-xl border border-[#e8dfd2] bg-[#faf6ef] px-2 py-1.5 text-sm font-normal normal-case outline-none"
-                >
-                  <option value="">libovolná</option>
-                  <option value="4">do 4 písmen</option>
-                  <option value="5">do 5 písmen</option>
-                  <option value="6">do 6 písmen</option>
-                  <option value="8">do 8 písmen</option>
-                </select>
-              </label>
-              <label className="block text-xs font-semibold uppercase tracking-wide text-[#8a7f71]">
-                Max. slabik
-                <select
-                  value={filtr.maxSlabiky ?? ''}
-                  onChange={e => setFiltr({ ...filtr, maxSlabiky: e.target.value ? Number(e.target.value) : null })}
-                  className="mt-1 w-full rounded-xl border border-[#e8dfd2] bg-[#faf6ef] px-2 py-1.5 text-sm font-normal normal-case outline-none"
-                >
-                  <option value="">libovolně</option>
-                  <option value="2">do 2 slabik</option>
-                  <option value="3">do 3 slabik</option>
-                  <option value="4">do 4 slabik</option>
-                </select>
-              </label>
-            </div>
-
-            <div>
-              <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-[#8a7f71]">Začíná písmenem</p>
-              <div className="flex flex-wrap gap-1.5">
-                <Chip aktivni={filtr.pismeno === null} onClick={() => setFiltr({ ...filtr, pismeno: null })}>vše</Chip>
-                {dostupnaPismena.map(p => (
-                  <Chip key={p} aktivni={filtr.pismeno === p} onClick={() => setFiltr({ ...filtr, pismeno: filtr.pismeno === p ? null : p })}>
-                    {p}
-                  </Chip>
-                ))}
+            <Sekce nazev="Délka jména" ikona={<Ruler size={13} />} pocet={(filtr.maxDelka ? 1 : 0) + (filtr.maxSlabiky ? 1 : 0)}>
+              <div className="space-y-3">
+                <Posuvnik popisek="Počet písmen" hodnota={filtr.maxDelka} min={3} max={10} jednotka="písmen" onZmena={h => setFiltr({ ...filtr, maxDelka: h })} />
+                <Posuvnik popisek="Počet slabik" hodnota={filtr.maxSlabiky} min={1} max={4} jednotka="slabik" onZmena={h => setFiltr({ ...filtr, maxSlabiky: h })} />
               </div>
-            </div>
+            </Sekce>
 
-            <div>
-              <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-[#8a7f71]">Končí písmenem</p>
-              <div className="flex flex-wrap gap-1.5">
-                <Chip aktivni={filtr.konciNa === null} onClick={() => setFiltr({ ...filtr, konciNa: null })}>vše</Chip>
-                {koncovaPismena.map(p => (
-                  <Chip key={p} aktivni={filtr.konciNa === p} onClick={() => setFiltr({ ...filtr, konciNa: filtr.konciNa === p ? null : p })}>
-                    {p}
-                  </Chip>
-                ))}
-              </div>
-            </div>
+            <Sekce nazev="Písmena" ikona={<Type size={13} />} pocet={(filtr.pismeno ? 1 : 0) + (filtr.konciNa ? 1 : 0)}>
+              <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-[#a2988a]">Začíná na</p>
+              <PismenaMrizka pismena={pismena.zacatek} vybrane={filtr.pismeno} onVyber={p => setFiltr({ ...filtr, pismeno: p })} />
+              <p className="mb-1 mt-3 text-[11px] font-semibold uppercase tracking-wide text-[#a2988a]">Končí na</p>
+              <PismenaMrizka pismena={pismena.konec} vybrane={filtr.konciNa} onVyber={p => setFiltr({ ...filtr, konciNa: p })} />
+            </Sekce>
+
+            <div className="pt-3"><Reklama plocha="deti-filtr" /></div>
           </aside>
 
           <section>
-            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-              <p className="text-sm text-[#6b6156]">
-                <strong className="[font-family:var(--font-syne)] text-lg text-[#2b2723]">{vysledky.length}</strong> jmen
-              </p>
-              <div className="flex items-center gap-3">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <button onClick={() => setPanelOtevren(true)} className="filtr-tlacitko-mobil inline-flex items-center gap-1.5 rounded-full border border-[#e8dfd2] bg-white px-3 py-1.5 text-[13px] font-semibold">
+                  <SlidersHorizontal size={14} /> Filtr
+                  {aktivni.length > 0 && <span className="filtr-pocet">{aktivni.length}</span>}
+                </button>
+                <p className="text-[13px] text-[#6b6156]">
+                  <strong className="[font-family:var(--font-syne)] text-lg text-[#2b2723]">{vysledky.length}</strong> jmen
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
                 <button
                   onClick={() => vysledky.length && setNahodne(vysledky[Math.floor(Math.random() * vysledky.length)].id)}
-                  className="rounded-full border border-[#e8dfd2] bg-white px-3 py-1.5 text-sm text-[#6b6156] transition-colors hover:border-[#2b2723]"
-                  title="Vylosovat jedno jméno z aktuálního výběru"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-[#e8dfd2] bg-white px-3 py-1.5 text-[13px] text-[#6b6156] hover:border-[#2b2723]"
                 >
-                  🎲 Překvap mě
+                  <Dices size={14} /> Překvap mě
                 </button>
-                <label className="flex items-center gap-2 text-sm text-[#6b6156]">
-                  Seřadit:
-                  <select
-                    value={razeni}
-                    onChange={e => setRazeni(e.target.value as Razeni)}
-                    className="rounded-full border border-[#e8dfd2] bg-white px-3 py-1.5 outline-none focus:border-[#2b2723]"
-                  >
+                <label className="inline-flex items-center gap-1.5 rounded-full border border-[#e8dfd2] bg-white py-1.5 pl-3 pr-1 text-[13px] text-[#6b6156]">
+                  <ArrowDownAZ size={14} aria-hidden />
+                  <select value={razeni} onChange={e => setRazeni(e.target.value as Razeni)} className="bg-transparent pr-1 text-[13px] outline-none" aria-label="Řazení výsledků">
                     {RAZENI_MOZNOSTI.map(r => <option key={r.id} value={r.id}>{r.nazev}</option>)}
                   </select>
                 </label>
               </div>
             </div>
 
+            {aktivni.length > 0 && <div className="mb-4"><AktivniFiltry polozky={aktivni} /></div>}
+
             {nahodne && vysledky.some(j => j.id === nahodne) && (
               <div className="mb-5 rounded-2xl border-2 border-[#d97757] p-1">
-                <p className="px-3 pt-1 text-xs font-semibold uppercase tracking-wide text-[#d97757]">🎲 Náhodný tip</p>
+                <p className="px-3 pt-1 text-[11px] font-semibold uppercase tracking-wide text-[#d97757]">Náhodný tip</p>
                 <NameCard jmeno={vysledky.find(j => j.id === nahodne)!} />
               </div>
             )}
@@ -362,9 +332,7 @@ export default function DetiFinder() {
             {skupiny ? (
               skupiny.map(([pismeno, jmena]) => (
                 <div key={pismeno} className="mb-6">
-                  <h3 className="mb-2 border-b border-[#e8dfd2] pb-1 [font-family:var(--font-syne)] text-2xl font-bold text-[#c4b8a7]">
-                    {pismeno}
-                  </h3>
+                  <h3 className="mb-2 border-b border-[#e8dfd2] pb-1 [font-family:var(--font-syne)] text-2xl font-bold text-[#c4b8a7]">{pismeno}</h3>
                   <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                     {jmena.map(j => <NameCard key={j.id} jmeno={j} />)}
                   </div>
@@ -372,95 +340,78 @@ export default function DetiFinder() {
               ))
             ) : (
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                {vysledky.map((j, i) => <NameCard key={j.id} jmeno={j} poradi={razeni === 'popularita' ? i + 1 : undefined} />)}
+                {vysledky.slice(0, 11).map((j, i) => <NameCard key={j.id} jmeno={j} poradi={razeni === 'popularita' ? i + 1 : undefined} />)}
+                {vysledky.length > 5 && <Reklama plocha="deti-v-mrizce" />}
+                {vysledky.slice(11).map((j, i) => <NameCard key={j.id} jmeno={j} poradi={razeni === 'popularita' ? i + 12 : undefined} />)}
               </div>
             )}
+
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              <Reklama plocha="deti-pod" />
+              <Reklama plocha="deti-bocni" />
+            </div>
           </section>
         </div>
-      ) : rezim === 'shoda' ? (
-        <div className="grid gap-8 lg:grid-cols-[340px,1fr]">
-          <aside className="space-y-5 self-start rounded-3xl border border-[#e8dfd2] bg-white p-5 shadow-sm lg:sticky lg:top-20">
-            <h2 className="[font-family:var(--font-syne)] text-lg font-bold">Vaše preference</h2>
+      )}
 
-            <div>
-              <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-[#8a7f71]">Čekáte</p>
-              <div className="flex gap-1.5">
-                <Chip aktivni={pohlavi === 'holka'} onClick={() => setPohlavi('holka')}>👧 Holčičku</Chip>
-                <Chip aktivni={pohlavi === 'kluk'} onClick={() => setPohlavi('kluk')}>👦 Chlapečka</Chip>
-              </div>
-            </div>
+      {rezim === 'shoda' && (
+        <div className="grid items-start gap-6 lg:grid-cols-[320px_1fr]">
+          <aside className="space-y-4 self-start rounded-3xl border border-[#e8dfd2] bg-white p-4 shadow-sm lg:sticky lg:top-20">
+            <h2 className="flex items-center gap-1.5 [font-family:var(--font-syne)] text-base font-bold">
+              <Sparkles size={16} aria-hidden /> Vaše preference
+            </h2>
+
+            <Prepinac<'holka' | 'kluk'>
+              hodnota={pohlavi}
+              onZmena={setPohlavi}
+              moznosti={[{ id: 'holka', nazev: 'čekáme holčičku' }, { id: 'kluk', nazev: 'čekáme chlapečka' }]}
+            />
 
             <label className="block">
-              <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-[#8a7f71]">Příjmení dítěte</p>
+              <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-[#8a7f71]">Příjmení dítěte</span>
               <input
                 value={prijmeni}
                 onChange={e => setPrijmeni(e.target.value)}
                 placeholder={pohlavi === 'holka' ? 'např. Nováková' : 'např. Novák'}
-                className="w-full rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-4 py-2 text-sm outline-none focus:border-[#2b2723]"
+                className="w-full rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-4 py-2 text-[13px] outline-none focus:border-[#2b2723]"
               />
-              <p className="mt-1 text-[11px] text-[#8a7f71]">Zhodnotíme rytmus, plynulost i to, jestli se jméno s příjmením nerýmuje.</p>
             </label>
 
-            <div>
-              <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-[#8a7f71]">Jména v rodině (nepovinné)</p>
+            <Sekce nazev="Jména v rodině" ikona={<Users size={13} />} pocet={[maminka, tatinek, sourozenec].filter(x => x.trim()).length} vychoziOtevrena>
               <div className="grid grid-cols-2 gap-2">
-                <input
-                  value={maminka}
-                  onChange={e => setMaminka(e.target.value)}
-                  placeholder="maminka — Jana"
-                  className="w-full rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-4 py-2 text-sm outline-none focus:border-[#2b2723]"
-                />
-                <input
-                  value={tatinek}
-                  onChange={e => setTatinek(e.target.value)}
-                  placeholder="tatínek — Petr"
-                  className="w-full rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-4 py-2 text-sm outline-none focus:border-[#2b2723]"
-                />
+                <input value={maminka} onChange={e => setMaminka(e.target.value)} placeholder="maminka" className="rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-3 py-2 text-[13px] outline-none focus:border-[#2b2723]" />
+                <input value={tatinek} onChange={e => setTatinek(e.target.value)} placeholder="tatínek" className="rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-3 py-2 text-[13px] outline-none focus:border-[#2b2723]" />
               </div>
-              <input
-                value={sourozenec}
-                onChange={e => setSourozenec(e.target.value)}
-                placeholder="sourozenec — např. Eliška"
-                className="mt-2 w-full rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-4 py-2 text-sm outline-none focus:border-[#2b2723]"
-              />
-              <p className="mt-1 text-[11px] text-[#8a7f71]">
-                Doporučíme jména ladící s celou rodinou — stylem, původem i rytmem. Poznáme
-                i podobu jména po rodiči (Petr → Petra, Josef → Josefína). Jména, která ladí
-                s více členy rodiny, dostanou štítek.
+              <input value={sourozenec} onChange={e => setSourozenec(e.target.value)} placeholder="sourozenec" className="mt-2 w-full rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-3 py-2 text-[13px] outline-none focus:border-[#2b2723]" />
+              <p className="mt-1.5 text-[11px] text-[#8a7f71]">
+                Jména, která ladí s více členy rodiny, dostanou štítek. Poznáme i podobu jména po rodiči (Petr → Petra).
               </p>
-            </div>
+            </Sekce>
 
-            <label className="block">
-              <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-[#8a7f71]">Měsíc narození</p>
+            <Sekce nazev="Měsíc narození" ikona={<Calendar size={13} />} pocet={mesic ? 1 : 0}>
               <select
                 value={mesic ?? ''}
                 onChange={e => setMesic(e.target.value ? Number(e.target.value) : null)}
-                className="w-full rounded-xl border border-[#e8dfd2] bg-[#faf6ef] px-3 py-2 text-sm outline-none focus:border-[#2b2723]"
+                className="w-full rounded-xl border border-[#e8dfd2] bg-[#faf6ef] px-3 py-2 text-[13px] outline-none focus:border-[#2b2723]"
               >
                 <option value="">— nevím / nechci zadat —</option>
                 {MESICE_NAZVY.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
               </select>
-            </label>
+            </Sekce>
 
-            <div>
-              <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-[#8a7f71]">Styl, který se vám líbí</p>
-              <div className="flex flex-wrap gap-1.5">
+            <Sekce nazev="Styl" ikona={<Palette size={13} />} pocet={stylyShody.length}>
+              <Chipy>
                 {VSECHNY_STYLY.map(s => (
                   <Chip key={s} aktivni={stylyShody.includes(s)} onClick={() => setStylyShody(prepni(stylyShody, s))}>{s}</Chip>
                 ))}
-              </div>
-            </div>
+              </Chipy>
+            </Sekce>
 
-            <div>
-              <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-[#8a7f71]">Země inspirace</p>
-              <div className="flex flex-wrap gap-1.5">
-                {ZEME.map(z => (
-                  <Chip key={z.kod} aktivni={zemeShody.includes(z.kod)} onClick={() => setZemeShody(prepni(zemeShody, z.kod))}>
-                    {z.vlajka} {z.nazev}
-                  </Chip>
-                ))}
-              </div>
-            </div>
+            <Sekce nazev="Země inspirace" ikona={<Globe size={13} />} pocet={zemeShody.length}>
+              <VyberZemi zeme={ZEME} vybrane={zemeShody} onPrepni={k => setZemeShody(prepni(zemeShody, k))} onVymaz={() => setZemeShody([])} />
+            </Sekce>
+
+            <Reklama plocha="deti-filtr" />
           </aside>
 
           <section>
@@ -473,60 +424,53 @@ export default function DetiFinder() {
               {mesic && <>, narození v měsíci <strong>{MESICE_NAZVY[mesic - 1]}</strong></>}
             </p>
             <p className="mb-4 text-xs text-[#8a7f71]">
-              {inicialy && <>Monogram top shody: <strong>{inicialy.text}</strong>{inicialy.varovani && <span className="text-[#9a6b1f]"> — ⚠️ {inicialy.varovani}</span>} · </>}
+              {inicialy && <>Monogram top shody: <strong>{inicialy.text}</strong>{inicialy.varovani && <span className="text-[#9a6b1f]"> — {inicialy.varovani}</span>} · </>}
               {mesic && <>znamení: <strong>{ZNAMENI_MESICE[mesic]}</strong> · </>}
               u každého jména uvádíme i číslo jména a případný svátek
             </p>
             <div className="grid gap-3 sm:grid-cols-2">
-              {shody.map((s, i) => <ShodaKarta key={s.jmeno.id} shoda={s} poradi={i + 1} />)}
+              {shody.slice(0, 6).map((s, i) => <ShodaKarta key={s.jmeno.id} shoda={s} poradi={i + 1} />)}
+              <Reklama plocha="deti-v-mrizce" />
+              {shody.slice(6).map((s, i) => <ShodaKarta key={s.jmeno.id} shoda={s} poradi={i + 7} />)}
+            </div>
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              <Reklama plocha="deti-pod" />
+              <Reklama plocha="deti-bocni" />
             </div>
           </section>
         </div>
-      ) : null}
+      )}
 
       {rezim === 'sourozenec' && (
-        <div className="grid gap-8 lg:grid-cols-[340px,1fr]">
-          <aside className="space-y-5 self-start rounded-3xl border border-[#e8dfd2] bg-white p-5 shadow-sm lg:sticky lg:top-20">
-            <h2 className="[font-family:var(--font-syne)] text-lg font-bold">Sourozenecký ladič</h2>
-            <p className="text-xs text-[#8a7f71]">
-              Najdeme jména, která ladí se jménem prvního dítěte — stylem, původem i rytmem.
+        <div className="grid items-start gap-6 lg:grid-cols-[320px_1fr]">
+          <aside className="space-y-4 self-start rounded-3xl border border-[#e8dfd2] bg-white p-4 shadow-sm lg:sticky lg:top-20">
+            <h2 className="flex items-center gap-1.5 [font-family:var(--font-syne)] text-base font-bold">
+              <Users size={16} aria-hidden /> Sourozenecký ladič
+            </h2>
+            <p className="text-[12px] text-[#8a7f71]">
+              Najdeme jména ladící se jménem prvního dítěte — stylem, původem i rytmem.
               Stejnou iniciálu a rýmy hlídáme, aby se jména doma nepletla.
             </p>
-
-            <div>
-              <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-[#8a7f71]">Čekáte</p>
-              <div className="flex gap-1.5">
-                <Chip aktivni={pohlavi === 'holka'} onClick={() => setPohlavi('holka')}>👧 Holčičku</Chip>
-                <Chip aktivni={pohlavi === 'kluk'} onClick={() => setPohlavi('kluk')}>👦 Chlapečka</Chip>
-              </div>
-            </div>
-
+            <Prepinac<'holka' | 'kluk'>
+              hodnota={pohlavi}
+              onZmena={setPohlavi}
+              moznosti={[{ id: 'holka', nazev: 'čekáme holčičku' }, { id: 'kluk', nazev: 'čekáme chlapečka' }]}
+            />
             <label className="block">
-              <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-[#8a7f71]">Jméno sourozence</p>
-              <input
-                value={sourozenec}
-                onChange={e => setSourozenec(e.target.value)}
-                placeholder="např. Eliška"
-                className="w-full rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-4 py-2 text-sm outline-none focus:border-[#2b2723]"
-              />
+              <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-[#8a7f71]">Jméno sourozence</span>
+              <input value={sourozenec} onChange={e => setSourozenec(e.target.value)} placeholder="např. Eliška" className="w-full rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-4 py-2 text-[13px] outline-none focus:border-[#2b2723]" />
             </label>
-
             <label className="block">
-              <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-[#8a7f71]">Příjmení (nepovinné)</p>
-              <input
-                value={prijmeni}
-                onChange={e => setPrijmeni(e.target.value)}
-                placeholder="např. Nováková"
-                className="w-full rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-4 py-2 text-sm outline-none focus:border-[#2b2723]"
-              />
-              <p className="mt-1 text-[11px] text-[#8a7f71]">Když ho zadáte, hlídáme i souzvuk s příjmením.</p>
+              <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-[#8a7f71]">Příjmení (nepovinné)</span>
+              <input value={prijmeni} onChange={e => setPrijmeni(e.target.value)} placeholder="např. Nováková" className="w-full rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-4 py-2 text-[13px] outline-none focus:border-[#2b2723]" />
             </label>
+            <Reklama plocha="deti-filtr" />
           </aside>
 
           <section>
             {!sourozenec.trim() ? (
               <div className="rounded-3xl border border-dashed border-[#e8dfd2] p-10 text-center text-[#8a7f71]">
-                Zadejte jméno prvního dítěte a najdeme mu ladícího brášku či sestřičku. 👫
+                Zadejte jméno prvního dítěte a najdeme mu ladícího brášku či sestřičku.
               </div>
             ) : (
               <>
@@ -535,13 +479,19 @@ export default function DetiFinder() {
                   která ladí se jménem <strong>{sourozenec.trim()}</strong>
                 </p>
                 <div className="grid gap-3 sm:grid-cols-2">
-                  {sourozenci.map((s, i) => <ShodaKarta key={s.jmeno.id} shoda={s} poradi={i + 1} />)}
+                  {sourozenci.slice(0, 6).map((s, i) => <ShodaKarta key={s.jmeno.id} shoda={s} poradi={i + 1} />)}
+                  <Reklama plocha="deti-v-mrizce" />
+                  {sourozenci.slice(6).map((s, i) => <ShodaKarta key={s.jmeno.id} shoda={s} poradi={i + 7} />)}
                 </div>
               </>
             )}
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              <Reklama plocha="deti-pod" />
+              <Reklama plocha="deti-bocni" />
+            </div>
           </section>
         </div>
       )}
-    </div>
+    </>
   )
 }

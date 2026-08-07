@@ -1,0 +1,85 @@
+// Nativní reklamní plochy. Kreativy záměrně vypadají jako ostatní obsah webu
+// (stejné karty, stejná paleta) — žádné blikající bannery. Každá plocha se
+// po 5 sekundách překlopí na další kreativu.
+//
+// Toto jsou ukázková data. Ostrý provoz je nahradí odpovědí z reklamního
+// serveru; tvar `Inzerat` zůstává stejný, takže stačí vyměnit zdroj.
+
+export type ReklamniPlocha =
+  | 'domov-nad-mapou' | 'domov-po-mape' | 'domov-mezi' | 'domov-pred-patickou' | 'domov-bocni'
+  | 'zvirata-filtr' | 'zvirata-nad' | 'zvirata-v-mrizce' | 'zvirata-pod' | 'zvirata-bocni'
+  | 'deti-filtr' | 'deti-nad' | 'deti-v-mrizce' | 'deti-pod' | 'deti-bocni'
+  | 'zeme-1' | 'zeme-2' | 'zeme-3' | 'zeme-4' | 'zeme-5'
+  | 'rodina-1' | 'rodina-2' | 'rodina-3' | 'rodina-4' | 'rodina-5'
+  | 'oblibene-1' | 'oblibene-2' | 'oblibene-3' | 'oblibene-4' | 'oblibene-5'
+
+export interface Inzerat {
+  id: string
+  /** krátký nadpis — čte se jako nadpis běžné karty */
+  nadpis: string
+  text: string
+  /** co uvidí uživatel na tlačítku */
+  cta: string
+  odkaz: string
+  /** jméno inzerenta, zobrazuje se drobně u štítku */
+  znacka: string
+  /** klíč ikony (lucide) */
+  ikona: string
+}
+
+const PSI: Inzerat[] = [
+  { id: 'r-psi-1', nadpis: 'Gravírovaná známka na obojek', text: 'Jméno i telefon vyrytý do nerezu. Vyrobíme do druhého dne a pošleme zdarma.', cta: 'Vybrat známku', odkaz: '#', znacka: 'Známkárna.cz', ikona: 'bone' },
+  { id: 'r-psi-2', nadpis: 'Kurz základní poslušnosti', text: 'Šest lekcí, malé skupiny, výcvik hravou formou. Naučte štěně reagovat na jméno.', cta: 'Zobrazit termíny', odkaz: '#', znacka: 'Psí škola Blesk', ikona: 'dog' },
+  { id: 'r-psi-3', nadpis: 'Pelíšek s vyšitým jménem', text: 'Pratelný potah, paměťová pěna a jméno vyšité na boku. Tři velikosti.', cta: 'Prohlédnout pelíšky', odkaz: '#', znacka: 'Hafík & spol.', ikona: 'house' },
+  { id: 'r-psi-4', nadpis: 'Pojištění pro psy a kočky', text: 'Úrazy i nemoci bez spoluúčasti, sjednání online za pět minut.', cta: 'Spočítat cenu', odkaz: '#', znacka: 'Zvířepojišťovna', ikona: 'shield-check' },
+]
+
+const KOCKY: Inzerat[] = [
+  { id: 'r-kocky-1', nadpis: 'Škrabadlo, které nezkazí obývák', text: 'Dubové dřevo a sisal místo plyše. Kočka si zvykne za jeden večer.', cta: 'Vybrat škrabadlo', odkaz: '#', znacka: 'Kočkodřevo', ikona: 'cat' },
+  { id: 'r-kocky-2', nadpis: 'Miska s jménem vaší kočky', text: 'Ručně malovaná keramika, jméno napíšeme podle vás. Vhodná do myčky.', cta: 'Objednat misku', odkaz: '#', znacka: 'Keramika Lada', ikona: 'star' },
+  { id: 'r-kocky-3', nadpis: 'Čip a registrace v evropské databázi', text: 'Když se kočka zatoulá, jméno na známce nestačí. Čipujeme bez objednání.', cta: 'Najít veterinu', odkaz: '#', znacka: 'VetPoint', ikona: 'shield-check' },
+]
+
+const DETI: Inzerat[] = [
+  { id: 'r-deti-1', nadpis: 'Dřevěné jméno nad postýlku', text: 'Vyřežeme jméno z bukového dřeva, na přání s barvou a hvězdičkami.', cta: 'Navrhnout jméno', odkaz: '#', znacka: 'Dřevěné jméno', ikona: 'baby' },
+  { id: 'r-deti-2', nadpis: 'Kniha na jméno vašeho dítěte', text: 'Pohádka, ve které je vaše dítě hlavní postavou. Tisk na počkání.', cta: 'Vytvořit knihu', odkaz: '#', znacka: 'Moje pohádka', ikona: 'star' },
+  { id: 'r-deti-3', nadpis: 'Fotograf na první měsíc', text: 'Novorozenecké focení u vás doma, klidné tempo, bez rekvizit navíc.', cta: 'Rezervovat termín', odkaz: '#', znacka: 'Ateliér Zrnko', ikona: 'sparkles' },
+  { id: 'r-deti-4', nadpis: 'Jmenovky do školky', text: 'Nažehlovací štítky se jménem — vydrží stovky praní. Sto kusů v balení.', cta: 'Objednat štítky', odkaz: '#', znacka: 'Štítkovna', ikona: 'type' },
+]
+
+const OBECNE: Inzerat[] = [
+  { id: 'r-obec-1', nadpis: 'Rodokmen na jednom listu', text: 'Dohledáme předky pět generací zpět a vytiskneme na kvalitní papír.', cta: 'Zjistit víc', odkaz: '#', znacka: 'Rodokmeny.cz', ikona: 'users' },
+  { id: 'r-obec-2', nadpis: 'Původ vašeho příjmení', text: 'Odkud se vzalo, kolik lidí ho dnes nosí a v jakém kraji je nejčastější.', cta: 'Vyhledat příjmení', odkaz: '#', znacka: 'Kde se vzalo', ikona: 'globe' },
+  { id: 'r-obec-3', nadpis: 'Kalendář se jmeninami', text: 'Nástěnný kalendář, kde jsou svátky vidět na první pohled. Formát A3.', cta: 'Prohlédnout kalendář', odkaz: '#', znacka: 'Papírna Vltava', ikona: 'calendar' },
+  { id: 'r-obec-4', nadpis: 'Jazykový kurz pro rodiče', text: 'Chcete jméno, které zvládnou i v cizině? Naučte se ho správně vyslovit.', cta: 'Vyzkoušet lekci', odkaz: '#', znacka: 'Lingvo', ikona: 'languages' },
+]
+
+/** Kreativy pro každou plochu — plocha se po 5 s překlopí na další. */
+export const REKLAMY: Record<string, Inzerat[]> = {
+  'domov-nad-mapou': OBECNE,
+  'domov-po-mape': [...DETI, ...OBECNE].slice(0, 4),
+  'domov-mezi': PSI,
+  'domov-pred-patickou': [...OBECNE].reverse(),
+  'domov-bocni': KOCKY,
+
+  'zvirata-filtr': PSI,
+  'zvirata-nad': KOCKY,
+  'zvirata-v-mrizce': [...PSI].reverse(),
+  'zvirata-pod': [...KOCKY, ...OBECNE].slice(0, 4),
+  'zvirata-bocni': OBECNE,
+
+  'deti-filtr': DETI,
+  'deti-nad': [...DETI].reverse(),
+  'deti-v-mrizce': OBECNE,
+  'deti-pod': [...DETI, ...OBECNE].slice(0, 4),
+  'deti-bocni': [...OBECNE].reverse(),
+
+  'zeme-1': OBECNE, 'zeme-2': DETI, 'zeme-3': PSI, 'zeme-4': KOCKY, 'zeme-5': [...OBECNE].reverse(),
+  'rodina-1': DETI, 'rodina-2': OBECNE, 'rodina-3': PSI, 'rodina-4': KOCKY, 'rodina-5': [...DETI].reverse(),
+  'oblibene-1': OBECNE, 'oblibene-2': DETI, 'oblibene-3': KOCKY, 'oblibene-4': PSI, 'oblibene-5': [...OBECNE].reverse(),
+}
+
+export const inzeratyProPlochu = (plocha: string): Inzerat[] => REKLAMY[plocha] ?? OBECNE
+
+/** Jak dlouho je jedna kreativa vidět, než se plocha překlopí. */
+export const INTERVAL_MS = 5000

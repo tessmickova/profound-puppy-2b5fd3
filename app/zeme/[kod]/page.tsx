@@ -3,8 +3,10 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import Shell from '@/components/names/Shell'
 import NameCard from '@/components/names/NameCard'
+import Reklama from '@/components/names/Reklama'
 import { jmenaZeme, KONTINENTY, ZEME, zemePodleKodu } from '@/lib/names/data'
 import { serad } from '@/lib/names/logic'
+import { jsonLdDrobky, jsonLdSeznam, WEB } from '@/lib/names/seo'
 import { KATEGORIE_INFO } from '@/lib/names/types'
 import type { Kategorie } from '@/lib/names/types'
 
@@ -17,8 +19,9 @@ export async function generateMetadata({ params }: { params: Promise<{ kod: stri
   const zeme = zemePodleKodu(kod)
   if (!zeme) return {}
   return {
-    title: `${zeme.nazev} — nejlíbivější jména pro zvířata i děti | Svět jmen`,
-    description: `${zeme.poznamka} Jména pro psy, kočky, další zvířata i děti z země ${zeme.nazev}.`,
+    title: `Jména z ${zeme.nazev} — pro děti i zvířata`,
+    description: `${zeme.poznamka} Jména pro holčičky, kluky, psy, kočky i další zvířata z ${zeme.nazev} — s významem a oblíbeností.`,
+    alternates: { canonical: `/zeme/${zeme.kod}` },
   }
 }
 
@@ -59,10 +62,16 @@ export default async function ZemeStranka({ params }: { params: Promise<{ kod: s
         </div>
       </header>
 
-      {PORADI_KATEGORII.map(kat => {
+      <div className="mb-10">
+        <Reklama plocha="zeme-1" varianta="pruh" />
+      </div>
+
+      {PORADI_KATEGORII.map((kat, poradiKat) => {
         const skupina = serad(jmena.filter(j => j.kategorie === kat), 'popularita')
         if (!skupina.length) return null
         const info = KATEGORIE_INFO[kat]
+        // mezi kategorie prokládáme nativní plochy, ať nejsou všechny u sebe
+        const plocha = ['zeme-2', 'zeme-3', 'zeme-4'][Math.floor(poradiKat / 3)]
         return (
           <section key={kat} className="mb-10">
             <h2 className="mb-3 [font-family:var(--font-syne)] text-2xl font-bold">
@@ -70,10 +79,35 @@ export default async function ZemeStranka({ params }: { params: Promise<{ kod: s
             </h2>
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {skupina.map((j, i) => <NameCard key={j.id} jmeno={j} poradi={i + 1} />)}
+              {poradiKat % 3 === 0 && plocha && <Reklama plocha={plocha} />}
             </div>
           </section>
         )
       })}
+
+      <div className="mb-6">
+        <Reklama plocha="zeme-5" varianta="pruh" />
+      </div>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLdDrobky([
+            { nazev: 'Svět jmen', url: '/' },
+            { nazev: zeme.nazev, url: `/zeme/${zeme.kod}` },
+          ])),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLdSeznam(
+            `Jména z ${zeme.nazev}`,
+            `${WEB.url}/zeme/${zeme.kod}`,
+            jmena.map(j => ({ jmeno: j.jmeno, vyznam: j.vyznam })),
+          )),
+        }}
+      />
 
       <div className="mt-12 flex flex-wrap justify-center gap-2">
         {ZEME.filter(z => z.kod !== zeme.kod).map(z => (

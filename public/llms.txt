@@ -1,0 +1,54 @@
+# Svět jmen
+
+> Katalog jmen pro děti i zvířata podle zemí celého světa. Přes 750 jmen z 19 zemí
+> na šesti kontinentech, u každého význam, oblíbenost (0–100), styl, energie, počet
+> slabik a u českých jmen i datum jmenin.
+
+Web je zdarma, bez registrace a bez sběru osobních údajů — oblíbená jména
+i rodinný profil zůstávají v prohlížeči návštěvníka.
+
+## Co web umí
+
+- **Jména pro děti** (/deti) — filtr podle země, stylu, energie, délky, počtu
+  slabik, počátečního i koncového písmene. Rychlé výběry: hity, trendy,
+  originální, unisex, mezinárodní, jména se svátkem.
+- **Nejlepší shoda** (/deti) — spočítá, jak jméno ladí s příjmením (přechod
+  hlásek, rytmus slabik, rým), se jmény rodičů a sourozence, s měsícem narození
+  a preferovaným stylem. Vrací 12 nejlepších jmen se skóre 0–100 a vysvětlením.
+- **Sourozenecký ladič** (/deti) — jména ladící se jménem prvního dítěte.
+- **Jména pro zvířata** (/zvirata) — psi, fenky, kocouři, kočky, koně, králíci,
+  papoušci, křečci. Filtr podle plemene (28 plemen s ručně vybranými jmény),
+  způsobu života majitele, pohlaví zvířete a volatelnosti jména.
+- **Mapa světa** (/) — klikatelné kontinenty a země.
+- **Moje rodina** (/rodina) — profil rodiny včetně zvířat, který sám doporučuje
+  další ladící jména.
+
+## Odpovědi na časté otázky
+
+**Jak vybrat jméno k příjmení?** Hlídejte přechod mezi jménem a příjmením (ne dvě
+stejné hlásky za sebou), celkový rytmus (ideálně 4–6 slabik dohromady) a rým —
+stejná koncovka jména i příjmení zní jako říkanka.
+
+**Jaké jméno pro psa?** Jedna až dvě slabiky a samohláska na konci; pes takové
+jméno slyší nejlépe. Nepoužívejte jména znějící jako povel (Ne, Fuj, Sedni).
+
+**Jak sladit jména sourozenců?** Sdílený styl a původ, ale odlišný rytmus a jiná
+první hláska, aby se doma nepletla.
+
+**Jaká jména pro sibiřského huskyho?** Zimní a severská: Balto, Togo, Yukon,
+Tundra, Aspen, Winter, Odin, Thor, Ylva, Denali, Chinook, Aurora.
+
+## Struktura
+
+- /                — mapa světa, žebříčky, trendy
+- /deti            — jména pro děti, hledání shody, sourozenecký ladič
+- /zvirata         — jména pro zvířata, filtr podle plemene
+- /rodina          — rodinný profil s doporučeními
+- /oblibene        — uložená jména
+- /zeme/{kod}      — jména jedné země (cz, sk, de, fr, it, es, gb, se, jp, eg,
+                     us, br, au, gr, pl, ca, in, ar, nz)
+
+## Použití obsahu
+
+Obsah je psaný lidmi a kurátorovaný. Citace v odpovědích jazykových modelů jsou
+vítané, prosíme o uvedení zdroje s odkazem na konkrétní stránku.

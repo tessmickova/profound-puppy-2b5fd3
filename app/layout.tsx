@@ -1,6 +1,7 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Orbitron, Syne, IBM_Plex_Mono } from 'next/font/google'
 import { Toaster } from 'react-hot-toast'
+import { jsonLdWeb, WEB } from '@/lib/names/seo'
 import './globals.css'
 
 const orbitron = Orbitron({ subsets: ['latin'], variable: '--font-orbitron', weight: ['400','700','900'] })
@@ -8,13 +9,29 @@ const syne     = Syne({ subsets: ['latin'], variable: '--font-syne', weight: ['4
 const ibm      = IBM_Plex_Mono({ subsets: ['latin'], variable: '--font-ibm-mono', weight: ['300','400','600'] })
 
 export const metadata: Metadata = {
-  title: 'AuroraDog – Živý stav polární záře pro ČR/SK',
-  description: 'Sleduj KP index, sluneční vítr a předpovědi aurora borealis v reálném čase. Alerty přes Telegram a WhatsApp.',
-  openGraph: {
-    title: 'AuroraDog 🐺',
-    description: 'Živý stav polární záře pro Česko a Slovensko',
-    siteName: 'AuroraDog',
+  metadataBase: new URL(WEB.url),
+  title: {
+    default: 'Svět jmen — jména pro děti i zvířata podle zemí',
+    template: '%s | Svět jmen',
   },
+  description: WEB.popis,
+  applicationName: WEB.nazev,
+  alternates: { canonical: '/' },
+  robots: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 },
+  openGraph: {
+    type: 'website',
+    locale: 'cs_CZ',
+    siteName: WEB.nazev,
+    title: 'Svět jmen — jména pro děti i zvířata podle zemí',
+    description: WEB.popis,
+  },
+  twitter: { card: 'summary_large_image' },
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: '#faf6ef',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -32,6 +49,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             } catch(e){}
           })();
         `}} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWeb()) }}
+        />
         {children}
         <Toaster
           position="bottom-right"

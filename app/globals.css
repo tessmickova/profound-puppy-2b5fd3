@@ -208,3 +208,184 @@
     animation: none !important;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   SVĚT JMEN — nativní reklama a kompaktní filtry (mobile first)
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Nativní reklamní plocha ──
+   Vypadá jako běžná karta obsahu: stejný rám, radius i paleta. */
+.reklama-plocha {
+  display: block;
+  perspective: 800px;
+}
+.reklama-list {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #fff;
+  border: 1px solid #efe7da;
+  border-radius: 16px;
+  padding: 14px;
+  transform-origin: center top;
+  transition: transform .26s ease, opacity .26s ease;
+}
+.reklama-list.je-preklopena {
+  transform: rotateX(-88deg);
+  opacity: 0;
+}
+.reklama-pruh .reklama-list {
+  border-style: dashed;
+  background: linear-gradient(180deg, #fffdf9 0%, #fff 100%);
+}
+@media (min-width: 640px) {
+  .reklama-pruh .reklama-list { padding: 16px 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reklama-list { transition: none; }
+  .reklama-list.je-preklopena { transform: none; opacity: 1; }
+}
+
+/* ── Kompaktní filtr ── */
+.filtr-sekce {
+  border-top: 1px solid #f0e8dc;
+  padding: 8px 0;
+}
+.filtr-sekce:first-of-type { border-top: none; }
+.filtr-sekce > summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  list-style: none;
+  padding: 4px 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: #8a7f71;
+}
+.filtr-sekce > summary::-webkit-details-marker { display: none; }
+.filtr-sekce > summary .sipka {
+  margin-left: auto;
+  transition: transform .18s ease;
+}
+.filtr-sekce[open] > summary .sipka { transform: rotate(180deg); }
+.filtr-sekce > summary:hover { color: #2b2723; }
+.filtr-sekce .obsah { padding: 6px 0 10px; }
+.filtr-pocet {
+  min-width: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #d97757;
+  color: #fff;
+  font-size: 10px;
+  line-height: 17px;
+  text-align: center;
+  font-weight: 700;
+}
+
+/* Přepínač (segmented control) — pro volby, kde platí právě jedna */
+.prepinac {
+  display: flex;
+  background: #f6f0e6;
+  border-radius: 999px;
+  padding: 3px;
+  gap: 2px;
+}
+.prepinac button {
+  flex: 1;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #6b6156;
+  padding: 6px 8px;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: background .15s, color .15s;
+}
+.prepinac button[aria-pressed="true"] {
+  background: #fff;
+  color: #2b2723;
+  box-shadow: 0 1px 3px rgba(43, 39, 35, .12);
+}
+
+/* Abecední pás — kompaktní mřížka písmen místo velkých chipů */
+.pismena {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(26px, 1fr));
+  gap: 3px;
+}
+.pismena button {
+  border: 1px solid transparent;
+  background: #f6f0e6;
+  color: #6b6156;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 0;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background .12s, color .12s;
+}
+.pismena button:hover { background: #ece2d2; }
+.pismena button[aria-pressed="true"] { background: #2b2723; color: #faf6ef; }
+
+/* Posuvník pro délku a slabiky */
+.posuvnik {
+  width: 100%;
+  accent-color: #d97757;
+}
+
+/* Lišta aktivních filtrů nad výsledky */
+.aktivni-filtry {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
+}
+.aktivni-filtry button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #e8dfd2;
+  background: #fff;
+  color: #6b6156;
+  font: inherit;
+  font-size: 12px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.aktivni-filtry button:hover { border-color: #b3403a; color: #b3403a; }
+
+/* Mobilní panel filtru — na malých displejích se vysouvá zespoda */
+@media (max-width: 899px) {
+  .filtr-panel {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 60;
+    max-height: 82vh;
+    overflow-y: auto;
+    border-radius: 22px 22px 0 0;
+    box-shadow: 0 -8px 40px rgba(43, 39, 35, .22);
+    transform: translateY(100%);
+    transition: transform .24s ease;
+  }
+  .filtr-panel.je-otevreny { transform: translateY(0); }
+  .filtr-zaves {
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    background: rgba(43, 39, 35, .35);
+  }
+}
+@media (min-width: 900px) {
+  .filtr-tlacitko-mobil { display: none; }
+}
