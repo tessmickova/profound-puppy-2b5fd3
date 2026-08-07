@@ -3,11 +3,43 @@
 Nasazují se **dvě věci zvlášť**: web a reklamní služba. To je záměr — reklamy
 se dají nasadit, vypnout i rozbít bez dopadu na web.
 
-> **Nasazení se z tohoto prostředí nedá spustit.** Vývojová relace nemá povolený
-> odchozí provoz na `api.cloudflare.com`, `dash.cloudflare.com` ani
-> `workers.dev` (proxy vrací 403). Všechno níž je připravené a ověřené lokálně
-> na stejném běhovém prostředí, ale příkazy `deploy` musí spustit člověk
-> s přístupem k účtu.
+> **Nasazení z vývojové relace v prohlížeči nepůjde, dokud se nepovolí síť.**
+> Relace běží v prostředí s výchozí úrovní přístupu **Trusted**, která pouští
+> jen balíčkovací registry a GitHub. `api.cloudflare.com`, `dash.cloudflare.com`
+> ani `workers.dev` mezi nimi nejsou, takže `wrangler deploy` skončí na 403.
+> Všechno níž je připravené a ověřené lokálně na stejném běhovém prostředí —
+> chybí jen povolení sítě, nebo spuštění deploye z vlastního počítače.
+
+## Jak povolit Cloudflare ve vývojové relaci
+
+Jednorázové nastavení, potom už `npm run cf:deploy` projde i z prohlížeče:
+
+1. Otevřete [claude.ai/code](https://claude.ai/code).
+2. Nad polem pro zprávu je tlačítko s ikonou obláčku a názvem prostředí
+   (výchozí je **Default**). Klikněte na něj — samostatná stránka nastavení
+   pro tohle neexistuje.
+3. Najeďte na prostředí a klikněte na ozubené kolečko vpravo (nebo si přes
+   **Add cloud environment** založte nové, třeba „Cloudflare").
+4. **Network access** přepněte z **Trusted** na **Custom** a do pole
+   **Allowed domains** vypište jednu doménu na řádek:
+
+   ```text
+   api.cloudflare.com
+   dash.cloudflare.com
+   *.workers.dev
+   *.cloudflare.com
+   ```
+
+5. Zaškrtněte **Also include default list of common package managers** —
+   jinak by relace ztratila přístup k npm a k balíčkům.
+6. Uložte a spusťte **novou** relaci. Běžící relace si nastavení nepřevezme.
+
+Úrovně přístupu jsou čtyři: **None** (nic), **Trusted** (výchozí seznam),
+**Full** (cokoli) a **Custom** (vlastní seznam). Kdo nechce vypisovat domény,
+může dát **Full**; **Custom** je ale těsnější a stačí.
+
+Seznam povolených domén má každé prostředí vlastní a nastavuje si ho každý
+sám — správce ho nemůže rozeslat všem najednou.
 
 ---
 
@@ -20,6 +52,8 @@ export CLOUDFLARE_API_TOKEN=<token>
 
 **Token nikdy nepatří do repozitáře** — ani do `wrangler.toml`, ani do
 `wrangler.jsonc`. Jen do proměnné prostředí nebo do správce tajemství.
+Ve vývojové relaci ho vložte přes **Environment variables** v tomtéž dialogu,
+kde se nastavuje síť (hodnoty vidí každý, kdo prostředí použije).
 
 Token potřebuje tato oprávnění:
 
