@@ -149,7 +149,7 @@ function Sekce({
     <section className="mb-12">
       <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
         <NadpisSekce druh={druh}>{nadpis}</NadpisSekce>
-        <Link href={odkaz.href} className="text-[13.5px] text-[#8a7f71] underline decoration-dotted hover:text-[#2b2723]">
+        <Link href={odkaz.href} className="odkaz-dal text-[13.5px] text-[#8a7f71] underline decoration-dotted hover:text-[#2b2723]">
           {odkaz.text} →
         </Link>
       </div>

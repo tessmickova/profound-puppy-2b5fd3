@@ -9,6 +9,7 @@ import { najdiProRodinu } from '@/lib/names/logic'
 import type { Kategorie } from '@/lib/names/types'
 import { ROLE, useRodina } from '@/lib/names/rodina'
 import ShodaKarta from './ShodaKarta'
+import Vyber from './Vyber'
 import VolbaPodrobnosti from './VolbaPodrobnosti'
 import Rozvrzeni from './Rozvrzeni'
 import NadpisSekce from './NadpisSekce'
@@ -67,13 +68,14 @@ export default function RodinaProfil() {
             placeholder="jméno — např. Jana nebo Rex"
             className="w-56 rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-4 py-2 text-sm outline-none focus:border-[#2b2723]"
           />
-          <select
-            value={role}
-            onChange={e => setRole(e.target.value)}
-            className="rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-3 py-2 text-sm outline-none focus:border-[#2b2723]"
-          >
-            {ROLE.map(r => <option key={r.id} value={r.id}>{r.emoji} {r.nazev}</option>)}
-          </select>
+          <div className="w-44">
+            <Vyber
+              hodnota={role}
+              popisek="Kdo to je"
+              onZmena={setRole}
+              volby={ROLE.map(r => ({ hodnota: r.id, nazev: r.nazev, znak: r.emoji }))}
+            />
+          </div>
           <button
             type="submit"
             disabled={!jmeno.trim()}

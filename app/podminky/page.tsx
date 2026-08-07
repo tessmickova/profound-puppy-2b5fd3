@@ -32,6 +32,14 @@ export default function PodminkyStranka() {
         <p>
           Web je zdarma a bez registrace. Uložená jména i rodinný profil zůstávají
           ve vašem prohlížeči; když si vymažete data prohlížeče, zmizí i ony.
+          Cookies nepoužíváme, a proto tu nenajdete ani žádnou lištu se souhlasem.
+        </p>
+        <p>
+          Pořadí výsledků počítá automaticky náš vzorec — u každého jména je
+          napsané, proč se umístilo. Popisky jmen jsme psali s pomocí umělé
+          inteligence a redakčně je prošli; když někde najdete nesmysl, napište
+          nám a opravíme to. Podrobněji je to v{' '}
+          <Link href="/soukromi">Ochraně osobních údajů</Link>.
         </p>
 
         <h2>Co tu nedělat</h2>

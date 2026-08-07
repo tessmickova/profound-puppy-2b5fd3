@@ -2,11 +2,13 @@
 
 // Stavební prvky kompaktního filtru. Každý typ volby dostal ovládání, které
 // se pro ni hodí prakticky: přepínač pro „právě jedna", chipy pro krátké
-// výčty, select pro dlouhé seznamy, posuvník pro čísla a mřížku písmen
-// pro abecedu.
+// výčty, vlastní rozbalovací nabídku pro dlouhé seznamy, posuvník pro čísla
+// a mřížku písmen pro abecedu. Systémový <select> tu není nikde — vypadal by
+// v každém prohlížeči jinak.
 
 import { ChevronDown, X } from 'lucide-react'
 import type { ReactNode } from 'react'
+import Vyber from './Vyber'
 
 export function Sekce({
   nazev, ikona, pocet, vychoziOtevrena = false, children,
@@ -154,7 +156,7 @@ export function PismenaMrizka({
   )
 }
 
-/** Vícenásobný výběr v selectu — pro dlouhé seznamy (země). */
+/** Vícenásobný výběr — pro dlouhé seznamy (země). Vybrané se ukládají jako chipy. */
 export function VyberZemi({
   zeme, vybrane, onPrepni, onVymaz,
 }: {
@@ -165,17 +167,15 @@ export function VyberZemi({
 }) {
   return (
     <div>
-      <select
-        value=""
-        onChange={e => e.target.value && onPrepni(e.target.value)}
-        className="w-full rounded-xl border border-[#e8dfd2] bg-[#faf6ef] px-3 py-2 text-[13px] outline-none focus:border-[#2b2723]"
-        aria-label="Přidat zemi do filtru"
-      >
-        <option value="">+ přidat zemi…</option>
-        {zeme.filter(z => !vybrane.includes(z.kod)).map(z => (
-          <option key={z.kod} value={z.kod}>{z.vlajka} {z.nazev}</option>
-        ))}
-      </select>
+      <Vyber
+        hodnota=""
+        prazdne="+ přidat zemi…"
+        popisek="Přidat zemi do filtru"
+        onZmena={kod => kod && onPrepni(kod)}
+        volby={zeme.filter(z => !vybrane.includes(z.kod)).map(z => ({
+          hodnota: z.kod, nazev: z.nazev, znak: z.vlajka,
+        }))}
+      />
       {vybrane.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-1.5">
           {vybrane.map(kod => {
@@ -191,7 +191,7 @@ export function VyberZemi({
               </button>
             )
           })}
-          <button type="button" onClick={onVymaz} className="text-[12px] text-[#8a7f71] underline decoration-dotted">
+          <button type="button" onClick={onVymaz} className="textove text-[12px] text-[#8a7f71] underline decoration-dotted">
             vymazat
           </button>
         </div>

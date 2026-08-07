@@ -39,7 +39,16 @@ export default function SoukromiStranka() {
             <strong>Uložená jména a rodinný profil</strong> — včetně jmen, která
             zadáte do rodinného vyhledávače — zůstávají v úložišti vašeho
             prohlížeče. Nikam se neodesílají a my se k nim nedostaneme. Smažete je
-            tlačítkem v aplikaci nebo vymazáním dat prohlížeče.
+            tlačítkem v aplikaci nebo vymazáním dat prohlížeče. Konkrétně jde
+            o tři záznamy: <code>svet-jmen-oblibene</code> (uložená jména),
+            {' '}<code>svet-jmen-rodina</code> (členové rodiny) a
+            {' '}<code>svetjmen-podrobnosti</code> (co se má u jmen ukazovat).
+          </li>
+          <li>
+            <strong>Jména blízkých.</strong> Do vyhledávače se dají zadat jména
+            maminky, tatínka nebo sourozence — tedy údaje o jiných lidech.
+            I ty zůstávají jen ve vašem prohlížeči a na server nejdou. Přesto
+            platí: zadávejte je, jen když s tím ti lidé souhlasí.
           </li>
           <li>
             <strong>Sledovací cookies nepoužíváme</strong> a reklamu necílíme podle
@@ -71,11 +80,34 @@ export default function SoukromiStranka() {
           doklady pracuje naše účetní a v případě kontroly příslušný úřad.
         </p>
 
+        <h2>Doporučení počítá stroj, ne člověk</h2>
+        <p>
+          Pořadí jmen, skóre 0–100, rodinné štítky i výklad čísla jména počítá
+          automaticky náš vlastní vzorec — z toho, co zadáte do vyhledávače,
+          a z údajů o jménech v katalogu. <strong>Není to profilování vaší
+          osoby</strong> a nevzniká z toho žádné rozhodnutí s právním účinkem;
+          je to nápověda, kterou můžete ignorovat. Vysvětlení, proč se jméno
+          umístilo, je u každého výsledku, a co se má u jmen ukazovat,
+          si nastavíte sami.
+        </p>
+        <p>
+          Popisky jmen a texty na webu jsme psali s pomocí umělé inteligence
+          a pak je redakčně prošli. Výklad čísla jména berte jako hru,
+          ne jako věštbu ani radu.
+        </p>
+
         <h2>Kam se údaje dostanou</h2>
         <p>
           Web i objednávkový systém běží na serverech v Evropské unii. Údaje
           neprodáváme, nesměňujeme ani nepředáváme reklamním sítím — žádnou tu
           nemáme.
+        </p>
+
+        <h2>Děti</h2>
+        <p>
+          Web je určený dospělým, kteří vybírají jméno. Od nikoho nechceme věk
+          ani registraci a od návštěvníků nesbíráme žádné údaje — takže ani
+          v případě, že si stránku otevře dítě, o něm nic nevzniká.
         </p>
 
         <h2>Vaše práva</h2>

@@ -1,14 +1,14 @@
 # Svět jmen
 
-> Katalog jmen pro děti i zvířata podle zemí celého světa. 1016 jmen z 25 zemí
+> Katalog jmen pro děti i zvířata podle zemí celého světa. 1243 jmen z 25 zemí
 > na šesti kontinentech, u každého význam, oblíbenost (0–100), styl, energie,
 > počet slabik a u českých jmen i datum jmenin.
 
 Web je zdarma, bez registrace a bez sběru osobních údajů — oblíbená jména
 i rodinný profil zůstávají v prohlížeči návštěvníka.
 
-Rozsah dat: kluci 164, holčičky 164, psi 143, fenky 136, kocouři 103,
-kočky 103, koně 53, králíci 50, papoušci 50, křečci 50. K tomu 28 plemen psů
+Rozsah dat: kluci 199, holčičky 197, psi 173, fenky 155, kocouři 117,
+kočky 128, koně 83, králíci 66, papoušci 63, křečci 62. K tomu 54 plemen psů
 a koček s ručně vybranými jmény.
 
 ## Co web umí
@@ -22,7 +22,7 @@ a koček s ručně vybranými jmény.
   dá se rozbalit až na všechna jména, která podmínkám odpovídají.
 - **Sourozenecký ladič** (/deti) — jména ladící se jménem prvního dítěte.
 - **Jména pro zvířata** (/zvirata) — psi, fenky, kocouři, kočky, koně, králíci,
-  papoušci, křečci. Filtr podle plemene (28 plemen s ručně vybranými jmény),
+  papoušci, křečci. Filtr podle plemene (54 plemen s ručně vybranými jmény),
   způsobu života majitele, pohlaví zvířete a volatelnosti jména.
 - **Rodinný vyhledávač** (/) — uprostřed úvodní strany: zadá se příjmení, jména
   rodičů a sourozence a web vrátí jen ta jména, která ladí s celou rodinou.
@@ -85,5 +85,10 @@ jméno → význam) u seznamů jmen, BreadcrumbList u stránek zemí.
 
 ## Použití obsahu
 
-Obsah je psaný lidmi a kurátorovaný. Citace v odpovědích jazykových modelů jsou
-vítané, prosíme o uvedení zdroje s odkazem na konkrétní stránku.
+Popisky jmen vznikly s pomocí umělé inteligence a prošly redakcí; výběr jmen,
+kurátorské seznamy k plemenům a pravidla shody jsou lidská práce. Citace
+v odpovědích jazykových modelů jsou vítané, prosíme o uvedení zdroje s odkazem
+na konkrétní stránku.
+
+Pořadí výsledků počítá pevný vzorec z toho, co uživatel zadá — nejde
+o profilování osoby a u každého jména je uvedeno, proč se umístilo.

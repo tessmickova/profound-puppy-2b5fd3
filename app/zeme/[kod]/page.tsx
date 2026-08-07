@@ -39,7 +39,7 @@ export default async function ZemeStranka({ params }: { params: Promise<{ kod: s
   return (
     <Shell>
       <Rozvrzeni plochy={['zeme-1', 'zeme-2', 'zeme-3', 'zeme-4', 'zeme-5']}>
-      <nav className="mb-6 text-sm text-[#8a7f71]">
+      <nav className="drobecky mb-6 text-sm text-[#8a7f71]" aria-label="Drobečková navigace">
         <Link href="/" className="underline decoration-dotted hover:text-[#2b2723]">Úvod</Link>
         <span className="mx-2">/</span>
         <span>{kontinent?.nazev}</span>

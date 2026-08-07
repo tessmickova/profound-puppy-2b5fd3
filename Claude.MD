@@ -22,9 +22,9 @@ nevykreslí reklamní plochy.
 Pomáhá vybrat jméno pro dítě nebo pro zvíře. Bez registrace, zdarma, bez
 sbírání údajů — všechno, co si uživatel uloží, zůstává v jeho prohlížeči.
 
-Datová základna: **1016 jmen z 25 zemí** na šesti kontinentech (Kluci 164,
-Holčičky 164, Psi 143, Fenky 136, Kocouři 103, Kočky 103, Koně 53, Králíci 50,
-Papoušci 50, Křečci 50) a **28 plemen** s ručně vybranými jmény.
+Datová základna: **1243 jmen z 25 zemí** na šesti kontinentech (Kluci 199,
+Holčičky 197, Psi 173, Fenky 155, Kocouři 117, Kočky 128, Koně 83, Králíci 66,
+Papoušci 63, Křečci 62) a **54 plemen** s ručně vybranými jmény.
 
 ## Stránky (`app/`)
 
@@ -63,6 +63,13 @@ Mapa světa na úvodu **už není** — země jsou jen ve filtru a v patičce.
   jen jména a nic víc. `druh="lide"` nebo `"zvirata"` mění barevný tón.
 - **NadpisSekce.tsx** — nadpis s ikonou v barevném čtverečku; lidé chladná modrá
   s kojencem, zvířata teplá okrová s tlapkou.
+- **Vyber.tsx** — vlastní rozbalovací nabídka místo systémového `<select>`.
+  Ovládá se klávesnicí (šipky, Enter, Esc, psaní), má `role="listbox"`
+  a vypadá jako zbytek webu. Systémový select už není nikde.
+- **ShodaKarta.tsx** — karta nalezené shody s pevným pořadím řádků.
+- **VolbaPodrobnosti.tsx** — přepínače toho, co se u jmen ukazuje.
+- **RychleOdpovedi.tsx** — krátké odpovědi na časté otázky; text je vidět
+  na stránce a zároveň jde stránkou jako strukturovaná data.
 - **Reklama.tsx** — jedna nativní reklamní plocha (viz níže).
 - **RodinaProfil.tsx**, **OblibeneSeznam.tsx**, **Paticka.tsx**.
 
@@ -72,13 +79,14 @@ Mapa světa na úvodu **už není** — země jsou jen ve filtru a v patičce.
 |---|---|
 | `types.ts` | `Jmeno`, `Kategorie`, `Plemeno`, `PohlaviZvirete`, popisné mapy |
 | `data.ts` | všechna jména, země, kontinenty; helper `pridej()` dopočítá slabiky a délku |
-| `breeds.ts` | 28 plemen, u každého `doporucena` — ručně vybraná jména (husky: Balto, Togo, Yukon…) |
+| `breeds.ts` | 54 plemen (36 psích, 18 kočičích), u každého `doporucena` — ručně vybraná jména (husky: Balto, Togo, Yukon…) |
 | `extra.ts` | domácké tvary, svátky, unisex, pohlaví zvířecích jmen |
 | `logic.ts` | mozek webu — filtr, řazení, souzvuk s příjmením, rodinná harmonie, numerologie, rychlá analýza, volatelnost, kolize s povely |
 | `vCesku.ts` | jména do jezdících pásů — 247 lidských, 157 zvířecích (ručně vybraný seznam, ne strojová data) |
 | `oblibene.ts`, `rodina.ts`, `detail.ts` | stav v prohlížeči přes `useSyncExternalStore` |
 | `seo.ts` | JSON-LD (WebSite, FAQPage, ItemList, BreadcrumbList), časté dotazy |
 | `pravni.ts` | údaje provozovatele sdílené právními stránkami |
+| `podrobnosti.ts` | co se má u nalezených jmen ukazovat — volba se pamatuje v prohlížeči |
 | `reklamy.ts` | typ `Inzerat` + ukázkové kreativy pro vývoj |
 | `reklamniServer.ts` | jediné místo, kde web ví o reklamní službě |
 
@@ -172,7 +180,8 @@ Aby web ve vývoji bral reklamy ze služby:
 `NEXT_PUBLIC_ADS_API=http://localhost:8799 npm run dev`
 
 Nasazení, proměnné prostředí a postup krok za krokem: **`docs/NASAZENI.md`**.
-Doporučené domény: **`docs/DOMENY.md`**.
+Kontrola před spuštěním (zařízení, GDPR, AI, co ještě vyplnit):
+**`docs/PRED-SPUSTENIM.md`**. Doporučené domény: **`docs/DOMENY.md`**.
 
 ## Konvence
 

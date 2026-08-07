@@ -37,14 +37,14 @@ export const CASTE_DOTAZY: { otazka: string; odpoved: string }[] = [
   {
     otazka: 'Jak najít jméno podle plemene psa?',
     odpoved:
-      'Ke každému z 28 plemen máme ručně vybraná jména podle jeho původu, povahy '
+      'Ke každému z 54 plemen máme ručně vybraná jména podle jeho původu, povahy '
       + 'a historie — sibiřský husky dostane zimní a severská jména (Balto, Togo, '
       + 'Yukon, Odin), bígl Snoopyho, shiba inu japonská jména.',
   },
   {
     otazka: 'Kolik jmen katalog obsahuje?',
     odpoved:
-      'Přes 1000 jmen z 25 zemí na šesti kontinentech — pro holčičky, kluky, psy, '
+      'Přes 1200 jmen z 25 zemí na šesti kontinentech — pro holčičky, kluky, psy, '
       + 'fenky, kocoury, kočky, koně, králíky, papoušky i křečky. U každého jména '
       + 'je význam, oblíbenost, styl a délka.',
   },

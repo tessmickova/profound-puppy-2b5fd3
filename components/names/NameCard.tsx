@@ -34,7 +34,7 @@ export function Srdicko({ id, velke }: { id: string; velke?: boolean }) {
       }}
       aria-label={oblibene ? 'Odebrat z oblíbených' : 'Přidat do oblíbených'}
       title={oblibene ? 'Odebrat z oblíbených' : 'Uložit mezi oblíbená'}
-      className={`${velke ? 'text-2xl' : 'text-lg'} ${poskoc ? 'srdce-poskoc' : ''} leading-none transition-transform hover:scale-125 ${oblibene ? '' : 'opacity-45 hover:opacity-100'}`}
+      className={`srdicko ${velke ? 'text-2xl' : 'text-lg'} ${poskoc ? 'srdce-poskoc' : ''} transition-transform hover:scale-125 ${oblibene ? '' : 'opacity-45 hover:opacity-100'}`}
     >
       {oblibene ? '❤️' : '🤍'}
     </button>

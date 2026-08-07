@@ -22,6 +22,7 @@ import { KATEGORIE_INFO, VSECHNY_STYLY } from '@/lib/names/types'
 import type { Energie, Kategorie, PohlaviZvirete, Velikost } from '@/lib/names/types'
 import { useOblibene } from '@/lib/names/oblibene'
 import NameCard from './NameCard'
+import Vyber from './Vyber'
 import Rozvrzeni from './Rozvrzeni'
 import {
   AktivniFiltry, Chip, Chipy, PismenaMrizka, Posuvnik, Prepinac, Sekce, VyberZemi,
@@ -129,7 +130,7 @@ export default function ZvirataFinder() {
           {aktivni.length > 0 && <span className="filtr-pocet">{aktivni.length}</span>}
         </h2>
         <div className="flex items-center gap-2">
-          <button onClick={reset} className="text-[12px] text-[#8a7f71] underline decoration-dotted hover:text-[#2b2723]">
+          <button onClick={reset} className="textove text-[12px] text-[#8a7f71] underline decoration-dotted hover:text-[#2b2723]">
             Vymazat
           </button>
           <button
@@ -196,19 +197,16 @@ export default function ZvirataFinder() {
       </Sekce>
 
       <Sekce nazev="Plemeno" ikona={<Dog size={13} />} pocet={plemeno ? 1 : 0}>
-        <select
-          value={plemeno}
-          onChange={e => { setPlemeno(e.target.value); setRazeni(e.target.value ? 'doporucene' : 'popularita') }}
-          className="w-full rounded-xl border border-[#e8dfd2] bg-[#faf6ef] px-3 py-2 text-[13px] outline-none focus:border-[#2b2723]"
-        >
-          <option value="">— bez výběru plemene —</option>
-          <optgroup label="Psí plemena">
-            {PLEMENA_PSU.map(p => <option key={p.nazev}>{p.nazev}</option>)}
-          </optgroup>
-          <optgroup label="Kočičí plemena">
-            {PLEMENA_KOCEK.map(p => <option key={p.nazev}>{p.nazev}</option>)}
-          </optgroup>
-        </select>
+        <Vyber
+          hodnota={plemeno}
+          prazdne="— bez výběru plemene —"
+          popisek="Plemeno"
+          onZmena={h => { setPlemeno(h); setRazeni(h ? 'doporucene' : 'popularita') }}
+          volby={[
+            ...PLEMENA_PSU.map(p => ({ hodnota: p.nazev, nazev: p.nazev, skupina: 'Psí plemena' })),
+            ...PLEMENA_KOCEK.map(p => ({ hodnota: p.nazev, nazev: p.nazev, skupina: 'Kočičí plemena' })),
+          ]}
+        />
         {vybranePlemeno && <p className="mt-2 rounded-xl bg-[#f3ecdf] p-2 text-[12px] text-[#6b6156]">{vybranePlemeno.popis}</p>}
       </Sekce>
 
@@ -314,18 +312,17 @@ export default function ZvirataFinder() {
               >
                 <Dices size={14} /> Překvap mě
               </button>
-              <label className="inline-flex items-center gap-1.5 rounded-full border border-[#e8dfd2] bg-white py-1.5 pl-3 pr-1 text-[13px] text-[#6b6156]">
-                <ArrowDownAZ size={14} aria-hidden />
-                <select
-                  value={razeni}
-                  onChange={e => setRazeni(e.target.value as Razeni | 'doporucene')}
-                  className="bg-transparent pr-1 text-[13px] outline-none"
-                  aria-label="Řazení výsledků"
-                >
-                  {vybranePlemeno && <option value="doporucene">Doporučené pro plemeno</option>}
-                  {RAZENI_MOZNOSTI.map(r => <option key={r.id} value={r.id}>{r.nazev}</option>)}
-                </select>
-              </label>
+              <Vyber
+                varianta="pilulka"
+                ikona={<ArrowDownAZ size={14} />}
+                popisek="Řazení výsledků"
+                hodnota={razeni}
+                onZmena={h => setRazeni(h as Razeni | 'doporucene')}
+                volby={[
+                  ...(vybranePlemeno ? [{ hodnota: 'doporucene', nazev: 'Doporučené pro plemeno' }] : []),
+                  ...RAZENI_MOZNOSTI.map(r => ({ hodnota: r.id, nazev: r.nazev })),
+                ]}
+              />
             </div>
           </div>
 
@@ -336,8 +333,18 @@ export default function ZvirataFinder() {
           )}
 
           {nahodneJmeno && (
-            <div className="mb-5 rounded-2xl border-2 border-[#d97757] p-1">
-              <p className="px-3 pt-1 text-[11px] font-semibold uppercase tracking-wide text-[#d97757]">Náhodný tip</p>
+            <div className="tip-ramecek mb-5 rounded-2xl border-2 border-[#d97757] p-1">
+              <div className="tip-hlava">
+                <p className="tip-popisek">Náhodný tip</p>
+                <button
+                  type="button"
+                  className="tip-zavrit"
+                  onClick={() => setNahodne(null)}
+                  aria-label="Zavřít náhodný tip"
+                >
+                  <X size={15} aria-hidden />
+                </button>
+              </div>
               <NameCard jmeno={nahodneJmeno} />
             </div>
           )}

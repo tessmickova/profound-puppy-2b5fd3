@@ -21,6 +21,7 @@ import { KATEGORIE_INFO, MESICE_NAZVY, VSECHNY_STYLY } from '@/lib/names/types'
 import type { Energie, Kategorie, Styl } from '@/lib/names/types'
 import { useOblibene } from '@/lib/names/oblibene'
 import NameCard from './NameCard'
+import Vyber from './Vyber'
 import ShodaKarta from './ShodaKarta'
 import VolbaPodrobnosti from './VolbaPodrobnosti'
 import Rozvrzeni from './Rozvrzeni'
@@ -209,7 +210,7 @@ export default function DetiFinder() {
                 {aktivni.length > 0 && <span className="filtr-pocet">{aktivni.length}</span>}
               </h2>
               <div className="flex items-center gap-2">
-                <button onClick={() => { setFiltr(PRAZDNY_FILTR); setRychle([]) }} className="text-[12px] text-[#8a7f71] underline decoration-dotted hover:text-[#2b2723]">
+                <button onClick={() => { setFiltr(PRAZDNY_FILTR); setRychle([]) }} className="textove text-[12px] text-[#8a7f71] underline decoration-dotted hover:text-[#2b2723]">
                   Vymazat
                 </button>
                 <button onClick={() => setPanelOtevren(false)} className="filtr-tlacitko-mobil rounded-full border border-[#e8dfd2] p-1" aria-label="Zavřít filtr">
@@ -310,20 +311,32 @@ export default function DetiFinder() {
                 >
                   <Dices size={14} /> Překvap mě
                 </button>
-                <label className="inline-flex items-center gap-1.5 rounded-full border border-[#e8dfd2] bg-white py-1.5 pl-3 pr-1 text-[13px] text-[#6b6156]">
-                  <ArrowDownAZ size={14} aria-hidden />
-                  <select value={razeni} onChange={e => setRazeni(e.target.value as Razeni)} className="bg-transparent pr-1 text-[13px] outline-none" aria-label="Řazení výsledků">
-                    {RAZENI_MOZNOSTI.map(r => <option key={r.id} value={r.id}>{r.nazev}</option>)}
-                  </select>
-                </label>
+                <Vyber
+                  varianta="pilulka"
+                  ikona={<ArrowDownAZ size={14} />}
+                  popisek="Řazení výsledků"
+                  hodnota={razeni}
+                  onZmena={h => setRazeni(h as Razeni)}
+                  volby={RAZENI_MOZNOSTI.map(r => ({ hodnota: r.id, nazev: r.nazev }))}
+                />
               </div>
             </div>
 
             {aktivni.length > 0 && <div className="mb-4"><AktivniFiltry polozky={aktivni} /></div>}
 
             {nahodne && vysledky.some(j => j.id === nahodne) && (
-              <div className="mb-5 rounded-2xl border-2 border-[#d97757] p-1">
-                <p className="px-3 pt-1 text-[11px] font-semibold uppercase tracking-wide text-[#d97757]">Náhodný tip</p>
+              <div className="tip-ramecek mb-5 rounded-2xl border-2 border-[#d97757] p-1">
+                <div className="tip-hlava">
+                  <p className="tip-popisek">Náhodný tip</p>
+                  <button
+                    type="button"
+                    className="tip-zavrit"
+                    onClick={() => setNahodne(null)}
+                    aria-label="Zavřít náhodný tip"
+                  >
+                    <X size={15} aria-hidden />
+                  </button>
+                </div>
                 <NameCard jmeno={vysledky.find(j => j.id === nahodne)!} />
               </div>
             )}
@@ -374,14 +387,13 @@ export default function DetiFinder() {
             </h2>
 
             <Sekce nazev="Měsíc narození" ikona={<Calendar size={13} />} pocet={mesic ? 1 : 0}>
-              <select
-                value={mesic ?? ''}
-                onChange={e => setMesic(e.target.value ? Number(e.target.value) : null)}
-                className="w-full rounded-xl border border-[#e8dfd2] bg-[#faf6ef] px-3 py-2 text-[13px] outline-none focus:border-[#2b2723]"
-              >
-                <option value="">— nevím / nechci zadat —</option>
-                {MESICE_NAZVY.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
-              </select>
+              <Vyber
+                hodnota={mesic ? String(mesic) : ''}
+                prazdne="— nevím / nechci zadat —"
+                popisek="Měsíc narození"
+                onZmena={h => setMesic(h ? Number(h) : null)}
+                volby={MESICE_NAZVY.map((m, i) => ({ hodnota: String(i + 1), nazev: m }))}
+              />
             </Sekce>
 
             <Sekce nazev="Styl" ikona={<Palette size={13} />} pocet={stylyShody.length}>

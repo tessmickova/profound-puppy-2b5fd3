@@ -17,7 +17,7 @@ export default function VolbaPodrobnosti() {
         </h3>
         <button
           onClick={vratVychozi}
-          className="text-[12px] text-[#8a7f71] underline decoration-dotted hover:text-[#2b2723]"
+          className="textove text-[12px] text-[#8a7f71] underline decoration-dotted hover:text-[#2b2723]"
         >
           Výchozí
         </button>
