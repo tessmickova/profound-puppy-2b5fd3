@@ -22,6 +22,7 @@ import type { Energie, Kategorie, Styl } from '@/lib/names/types'
 import { useOblibene } from '@/lib/names/oblibene'
 import NameCard, { Srdicko, Stitky } from './NameCard'
 import Rozvrzeni from './Rozvrzeni'
+import RodinnyVyhledavac from './RodinnyVyhledavac'
 import {
   AktivniFiltry, Chip, Chipy, PismenaMrizka, Posuvnik, Prepinac, Sekce, VyberZemi,
 } from './FiltrUI'
@@ -349,38 +350,24 @@ export default function DetiFinder() {
       )}
 
       {rezim === 'shoda' && (
-        <div className="grid items-start gap-6 lg:grid-cols-[320px_1fr]">
+        <>
+        <RodinnyVyhledavac
+          pohlavi={pohlavi}
+          onPohlavi={setPohlavi}
+          popisPod="Stačí vyplnit, co víte — každé pole zpřesní výběr. Jména, která ladí s víc členy rodiny, dostanou štítek, a poznáme i podobu jména po rodiči (Petr → Petra)."
+          pole={[
+            { klic: 'prijmeni', popisek: 'Příjmení dítěte', hodnota: prijmeni, napoveda: pohlavi === 'holka' ? 'např. Nováková' : 'např. Novák', onZmena: setPrijmeni },
+            { klic: 'maminka', popisek: 'Maminka', hodnota: maminka, napoveda: 'např. Jana', onZmena: setMaminka },
+            { klic: 'tatinek', popisek: 'Tatínek', hodnota: tatinek, napoveda: 'např. Petr', onZmena: setTatinek },
+            { klic: 'sourozenec', popisek: 'Sourozenec', hodnota: sourozenec, napoveda: 'např. Eliška', onZmena: setSourozenec },
+          ]}
+        />
+
+        <div className="grid items-start gap-6 lg:grid-cols-[280px_1fr]">
           <aside className="space-y-4 self-start rounded-3xl border border-[#e8dfd2] bg-white p-4 shadow-sm lg:sticky lg:top-20">
             <h2 className="flex items-center gap-1.5 [font-family:var(--font-syne)] text-base font-bold">
-              <Sparkles size={16} aria-hidden /> Vaše preference
+              <Sparkles size={16} aria-hidden /> Doplňující výběr
             </h2>
-
-            <Prepinac<'holka' | 'kluk'>
-              hodnota={pohlavi}
-              onZmena={setPohlavi}
-              moznosti={[{ id: 'holka', nazev: 'čekáme holčičku' }, { id: 'kluk', nazev: 'čekáme chlapečka' }]}
-            />
-
-            <label className="block">
-              <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-[#8a7f71]">Příjmení dítěte</span>
-              <input
-                value={prijmeni}
-                onChange={e => setPrijmeni(e.target.value)}
-                placeholder={pohlavi === 'holka' ? 'např. Nováková' : 'např. Novák'}
-                className="w-full rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-4 py-2 text-[13px] outline-none focus:border-[#2b2723]"
-              />
-            </label>
-
-            <Sekce nazev="Jména v rodině" ikona={<Users size={13} />} pocet={[maminka, tatinek, sourozenec].filter(x => x.trim()).length} vychoziOtevrena>
-              <div className="grid grid-cols-2 gap-2">
-                <input value={maminka} onChange={e => setMaminka(e.target.value)} placeholder="maminka" className="rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-3 py-2 text-[13px] outline-none focus:border-[#2b2723]" />
-                <input value={tatinek} onChange={e => setTatinek(e.target.value)} placeholder="tatínek" className="rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-3 py-2 text-[13px] outline-none focus:border-[#2b2723]" />
-              </div>
-              <input value={sourozenec} onChange={e => setSourozenec(e.target.value)} placeholder="sourozenec" className="mt-2 w-full rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-3 py-2 text-[13px] outline-none focus:border-[#2b2723]" />
-              <p className="mt-1.5 text-[11px] text-[#8a7f71]">
-                Jména, která ladí s více členy rodiny, dostanou štítek. Poznáme i podobu jména po rodiči (Petr → Petra).
-              </p>
-            </Sekce>
 
             <Sekce nazev="Měsíc narození" ikona={<Calendar size={13} />} pocet={mesic ? 1 : 0}>
               <select
@@ -426,33 +413,22 @@ export default function DetiFinder() {
             </div>
           </section>
         </div>
+        </>
       )}
 
       {rezim === 'sourozenec' && (
-        <div className="grid items-start gap-6 lg:grid-cols-[320px_1fr]">
-          <aside className="space-y-4 self-start rounded-3xl border border-[#e8dfd2] bg-white p-4 shadow-sm lg:sticky lg:top-20">
-            <h2 className="flex items-center gap-1.5 [font-family:var(--font-syne)] text-base font-bold">
-              <Users size={16} aria-hidden /> Sourozenecký ladič
-            </h2>
-            <p className="text-[12px] text-[#8a7f71]">
-              Najdeme jména ladící se jménem prvního dítěte — stylem, původem i rytmem.
-              Stejnou iniciálu a rýmy hlídáme, aby se jména doma nepletla.
-            </p>
-            <Prepinac<'holka' | 'kluk'>
-              hodnota={pohlavi}
-              onZmena={setPohlavi}
-              moznosti={[{ id: 'holka', nazev: 'čekáme holčičku' }, { id: 'kluk', nazev: 'čekáme chlapečka' }]}
-            />
-            <label className="block">
-              <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-[#8a7f71]">Jméno sourozence</span>
-              <input value={sourozenec} onChange={e => setSourozenec(e.target.value)} placeholder="např. Eliška" className="w-full rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-4 py-2 text-[13px] outline-none focus:border-[#2b2723]" />
-            </label>
-            <label className="block">
-              <span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-[#8a7f71]">Příjmení (nepovinné)</span>
-              <input value={prijmeni} onChange={e => setPrijmeni(e.target.value)} placeholder="např. Nováková" className="w-full rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-4 py-2 text-[13px] outline-none focus:border-[#2b2723]" />
-            </label>
-          </aside>
+        <>
+        <RodinnyVyhledavac
+          pohlavi={pohlavi}
+          onPohlavi={setPohlavi}
+          popisPod="Najdeme jména ladící se jménem prvního dítěte — stylem, původem i rytmem. Stejnou iniciálu a rýmy hlídáme, aby se jména doma nepletla."
+          pole={[
+            { klic: 'sourozenec', popisek: 'Jméno sourozence', hodnota: sourozenec, napoveda: 'např. Eliška', onZmena: setSourozenec },
+            { klic: 'prijmeni', popisek: 'Příjmení (nepovinné)', hodnota: prijmeni, napoveda: 'např. Nováková', onZmena: setPrijmeni },
+          ]}
+        />
 
+        <div>
           <section>
             {!sourozenec.trim() ? (
               <div className="rounded-3xl border border-dashed border-[#e8dfd2] p-10 text-center text-[#8a7f71]">
@@ -471,6 +447,7 @@ export default function DetiFinder() {
             )}
           </section>
         </div>
+        </>
       )}
     </Rozvrzeni>
   )

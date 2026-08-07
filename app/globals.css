@@ -956,3 +956,102 @@
   font-weight: 700;
 }
 .karta-spodek .karta-puvod { flex: none; }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   RODINNÝ VYHLEDÁVAČ — hlavní vstup, proto stojí na středu
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.vyhledavac {
+  position: relative;
+  margin-bottom: 26px;
+  padding: 20px;
+  border: 1px solid #ecdfd0;
+  border-radius: 24px;
+  background: linear-gradient(180deg, #fffdfa 0%, #fff 55%);
+  box-shadow: 0 4px 22px rgba(43, 39, 35, .06);
+}
+@media (min-width: 640px) { .vyhledavac { padding: 24px 26px; } }
+
+.vyhledavac-hlava {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.vyhledavac-hlava h2 {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  font-family: var(--font-syne), system-ui, sans-serif;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -.01em;
+}
+.vyhledavac-pohlavi { flex: none; }
+.vyhledavac-pohlavi button { padding: 6px 14px; }
+
+.vyhledavac-pole {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 560px) { .vyhledavac-pole { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 900px) { .vyhledavac-pole { grid-template-columns: repeat(4, 1fr); } }
+
+.vyhledavac-pole label { display: grid; gap: 5px; }
+.vyhledavac-popisek {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: #8a7f71;
+}
+.vyhledavac-vstup {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid #e8dfd2;
+  border-radius: 999px;
+  background: #faf6ef;
+  padding: 0 14px;
+  color: #a2988a;
+  transition: border-color .15s, background .15s;
+}
+.vyhledavac-vstup:focus-within {
+  border-color: #d97757;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(217, 119, 87, .12);
+}
+.vyhledavac-vstup input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: none;
+  padding: 10px 0;
+  font: inherit;
+  font-size: 14px;
+  color: #2b2723;
+  outline: none;
+}
+.vyhledavac-popis {
+  margin: 12px 0 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #8a7f71;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   TLAČÍTKO FILTRU — má být vidět, ne splynout
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.filtr-tlacitko-mobil {
+  border-color: #d97757 !important;
+  background: #fdeeea !important;
+  color: #b3563a !important;
+  box-shadow: 0 2px 8px rgba(217, 119, 87, .18);
+}
+.filtr-tlacitko-mobil:hover { background: #fbe4dd !important; }
+.filtr-tlacitko-mobil .filtr-pocet { background: #d97757; }
