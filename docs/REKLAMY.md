@@ -70,8 +70,10 @@ Tři tabulky (`schema.sql`), nic navíc:
 - **`inzerenti`** — firma, IČO, e-mail. Jen to, bez čeho nejde vystavit faktura.
 - **`objednavky`** — plocha, období, cena, variabilní symbol, stav
   (`ceka_na_platbu` / `aktivni` / `vyprsela` / `zrusena`), token, platnost od–do.
-- **`inzeraty`** — značka, nadpis, text, tlačítko, odkaz a buď ikona, nebo klíč
-  loga v úložišti.
+- **`inzeraty`** — značka, nadpis, text, tlačítko, odkaz a buď klíč loga
+  v úložišti, nebo ikona. **Logo je to hlavní** — nahrává se rovnou při
+  objednávce a na kartě je vidět místo ikony; ikona slouží jen jako náhrada,
+  dokud firma logo nedodá.
 
 Loga leží v objektovém úložišti, ne v databázi.
 
@@ -98,10 +100,19 @@ jinak by se plocha prodala dvakrát.
   **52 px** přišpendlená úplně nahoře. Od 700 px jsou v ní dvě kampaně vedle
   sebe, pod 700 px jedna, a po **deseti sekundách** naskočí další.
 
-Rotace se zastaví při najetí myší, doteku i zaměření z klávesnice a dá se
-vypnout tlačítkem pauzy. Kdo má v systému vypnuté animace
-(`prefers-reduced-motion`), uvidí prosté prostřídání bez otáčení. Označení
-„reklama" je na kartě i v liště vidět vždycky.
+Všech deset pozic se překlápí **v jednu a tu samou chvíli**. Rozházené
+překlápění by znamenalo, že se návštěvníkovi koutkem oka pořád něco hýbe —
+takhle se obraz jednou za patnáct sekund změní a pak je zase klid.
+
+Rotace se zastaví při najetí myší, doteku i zaměření z klávesnice. **Tlačítko
+pauzy je jen v liště nahoře** — u sloupců by pátou kartu zbytečně přebíjelo.
+Kdo má v systému vypnuté animace (`prefers-reduced-motion`), uvidí prosté
+prostřídání bez otáčení. Označení „reklama" je na kartě i v liště vidět
+vždycky.
+
+Sloupce mají stejný papírový podklad jako zbytek webu: překrývají odsazení
+stránky a bez vlastního pozadí by po stranách prosvítalo tmavé pozadí
+dokumentu, které patří AuroraDogu (sdílí stejné `<body>`).
 
 Volná plocha se nevykreslí jako díra — ukáže se jako nabídka „Tady může být
 vaše značka, volné místo N/20" s odkazem na `/reklama`.

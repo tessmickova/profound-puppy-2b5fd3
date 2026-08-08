@@ -153,7 +153,10 @@ export function samoobsluha(env: Prostredi): string {
             <input type="url" id="odkaz" placeholder="https://…"></label>
         </div>
 
-        <div class="pole"><span>Ikona <em>— po zaplacení můžete místo ní nahrát logo</em></span>
+        <label class="pole"><span>Logo <em>— PNG, JPG nebo WEBP do 200 kB; na kartě je vidět místo ikony</em></span>
+          <input type="file" id="logo" accept="image/png,image/jpeg,image/webp"></label>
+
+        <div class="pole"><span>Ikona <em>— použije se, jen když logo nenahrajete</em></span>
           <div class="ikony" id="ikony"></div>
         </div>
       </section>
@@ -188,7 +191,7 @@ export function samoobsluha(env: Prostredi): string {
         <h2 style="font-size:14px;color:var(--tlumene);margin-bottom:10px;">Náhled na webu</h2>
         <div class="reklama">
           <div class="hlava">
-            <span class="znacka"><span id="n-ikona">✦</span><span id="n-znacka">Vaše značka</span></span>
+            <span class="znacka"><img id="n-logo" alt="" hidden style="width:16px;height:16px;object-fit:contain"><span id="n-ikona">✦</span><span id="n-znacka">Vaše značka</span></span>
             <span class="stitek">sponzorováno</span>
           </div>
           <h3 id="n-nadpis">Nadpis inzerátu</h3>
@@ -218,7 +221,7 @@ export function samoobsluha(env: Prostredi): string {
     'bone':'🦴','dog':'🐕','cat':'🐈','house':'🏠','shield-check':'🛡️','star':'★','baby':'👶',
     'sparkles':'✦','type':'A','users':'👪','globe':'🌍','calendar':'📅','languages':'文'
   };
-  var stav = { plocha:null, obdobi:null, ikona:'sparkles', ceny:null };
+  var stav = { plocha:null, obdobi:null, ikona:'sparkles', ceny:null, logo:null };
   var $ = function (id) { return document.getElementById(id); };
 
   function korun(n) { return n.toLocaleString('cs-CZ') + ' Kč'; }
@@ -307,6 +310,21 @@ export function samoobsluha(env: Prostredi): string {
     void mesicne;
   }
 
+  // Logo se odešle až po vytvoření objednávky — do té chvíle ho jen ukazujeme.
+  $('logo').addEventListener('change', function () {
+    var soubor = this.files && this.files[0];
+    if (!soubor) { stav.logo = null; $('n-logo').hidden = true; $('n-ikona').hidden = false; prekresli(); return; }
+    if (soubor.size > 200 * 1024) {
+      $('hlaska').innerHTML = '<p class="hlaska chyba">Logo je větší než 200 kB. Zmenšete ho prosím.</p>';
+      this.value = ''; return;
+    }
+    stav.logo = soubor;
+    $('n-logo').src = URL.createObjectURL(soubor);
+    $('n-logo').hidden = false;
+    $('n-ikona').hidden = true;
+    prekresli();
+  });
+
   ['znacka','nadpis','text','cta','odkaz','email','firma','souhlas'].forEach(function (id) {
     $(id).addEventListener('input', prekresli);
     $(id).addEventListener('change', prekresli);
@@ -355,6 +373,20 @@ export function samoobsluha(env: Prostredi): string {
         $('krok-obdobi').hidden = true;
         $('krok-inzerat').hidden = true;
         $('krok-hotovo').classList.remove('schovano');
+        // Logo jde nahoru jako holé tělo požadavku — službě stačí typ souboru.
+        if (stav.logo) {
+          fetch('/api/objednavka/' + d.token + '/logo', {
+            method: 'POST',
+            headers: { 'Content-Type': stav.logo.type },
+            body: stav.logo,
+          }).then(function (r) {
+            $('logo-stav').innerHTML = r.ok
+              ? '<p class="hlaska ok">Logo je nahrané, na kartě se ukáže místo ikony.</p>'
+              : '<p class="hlaska chyba">Logo se nepodařilo nahrát. Zkuste ho prosím poslat znovu na adrese níž.</p>';
+          }).catch(function () {
+            $('logo-stav').innerHTML = '<p class="hlaska chyba">Logo se nepodařilo nahrát. Zkuste ho prosím poslat znovu na adrese níž.</p>';
+          });
+        }
         $('pokyny').innerHTML =
           '<p class="hlaska ok">Máme ji. Kampaň spustíme, jakmile dorazí platba — obvykle do druhého pracovního dne.</p>' +
           '<div class="shrnuti"><dl>' +
@@ -364,6 +396,7 @@ export function samoobsluha(env: Prostredi): string {
           '<dt>Účet</dt><dd>' + d.platba.ucet + '</dd>' +
           '<dt>Variabilní symbol</dt><dd>' + d.platba.vs + '</dd>' +
           '</dl></div>' +
+          '<div id="logo-stav"></div>' +
           '<p style="font-size:14px;margin-top:14px">Stav kampaně i nahrání loga najdete na téhle adrese — uložte si ji, je to zároveň váš přístup:<br>' +
           '<code style="word-break:break-all">' + location.origin + '/api/objednavka/' + d.token + '</code></p>';
         window.scrollTo({ top: 0, behavior: 'smooth' });

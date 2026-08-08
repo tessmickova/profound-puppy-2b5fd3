@@ -1829,6 +1829,12 @@ h1, h2, .vyhledavac-hlava h2 { text-wrap: balance; }
 }
 .reklamni-sloupec.je-vlevo { left: 0; }
 .reklamni-sloupec.je-vpravo { right: 0; }
+/* Sloupce překrývají odsazení stránky — musí mít stejný papír jako zbytek
+   webu, jinak by po stranách prosvítalo tmavé pozadí dokumentu (to patří
+   AuroraDogu, který sdílí stejné <body>). Ze stejného důvodu přebarvíme
+   i samotné <body>, ať se tmavá neukáže ani při přetažení stránky. */
+.reklamni-sloupec { background: #faf6ef; }
+body:has(.svetjmen-shell) { background-color: #faf6ef; }
 
 .reklamni-pozice {
   flex: 1;
@@ -1887,7 +1893,12 @@ h1, h2, .vyhledavac-hlava h2 { text-wrap: balance; }
   background: #f6efe3;
   color: #a5683a;
   margin-bottom: 2px;
+  overflow: hidden;
 }
+/* S logem je dlaždice jen rámeček — logo si nese vlastní barvy. */
+.reklamni-dlazdice.je-logo { background: #fff; border: 1px solid #efe7da; }
+.reklamni-dlazdice img { width: 100%; height: 100%; object-fit: contain; padding: 3px; }
+.reklamni-lista-logo { width: 18px; height: 18px; object-fit: contain; }
 .reklamni-nadpis {
   font-family: var(--font-syne), system-ui, sans-serif;
   font-size: 13px;

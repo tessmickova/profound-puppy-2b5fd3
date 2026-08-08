@@ -11,9 +11,13 @@
 // schovají se a místo nich naskočí úzká lišta úplně nahoře. V ní jede jedna
 // reklama (na širším tabletu dvě) a po deseti sekundách ji vystřídá další.
 //
-// Rotace se zastaví při najetí myší, doteku i zaměření z klávesnice a dá se
-// vypnout tlačítkem. Kdo má v systému vypnuté animace, uvidí prosté prostřídání
-// bez otáčení. Označení „reklama" je vidět vždycky.
+// Všech deset pozic se překlápí v jednu a tu samou chvíli. Rozházené
+// překlápění by znamenalo, že se koutkem oka pořád něco hýbe — takhle se
+// obraz jednou za patnáct sekund změní a pak je zase klid.
+//
+// Rotace se zastaví při najetí myší, doteku i zaměření z klávesnice; vypnout
+// se dá tlačítkem v liště. Kdo má v systému vypnuté animace, uvidí prosté
+// prostřídání bez otáčení. Označení „reklama" je vidět vždycky.
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
@@ -56,6 +60,7 @@ export default function ReklamniRam() {
   const [dve, setDve] = useState(false)
   const [tise, setTise] = useState(false)
   const [stopnuto, setStopnuto] = useState(false)
+  const [otoceno, setOtoceno] = useState(false)
   const pauza = useRef(false)
 
   useEffect(() => {
@@ -86,27 +91,37 @@ export default function ReklamniRam() {
     return () => dotaz.removeEventListener('change', zmer)
   }, [])
 
+  // Jeden časovač pro všechny pozice — překlopí se naráz, ne jedna po druhé.
+  useEffect(() => {
+    if (rezim !== 'sloupce' || stopnuto) return
+    const id = window.setInterval(() => {
+      if (!pauza.current) setOtoceno(o => !o)
+    }, INTERVAL_MS)
+    return () => window.clearInterval(id)
+  }, [rezim, stopnuto])
+
   const drz = useCallback((ano: boolean) => { pauza.current = ano }, [])
-  const stojiTo = stopnuto
+  // Klepnutí na pauzu je jasný pokyn — přidržení myší nebo prstem, které
+  // mohlo zůstat viset z předchozího doteku, tím zároveň pouštíme.
+  const prepni = useCallback(() => {
+    pauza.current = false
+    setStopnuto(s => !s)
+  }, [])
 
   if (rezim === null) return null
 
-  const spolecne = { mapa, tise, pauza, stopnuto: stojiTo, drz }
+  const spolecne = { mapa, tise, pauza, stopnuto, drz }
 
   if (rezim === 'lista') {
     return (
-      <ReklamniLista
-        {...spolecne}
-        kolik={dve ? 2 : 1}
-        prepni={() => setStopnuto(s => !s)}
-      />
+      <ReklamniLista {...spolecne} kolik={dve ? 2 : 1} prepni={prepni} />
     )
   }
 
   return (
     <>
-      <ReklamniSloupec strana="vlevo" pozice={[1, 2, 3, 4, 5]} {...spolecne} prepni={() => setStopnuto(s => !s)} />
-      <ReklamniSloupec strana="vpravo" pozice={[6, 7, 8, 9, 10]} {...spolecne} prepni={() => setStopnuto(s => !s)} />
+      <ReklamniSloupec strana="vlevo" pozice={[1, 2, 3, 4, 5]} otoceno={otoceno} {...spolecne} />
+      <ReklamniSloupec strana="vpravo" pozice={[6, 7, 8, 9, 10]} otoceno={otoceno} {...spolecne} />
     </>
   )
 }
@@ -123,48 +138,32 @@ interface SpolecneVlastnosti {
 }
 
 function ReklamniSloupec({
-  strana, pozice, mapa, tise, pauza, stopnuto, drz, prepni,
-}: SpolecneVlastnosti & { strana: 'vlevo' | 'vpravo'; pozice: number[] }) {
+  strana, pozice, otoceno, mapa, tise, drz,
+}: Omit<SpolecneVlastnosti, 'prepni' | 'pauza' | 'stopnuto'>
+  & { strana: 'vlevo' | 'vpravo'; pozice: number[]; otoceno: boolean }) {
   return (
     <aside
       className={`reklamni-sloupec je-${strana}`}
       aria-label="Sponzorovaný obsah"
-      onMouseEnter={() => drz(true)}
-      onMouseLeave={() => drz(false)}
+      onPointerEnter={() => drz(true)}
+      onPointerLeave={() => drz(false)}
+      onPointerCancel={() => drz(false)}
       onFocusCapture={() => drz(true)}
       onBlurCapture={() => drz(false)}
-      onTouchStart={() => drz(true)}
       onTouchEnd={() => drz(false)}
     >
       {pozice.map(p => (
-        <Pozice key={p} pozice={p} mapa={mapa} tise={tise} pauza={pauza} stopnuto={stopnuto} />
+        <Pozice key={p} pozice={p} otoceno={otoceno} mapa={mapa} tise={tise} />
       ))}
-      <TlacitkoPauzy stopnuto={stopnuto} prepni={prepni} />
     </aside>
   )
 }
 
-/** Jedna pozice ve sloupci: dvě strany, které se po 15 s překlápějí. */
+/** Jedna pozice ve sloupci: dvě strany, mezi kterými se přepíná. */
 function Pozice({
-  pozice, mapa, tise, pauza, stopnuto,
-}: { pozice: number; mapa: Mapa; tise: boolean; pauza: React.MutableRefObject<boolean>; stopnuto: boolean }) {
+  pozice, otoceno, mapa, tise,
+}: { pozice: number; otoceno: boolean; mapa: Mapa; tise: boolean }) {
   const [strany] = useState(() => stranyPozice(pozice))
-  const [otoceno, setOtoceno] = useState(false)
-
-  useEffect(() => {
-    if (stopnuto) return
-    // Pozice se nepřeklápějí naráz — každá o kousek později, ať to neblikne.
-    let opakovani = 0
-    const posun = window.setTimeout(() => {
-      opakovani = window.setInterval(() => {
-        if (!pauza.current) setOtoceno(o => !o)
-      }, INTERVAL_MS)
-    }, pozice * 900)
-    return () => {
-      window.clearTimeout(posun)
-      window.clearInterval(opakovani)
-    }
-  }, [pozice, pauza, stopnuto])
 
   return (
     <div className={`reklamni-pozice ${tise ? 'je-tise' : ''}`}>
@@ -203,9 +202,10 @@ function Karta({ plocha, mapa, tvar }: { plocha: string; mapa: Mapa; tvar: 'pred
       className={`reklamni-karta je-${tvar === 'prední' ? 'pred' : 'za'}`}
     >
       <span className="reklamni-znak">reklama</span>
-      <span className="reklamni-dlazdice" aria-hidden>
+      {/* Firmy sem dávají logo; ikona je jen náhrada, dokud ho nenahrají. */}
+      <span className={`reklamni-dlazdice ${inzerat.logo ? 'je-logo' : ''}`} aria-hidden>
         {inzerat.logo
-          ? <img src={inzerat.logo} alt="" width={22} height={22} loading="lazy" />
+          ? <img src={inzerat.logo} alt="" loading="lazy" />
           : <Ikona size={20} strokeWidth={1.75} />}
       </span>
       <span className="reklamni-nadpis">{inzerat.nadpis}</span>
@@ -240,11 +240,11 @@ function ReklamniLista({
     <aside
       className="reklamni-lista"
       aria-label="Sponzorovaný obsah"
-      onMouseEnter={() => drz(true)}
-      onMouseLeave={() => drz(false)}
+      onPointerEnter={() => drz(true)}
+      onPointerLeave={() => drz(false)}
+      onPointerCancel={() => drz(false)}
       onFocusCapture={() => drz(true)}
       onBlurCapture={() => drz(false)}
-      onTouchStart={() => drz(true)}
       onTouchEnd={() => drz(false)}
     >
       <span className="reklamni-lista-znak">reklama</span>
@@ -274,7 +274,7 @@ function RadekListy({ plocha, mapa }: { plocha: string; mapa: Mapa }) {
   return (
     <a href={inzerat.odkaz} rel="sponsored nofollow noopener" className="reklamni-lista-box">
       {inzerat.logo
-        ? <img src={inzerat.logo} alt="" width={16} height={16} loading="lazy" />
+        ? <img src={inzerat.logo} alt="" className="reklamni-lista-logo" loading="lazy" />
         : <Ikona size={15} strokeWidth={1.75} aria-hidden />}
       <span className="reklamni-lista-znacka">{inzerat.znacka}</span>
       <span className="reklamni-lista-nadpis">{inzerat.nadpis}</span>

@@ -128,11 +128,13 @@ Každá pozice má **dvě strany** a po **15 sekundách** se překlopí na tu dr
 Pozic je deset, prodaných ploch tedy **dvacet**, každá za **5 000 Kč/měsíc**
 a na **1–3 měsíce**. V liště se kampaně střídají po **10 sekundách**.
 
-Rotace se zastaví při najetí myší, doteku i zaměření klávesnicí a dá se vypnout
-tlačítkem pauzy; při `prefers-reduced-motion` se nic neotáčí. Označení
-„reklama" je vidět vždycky, odkazy mají `rel="sponsored nofollow noopener"`.
-Volná plocha se ukáže jako nabídka „Tady může být vaše značka" s odkazem
-na `/reklama`.
+Všech deset pozic se překlápí **naráz**, ne jedna po druhé — jinak by se
+koutkem oka pořád něco hýbalo. Rotace se zastaví při najetí myší, doteku
+i zaměření klávesnicí; tlačítko pauzy je **jen v liště nahoře**. Při
+`prefers-reduced-motion` se nic neotáčí. Označení „reklama" je vidět vždycky,
+odkazy mají `rel="sponsored nofollow noopener"`. Na kartě je **logo firmy**;
+ikona je jen náhrada, dokud ho firma nenahraje. Volná plocha se ukáže jako
+nabídka „Tady může být vaše značka" s odkazem na `/reklama`.
 
 Seznam ploch a ceník je v `ads-worker/src/plochy.ts`, vykreslení v
 `components/names/ReklamniRam.tsx`, prodejní náhled v `VyberPlochy.tsx`.

@@ -26,7 +26,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
   const jeAktivni = (href: string) => (href === '/' ? cesta === '/' : cesta.startsWith(href))
 
   return (
-    <div className="min-h-screen bg-[#faf6ef] pb-16 text-[#2b2723] lg:pb-0">
+    <div className="svetjmen-shell min-h-screen bg-[#faf6ef] pb-16 text-[#2b2723] lg:pb-0">
       {/* Reklama: postranní sloupce na širokém okně, jinak lišta nahoře. */}
       <ReklamniRam />
       <header className="hlavicka sticky top-0 z-40 border-b border-[#e8dfd2] bg-[#faf6ef]/92 backdrop-blur">
