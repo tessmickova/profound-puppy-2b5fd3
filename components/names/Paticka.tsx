@@ -48,7 +48,7 @@ export default function Paticka() {
               {ZVIRATA.map(k => (
                 <li key={k}>
                   <Link href={`/zvirata?kategorie=${k}`} className="text-[#6b6156] hover:text-[#2b2723] hover:underline">
-                    Jména pro {KATEGORIE_INFO[k].mnozne.toLowerCase()}
+                    Jména pro {KATEGORIE_INFO[k].proKoho}
                   </Link>
                 </li>
               ))}

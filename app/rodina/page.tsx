@@ -3,7 +3,9 @@ import Shell from '@/components/names/Shell'
 import RodinaProfil from '@/components/names/RodinaProfil'
 
 export const metadata: Metadata = {
-  title: 'Moje rodina — jména, která k vám ladí | Svět jmen',
+  // Osobní nástroj — pro vyhledávač tu není co indexovat.
+  robots: { index: false, follow: true },
+  title: 'Moje rodina — jména, která k vám ladí',
   description:
     'Naklikejte svou rodinu včetně zvířat a nechte si doporučovat další lidská i zvířecí jména, která k současným patří.',
 }

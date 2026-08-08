@@ -1,10 +1,10 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import Shell from '@/components/names/Shell'
-import { PRAVNI } from '@/lib/names/pravni'
+import { PRAVNI, cesyDatum } from '@/lib/names/pravni'
 
 export const metadata: Metadata = {
-  title: 'Ochrana osobních údajů | Svět jmen',
+  title: 'Ochrana osobních údajů',
   description:
     'Co o vás Svět jmen ví — krátce a bez oklik. Jména, která si uložíte, zůstávají ve vašem prohlížeči.',
 }
@@ -14,7 +14,7 @@ export default function SoukromiStranka() {
     <Shell>
       <article className="pravni-text">
         <h1>Ochrana osobních údajů</h1>
-        <p className="pravni-datum">Platné od {PRAVNI.platnostOd}</p>
+        <p className="pravni-datum">Účinné od {cesyDatum(PRAVNI.ucinnostOd)}</p>
 
         <p className="pravni-uvod">
           Krátce: běžný návštěvník nám o sobě neřekne nic. Účet tu není, registrace
@@ -26,7 +26,8 @@ export default function SoukromiStranka() {
         <h2>Kdo za údaje odpovídá</h2>
         <p>
           Správcem je {PRAVNI.provozovatel}
-          {PRAVNI.ico ? `, IČO ${PRAVNI.ico}` : ''}, kontakt{' '}
+          {PRAVNI.ico ? `, IČO ${PRAVNI.ico}` : ''}
+          {PRAVNI.sidlo ? `, se sídlem ${PRAVNI.sidlo}` : ''}, kontakt{' '}
           <a href={`mailto:${PRAVNI.email}`}>{PRAVNI.email}</a>.
         </p>
 
@@ -51,16 +52,23 @@ export default function SoukromiStranka() {
             platí: zadávejte je, jen když s tím ti lidé souhlasí.
           </li>
           <li>
-            <strong>Sledovací cookies nepoužíváme</strong> a reklamu necílíme podle
-            toho, kdo jste. Inzerát je vázaný na stránku, ne na člověka — proto
-            u nás není žádná cookie lišta.
+            <strong>Cookies web nenastavuje žádné</strong> — ani vlastní, ani cizí.
+            Používá jen úložiště prohlížeče (<code>localStorage</code>) na tři
+            záznamy vyjmenované výš; ty si zakládáte sami tím, že si jméno uložíte
+            nebo si nastavíte zobrazení. Podle § 89 odst. 3 zákona č. 127/2005 Sb.
+            (ePrivacy) jde o úložiště nezbytné pro službu, kterou jste si vyžádali,
+            takže se na ně souhlas nevztahuje a lišta tu není. Žádné měření
+            návštěvnosti, analytiku ani sledovací skripty třetích stran
+            nepoužíváme — web nedělá jediný požadavek mimo vlastní doménu
+            (výjimkou je reklamní služba, viz níž).
           </li>
           <li>
-            <strong>Provozní záznamy.</strong> Jako každý web krátkodobě
-            zaznamenáváme přístupy (adresa stránky, čas, typ prohlížeče, IP adresa),
-            abychom uhlídali výpadky a zneužití. Držíme je nejdéle 30 dnů a
-            k ničemu jinému je nepoužíváme. Právním základem je oprávněný zájem
-            na bezpečném provozu.
+            <strong>Provozní záznamy.</strong> Web běží na síti Cloudflare, která
+            při každém požadavku zpracuje IP adresu, adresu stránky, čas a typ
+            prohlížeče — bez toho by se stránka nedala doručit ani ochránit před
+            útokem. Záznamy slouží jen k provozu a bezpečnosti, nespojujeme je
+            s ničím dalším a sami si z nich nic dlouhodobě neukládáme. Právním
+            základem je oprávněný zájem na bezpečném provozu.
           </li>
         </ul>
 
@@ -96,11 +104,29 @@ export default function SoukromiStranka() {
           ne jako věštbu ani radu.
         </p>
 
-        <h2>Kam se údaje dostanou</h2>
+        <h2>Kde web běží a kam se údaje dostanou</h2>
         <p>
-          Web i objednávkový systém běží na serverech v Evropské unii. Údaje
-          neprodáváme, nesměňujeme ani nepředáváme reklamním sítím — žádnou tu
-          nemáme.
+          Web i objednávkový systém běží na platformě <strong>Cloudflare</strong>
+          {' '}(Cloudflare, Inc., USA) — konkrétně na službách Workers, D1 a R2.
+          Cloudflare je náš zpracovatel a provozuje globální síť: požadavek
+          obslouží ten datový uzel, který je návštěvníkovi nejblíž, takže
+          <strong> zpracování může proběhnout i mimo Evropskou unii</strong>.
+          Předání mimo EU je pokryté standardními smluvními doložkami Evropské
+          komise v rámci zpracovatelské smlouvy s Cloudflare. Netvrdíme tedy,
+          že všechna data zůstávají v EU — to by u téhle architektury nebyla
+          pravda.
+        </p>
+        <p>
+          Objednávky inzerentů a loga leží v databázi Cloudflare D1 a v úložišti
+          Cloudflare R2. Kromě Cloudflare, naší účetní a — v případě kontroly —
+          příslušného úřadu se k údajům nikdo nedostane. Údaje neprodáváme,
+          nesměňujeme ani nepředáváme reklamním sítím; žádnou tu nemáme.
+        </p>
+        <p className="pravni-doplnit">
+          <strong>K doplnění majitelem projektu:</strong> odkaz na uzavřenou
+          zpracovatelskou smlouvu s Cloudflare a případné další zpracovatele
+          (poskytovatel e-mailu, účetní software). Tenhle odstavec projděte
+          s právníkem — my popisujeme jen to, co je v kódu skutečně vidět.
         </p>
 
         <h2>Děti</h2>

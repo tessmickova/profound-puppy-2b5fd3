@@ -9,9 +9,9 @@ import { JMENA } from '@/lib/names/data'
 import { jsonLdOdpovedi, jsonLdSlovnik, ODPOVEDI_ZVIRATA, WEB } from '@/lib/names/seo'
 
 export const metadata: Metadata = {
-  title: 'Jména pro zvířata — psi, kočky, koně a další | Svět jmen',
+  title: 'Jména pro zvířata — psi, kočky, koně a další',
   description:
-    'Nejpodrobnější filtr zvířecích jmen: podle druhu, plemene, země původu, stylu, energie, velikosti, délky i počátečního písmene. Vše abecedně i podle oblíbenosti.',
+    'Nejpodrobnější filtr zvířecích jmen: podle druhu, plemene, země použití, stylu, energie, velikosti, délky i počátečního písmene. Vše abecedně i podle oblíbenosti.',
   alternates: { canonical: '/zvirata' },
 }
 

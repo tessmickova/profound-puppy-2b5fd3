@@ -1,13 +1,29 @@
-// Údaje, které se opakují v podmínkách a v ochraně osobních údajů.
-// Držíme je na jednom místě, ať se nikde nerozejdou.
+// Zpětně kompatibilní pohled na centrální config.
+//
+// Právní texty dřív měly vlastní kopie údajů o provozovateli; teď je berou
+// z `lib/config.ts`, aby se nemohly rozejít.
+
+import { OVERENO, PRAVNI_UCINNOST, PROVOZOVATEL, ADRESA_REKLAM as ADRESA } from '@/lib/config'
 
 export const PRAVNI = {
-  provozovatel: process.env.NEXT_PUBLIC_PROVOZOVATEL ?? 'Svět jmen',
-  ico: process.env.NEXT_PUBLIC_ICO ?? '',
-  email: process.env.NEXT_PUBLIC_KONTAKT ?? 'info@jmenaprodeti.cz',
-  emailReklama: process.env.NEXT_PUBLIC_KONTAKT_REKLAMA ?? 'reklama@jmenaprodeti.cz',
-  platnostOd: '1. 9. 2026',
+  provozovatel: PROVOZOVATEL.nazev,
+  ico: PROVOZOVATEL.ico,
+  dic: PROVOZOVATEL.dic,
+  platceDph: PROVOZOVATEL.platceDph,
+  sidlo: PROVOZOVATEL.sidlo,
+  email: PROVOZOVATEL.email,
+  emailReklama: PROVOZOVATEL.emailReklama,
+  ucet: PROVOZOVATEL.ucet,
+  ucinnostOd: PRAVNI_UCINNOST,
+  overeno: OVERENO,
 }
 
 /** Adresa samoobsluhy reklamní služby. Prázdná = služba ještě neběží. */
-export const ADRESA_REKLAM = process.env.NEXT_PUBLIC_ADS_API ?? ''
+export const ADRESA_REKLAM = ADRESA
+
+/** Datum ve tvaru, jaký se čte v textu: 1. 8. 2026. */
+export function cesyDatum(iso: string): string {
+  const [r, m, d] = iso.split('-').map(Number)
+  if (!r || !m || !d) return iso
+  return `${d}. ${m}. ${r}`
+}

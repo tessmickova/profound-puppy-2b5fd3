@@ -10,7 +10,11 @@ const esc = (s: string) =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 
 export function samoobsluha(env: Prostredi): string {
-  const web = (env.POVOLENE_ORIGINY ?? '').split(',')[0]?.trim() || 'https://jmenaprodeti.cz'
+  // Adresa webu je v nastavení služby. Odkazy na podmínky a soukromí musí
+  // mířit tam, kde web skutečně běží — na náhledu i v produkci.
+  const web = (env.WEB_URL ?? '').trim().replace(/\/$/, '')
+    || (env.POVOLENE_ORIGINY ?? '').split(',')[0]?.trim()
+    || ''
   const kontakt = env.PROVOZOVATEL_EMAIL ?? ''
 
   return `<!doctype html>

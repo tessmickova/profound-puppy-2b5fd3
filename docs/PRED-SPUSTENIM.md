@@ -1,123 +1,62 @@
-# Kontrola před zveřejněním
+# Před spuštěním do produkce
 
-Co bylo ověřeno, co z toho vyšlo a co je ještě potřeba doplnit ručně.
-Datum kontroly: srpen 2026.
+Web se dá nasadit jako náhled kdykoli. **Produkční build ale schválně spadne**,
+dokud nejsou doplněné údaje níž — jinak by na webu i na fakturách zůstalo
+`VYPLNIT s.r.o.` a `IČO 00000000`.
 
----
+Zkontrolovat se to dá takhle:
 
-## 1. Zařízení a rozlišení
+```bash
+NEXT_PUBLIC_PRODUKCE=1 npm run build
+```
 
-Projeto devět stránek (`/`, `/deti`, `/zvirata`, `/rodina`, `/oblibene`,
-`/zeme/cz`, `/reklama`, `/podminky`, `/soukromi`) na osmi šířkách:
-320, 390, 412, 768, 1024, 1280, 1440 a 1920 px, telefony a tablety
-s dotykem a dvojnásobnou hustotou pixelů.
+## Co musí doplnit majitel projektu
 
-| Co | Výsledek |
-|---|---|
-| Chyby JavaScriptu | žádné na žádné stránce ani šířce |
-| Chyby v konzoli | žádné |
-| Vodorovné posouvání stránky | nikde — `window.scrollX` zůstává na nule |
-| Dotykové cíle pod 24 × 24 px | jen odkazy uvnitř vět (WCAG 2.5.8 je vyjímá) |
+Všechno na jednom místě — proměnné v `wrangler.jsonc` (klíč `vars`) pro web
+a v `ads-worker/wrangler.toml` (sekce `[vars]`) pro reklamní službu.
+Žádný z těch údajů si nevymýšlíme.
 
-**Opraveno při kontrole:**
+| Proměnná | Kde | Co to je |
+|---|---|---|
+| `NEXT_PUBLIC_URL` | web | skutečná produkční doména přes `https://` |
+| `NEXT_PUBLIC_PROVOZOVATEL` | web + služba (`PROVOZOVATEL`) | obchodní firma z rejstříku |
+| `NEXT_PUBLIC_ICO` | web + služba (`PROVOZOVATEL_ICO`) | IČO, osm číslic |
+| `NEXT_PUBLIC_SIDLO` | web + služba (`PROVOZOVATEL_SIDLO`) | sídlo tak, jak patří na fakturu |
+| `NEXT_PUBLIC_DIC` | web + služba (`PROVOZOVATEL_DIC`) | DIČ; prázdné, když nejste plátci |
+| `NEXT_PUBLIC_PLATCE_DPH` | web | `1` = plátce DPH, `0` = neplátce |
+| `NEXT_PUBLIC_KONTAKT` | web | kontaktní e-mail |
+| `NEXT_PUBLIC_KONTAKT_REKLAMA` | web + služba (`PROVOZOVATEL_EMAIL`) | e-mail pro inzerenty |
+| `NEXT_PUBLIC_UCET` | web + služba (`BANKOVNI_UCET`) | číslo účtu pro platby za reklamu |
+| `WEB_URL` | služba | adresa webu — odsud vedou odkazy na podmínky a soukromí |
+| `POVOLENE_ORIGINY` | služba | domény, ze kterých smí web volat API |
 
-- srdíčka u jmen měla dotykovou plochu ~18 px — mají 30 × 30 px, vzhled
-  se nezměnil (plocha přesahuje mimo ikonu záporným okrajem),
-- odkazy v patičce, rozbalovací nadpisy filtru a drobečková navigace
-  dostaly minimální výšku 26 px,
-- textová tlačítka „Vymazat" a „Výchozí" mají výšku prstu,
-- posuvníky délky jména mají 24 px,
-- počítadlo na spodní liště bylo umístěné 8 px za pravým okrajem lišty;
-  teď sedí uvnitř dlaždice.
+Navíc:
 
-**Známá kosmetika:** v emulovaném prohlížeči je spodní lišta o 8 px širší
-než obsah stránky, protože `position: fixed` se měří k okraji okna včetně
-pruhu posuvníku. Na skutečném telefonu je posuvník překryvný a lišta se
-nad 640 px vůbec nezobrazuje, takže se to nikde neprojeví — ověřeno tím,
-že stránkou nejde vodorovně posunout.
+```bash
+cd ads-worker && npx wrangler secret put ADMIN_TOKEN
+```
 
----
+Bez `ADMIN_TOKEN` admin routy všechno odmítají — nedá se tedy potvrdit platba
+a rozsvítit kampaň.
 
-## 2. Soukromí a GDPR
+## Co ještě patří k právníkovi
 
-Změřeno v prohlížeči na všech stránkách:
+Tyhle věci jsme v textech označili, ale doplnit je musí člověk:
 
-| Co jsme hledali | Nalezeno |
-|---|---|
-| Požadavky na cizí domény | **žádné** — písma i skripty jsou z vlastního serveru |
-| Cookies | **žádné** |
-| `sessionStorage` | prázdný |
-| `localStorage` | tři záznamy, všechny zakládá sám uživatel svou akcí |
+- **Zpracovatelská smlouva s Cloudflare** — odkaz do `/soukromi`. Web běží na
+  Cloudflare Workers, D1 a R2, takže zpracování může proběhnout i mimo EU.
+  Tvrzení „všechna data zůstávají v EU" jsme z textu odstranili, protože
+  u téhle architektury není pravdivé.
+- **Další zpracovatelé** — poskytovatel e-mailu, účetní software.
+- **DPH** — v podmínkách se text mění podle `NEXT_PUBLIC_PLATCE_DPH`.
+  Zkontrolujte, že sedí.
+- **Reklama je B2B.** V podmínkách je uvedeno, že se prodává jen podnikatelům
+  a spotřebitelské odstoupení do 14 dnů se neuplatní. Nechte si to potvrdit.
 
-Záznamy v prohlížeči: `svet-jmen-oblibene` (uložená jména),
-`svet-jmen-rodina` (členové rodiny), `svetjmen-podrobnosti` (co se má
-u jmen ukazovat). Všechny tři jsou v Ochraně osobních údajů vyjmenované.
+## Doména a náhled
 
-**Lišta se souhlasem není potřeba.** Ukládání do zařízení podléhá souhlasu
-jen tehdy, není-li nezbytné pro službu, kterou si uživatel výslovně vyžádal.
-Tady si uživatel uložení sám vyvolá — klikne na srdíčko, přidá člena rodiny,
-přepne zobrazení. Nic se neukládá dopředu a nic se nesleduje.
-
-**Doplněno do Ochrany osobních údajů:**
-
-- výčet konkrétních záznamů v prohlížeči,
-- odstavec o jménech blízkých osob (maminka, tatínek, sourozenec jsou údaje
-  o jiných lidech — zůstávají v prohlížeči a mají se zadávat s jejich vědomím),
-- oddíl **Děti** — od návštěvníků se nesbírá nic, takže ani u dítěte nic nevzniká.
-
----
-
-## 3. Umělá inteligence a transparentnost
-
-Web není chatbot ani generátor obsahu na přání; pořadí jmen počítá pevný
-vzorec z toho, co člověk zadá do vyhledávače. Přesto jsme doplnili, co se
-tady vlastně děje:
-
-- **Doporučení počítá stroj, ne člověk** — nový oddíl v Ochraně osobních
-  údajů. Je v něm napsané, že nejde o profilování osoby, že z toho nevzniká
-  rozhodnutí s právním účinkem a že u každého výsledku je vysvětlení, proč se
-  umístil.
-- **Popisky jmen vznikly s pomocí AI** a prošly redakcí — uvedeno
-  v podmínkách i v ochraně údajů.
-- **Výklad čísla jména je hra**, ne věštba ani rada — bylo už dřív
-  v podmínkách a v detailu jména, teď i v ochraně údajů.
-
-Web nedělá nic z toho, co evropská pravidla pro AI zakazují nebo řadí mezi
-vysoce rizikové: nerozpoznává obličeje ani emoce, nehodnotí lidi, netěží
-z zranitelnosti dětí a nevydává se za člověka.
-
----
-
-## 4. Reklama
-
-- Každý inzerát je označený slovem **sponzorováno** (v úzkém sloupci
-  „reklama"), označení je vidět vždy.
-- Odkazy inzerentů mají `rel="sponsored nofollow noopener"`.
-- Reklama se **necílí podle člověka** — inzerát patří ke stránce, ne
-  k návštěvníkovi. Proto nevzniká žádný profil ani potřeba souhlasu.
-- Pravidla, co odmítneme (klamavé nabídky, míření na děti jako zákazníky,
-  alkohol, tabák, hazard, léčitelství), jsou v podmínkách.
-
----
-
-## 5. Co ještě musí doplnit člověk
-
-Bez těchto údajů se web nesmí spustit — právní texty by neidentifikovaly
-provozovatele:
-
-| Kde | Co vyplnit |
-|---|---|
-| `wrangler.jsonc` → `NEXT_PUBLIC_PROVOZOVATEL` | obchodní firma provozovatele |
-| `wrangler.jsonc` → `NEXT_PUBLIC_ICO` | IČO |
-| `wrangler.jsonc` → `NEXT_PUBLIC_KONTAKT` | kontaktní e-mail |
-| `wrangler.jsonc` → `NEXT_PUBLIC_KONTAKT_REKLAMA` | e-mail pro inzerenty |
-| `wrangler.jsonc` → `NEXT_PUBLIC_URL` | ostrá adresa webu |
-| `ads-worker/wrangler.toml` → `BANKOVNI_UCET` a spol. | bankovní spojení a údaje do faktur |
-| `lib/names/pravni.ts` → `platnostOd` | datum, od kterého podmínky platí |
-
-Dál doporučujeme před spuštěním:
-
-- **zrotovat Cloudflare API token** použitý při prvním nasazení,
-- projít ceník reklamních ploch (`ads-worker/src/plochy.ts`) — čísla jsou
-  odhad, ne měření,
-- rozhodnout, zda web bude plátcem DPH; podmínky uvádějí ceny bez DPH.
+Dokud `NEXT_PUBLIC_URL` míří na `workers.dev` nebo `localhost`, web se
+**sám označí za náhled**: `robots.txt` zakáže indexaci celého webu a mapa
+stránek je prázdná. Vedle produkční domény tak nemůže vzniknout druhá
+indexovatelná kopie. Po překlopení domény stačí změnit tuhle jedinou
+proměnnou.

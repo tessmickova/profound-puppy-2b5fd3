@@ -10,7 +10,11 @@
     "typecheck": "tsc --noEmit",
     "cf:build": "opennextjs-cloudflare build",
     "cf:preview": "opennextjs-cloudflare build && wrangler dev --local",
-    "cf:deploy": "opennextjs-cloudflare build && wrangler deploy"
+    "cf:deploy": "opennextjs-cloudflare build && wrangler deploy",
+    "test": "npx tsx --test testy/*.test.ts",
+    "kontrola:data": "npx tsx skripty/kontrola-dat.ts",
+    "prebuild": "npm run kontrola:data",
+    "kontrola": "npm run typecheck && npm run kontrola:data && npm test"
   },
   "dependencies": {
     "@supabase/ssr": "^0.9.0",
@@ -35,6 +39,7 @@
     "postcss": "^8.5.8",
     "tailwindcss": "^3.4.19",
     "typescript": "^5.9.3",
-    "wrangler": "^4.120.0"
+    "wrangler": "^4.120.0",
+    "tsx": "^4.23.11"
   }
 }

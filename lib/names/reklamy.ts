@@ -6,17 +6,14 @@
 // odpověď reklamní služby (viz `reklamniServer.ts`) — tvar `Inzerat` je
 // v obou případech stejný.
 
-/** Ploch je dvacet: deset pozic po dvou stranách. */
-export type ReklamniPlocha = `plocha-${number}`
+// Počty, ceny a intervaly mají jediný zdroj — `shared/reklama.ts`. Odsud je
+// jen přeposíláme, ať zbytek webu nemusí vědět, odkud pocházejí.
+export { PLOCH, POZIC, ROTACE_LISTA_MS, ROTACE_SLOUPCE_MS } from '@/shared/reklama'
 
-/** Kolik pozic web má — pět vlevo, pět vpravo. */
-export const POZIC = 10
-
-/** Kolik ploch se dá koupit dohromady (každá pozice má dvě strany). */
-export const PLOCH = POZIC * 2
+import { PLOCH as POCET_PLOCH, plochaId } from '@/shared/reklama'
 
 /** Seznam id všech ploch v pořadí, v jakém je vidí zákazník v náhledu. */
-export const PLOCHY: string[] = Array.from({ length: PLOCH }, (_, i) => `plocha-${i + 1}`)
+export const PLOCHY: string[] = Array.from({ length: POCET_PLOCH }, (_, i) => plochaId(i + 1))
 
 export interface Inzerat {
   id: string
@@ -74,7 +71,4 @@ export const REKLAMY: Record<string, Inzerat[]> = Object.fromEntries(
 export const inzeratyProPlochu = (plocha: string): Inzerat[] => REKLAMY[plocha] ?? []
 
 /** Jak dlouho je vidět jedna strana pozice ve sloupci, než se překlopí. */
-export const INTERVAL_MS = 15_000
-
-/** Jak dlouho je vidět jedna reklama v liště nahoře na telefonu. */
-export const INTERVAL_LISTA_MS = 10_000
+export { ROTACE_SLOUPCE_MS as INTERVAL_MS, ROTACE_LISTA_MS as INTERVAL_LISTA_MS } from '@/shared/reklama'

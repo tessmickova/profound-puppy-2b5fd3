@@ -3,7 +3,9 @@ import Shell from '@/components/names/Shell'
 import OblibeneSeznam from '@/components/names/OblibeneSeznam'
 
 export const metadata: Metadata = {
-  title: 'Oblíbená jména ❤️ | Svět jmen',
+  // Osobní nástroj — pro vyhledávač tu není co indexovat.
+  robots: { index: false, follow: true },
+  title: 'Oblíbená jména ❤️',
   description: 'Jména, která jste si označili srdíčkem — přehledně na jednom místě.',
 }
 

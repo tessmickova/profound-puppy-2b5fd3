@@ -220,7 +220,7 @@ export default function ZvirataFinder() {
         </Chipy>
       </Sekce>
 
-      <Sekce nazev="Země původu" ikona={<Globe size={13} />} pocet={filtr.zeme.length}>
+      <Sekce nazev="Kde se jméno používá" ikona={<Globe size={13} />} pocet={filtr.zeme.length}>
         <VyberZemi
           zeme={ZEME}
           vybrane={filtr.zeme}

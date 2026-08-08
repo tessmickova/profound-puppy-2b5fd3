@@ -1,10 +1,13 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import Shell from '@/components/names/Shell'
-import { PRAVNI } from '@/lib/names/pravni'
+import { PRAVNI, cesyDatum } from '@/lib/names/pravni'
+import { CENA_MESIC_KC, OBDOBI, PLOCH, POZIC, ROTACE_SLOUPCE_MS } from '@/shared/reklama'
+
+const korun = (c: number) => c.toLocaleString('cs-CZ')
 
 export const metadata: Metadata = {
-  title: 'Podmínky používání | Svět jmen',
+  title: 'Podmínky používání',
   description:
     'Za jakých podmínek Svět jmen funguje — pro návštěvníky i pro firmy, které si tu inzerují.',
 }
@@ -14,7 +17,7 @@ export default function PodminkyStranka() {
     <Shell>
       <article className="pravni-text">
         <h1>Podmínky používání</h1>
-        <p className="pravni-datum">Platné od {PRAVNI.platnostOd}</p>
+        <p className="pravni-datum">Účinné od {cesyDatum(PRAVNI.ucinnostOd)}</p>
 
         <h2>Kdo web provozuje</h2>
         <p>
@@ -73,16 +76,25 @@ export default function PodminkyStranka() {
             Nic víc se do plochy nevejde a nic dalšího po vás nechceme.
           </li>
           <li>
-            Kampaň se kupuje na <strong>měsíc, 6 měsíců nebo rok</strong>. Ceny jsou
-            uvedené u každé plochy bez DPH.
+            Web nabízí <strong>{PLOCH} reklamních ploch</strong>: {POZIC} pozic po
+            stranách obsahu, každá o dvou stranách. Kampaň se kupuje na{' '}
+            <strong>{OBDOBI.map(o => o.nazev).join(', ')}</strong> — delší období
+            zatím neprodáváme.
+          </li>
+          <li>
+            Cena je pro všechny plochy stejná: <strong>{korun(CENA_MESIC_KC)} Kč
+            za měsíc</strong>{PRAVNI.platceDph ? ' bez DPH; k ceně účtujeme DPH v zákonné sazbě' : ' — nejsme plátci DPH, cena je konečná'}.
+            Reklamu prodáváme <strong>jen podnikatelům</strong> (B2B); spotřebitelské
+            právo na odstoupení do 14 dnů se proto na objednávku nevztahuje.
           </li>
           <li>
             Objednávka je závazná okamžikem odeslání. Kampaň spustíme po připsání
             platby, nejpozději následující pracovní den.
           </li>
           <li>
-            Na jedné pozici se střídají dvě plochy — každá je vidět patnáct sekund. Negarantujeme počet
-            zobrazení ani proklik — garantujeme místo po celou zaplacenou dobu.
+            Na jedné pozici se střídají dvě plochy — každá je vidět{' '}
+            {ROTACE_SLOUPCE_MS / 1000} sekund. Negarantujeme počet zobrazení ani
+            proklik — garantujeme místo po celou zaplacenou dobu.
           </li>
           <li>
             <strong>Nic se neobnovuje automaticky.</strong> Na konci období kampaň

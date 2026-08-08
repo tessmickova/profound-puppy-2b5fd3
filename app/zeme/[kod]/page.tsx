@@ -6,7 +6,7 @@ import NameCard from '@/components/names/NameCard'
 import Rozvrzeni from '@/components/names/Rozvrzeni'
 import NadpisSekce from '@/components/names/NadpisSekce'
 import { jmenaZeme, KONTINENTY, ZEME, zemePodleKodu } from '@/lib/names/data'
-import { serad } from '@/lib/names/logic'
+import { serad, velke } from '@/lib/names/logic'
 import { jsonLdDrobky, jsonLdSeznam, jsonLdSlovnik, WEB } from '@/lib/names/seo'
 import { KATEGORIE_INFO } from '@/lib/names/types'
 import type { Kategorie } from '@/lib/names/types'
@@ -20,8 +20,8 @@ export async function generateMetadata({ params }: { params: Promise<{ kod: stri
   const zeme = zemePodleKodu(kod)
   if (!zeme) return {}
   return {
-    title: `Jména z ${zeme.nazev} — pro děti i zvířata`,
-    description: `${zeme.poznamka} Jména pro holčičky, kluky, psy, kočky i další zvířata z ${zeme.nazev} — s významem a oblíbeností.`,
+    title: `${velke(zeme.pridavne)} jména pro děti i zvířata`,
+    description: `${zeme.poznamka} Jména pro holčičky, kluky, psy, kočky i další zvířata z ${zeme.genitiv} — s významem a oblíbeností.`,
     alternates: { canonical: `/zeme/${zeme.kod}` },
   }
 }
@@ -95,7 +95,7 @@ export default async function ZemeStranka({ params }: { params: Promise<{ kod: s
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(jsonLdSeznam(
-            `Jména z ${zeme.nazev}`,
+            `${velke(zeme.pridavne)} jména`,
             `${WEB.url}/zeme/${zeme.kod}`,
             jmena.map(j => ({ jmeno: j.jmeno, vyznam: j.vyznam })),
           )),
@@ -107,7 +107,7 @@ export default async function ZemeStranka({ params }: { params: Promise<{ kod: s
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(jsonLdSlovnik(
-            `Jména z ${zeme.nazev} a jejich význam`,
+            `${velke(zeme.pridavne)} jména a jejich význam`,
             `${WEB.url}/zeme/${zeme.kod}`,
             jmena.map(j => ({ jmeno: j.jmeno, vyznam: j.vyznam })),
           )),

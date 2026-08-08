@@ -5,12 +5,14 @@
 // po kliknutí.
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { KATEGORIE_INFO, POHLAVI_INFO } from '@/lib/names/types'
 import type { Jmeno } from '@/lib/names/types'
 import { zemePodleKodu } from '@/lib/names/data'
 import { jeHit, jeOriginal, jeTrendy } from '@/lib/names/logic'
 import { useOblibene } from '@/lib/names/oblibene'
 import { otevriDetail } from '@/lib/names/detail'
+import { slugJmena } from '@/lib/names/slug'
 
 /** Jeden štítek navíc — víc jich na kartu nepatří. */
 function hlavniStitek(j: Jmeno): { text: string; trida: string } | null {
@@ -20,7 +22,14 @@ function hlavniStitek(j: Jmeno): { text: string; trida: string } | null {
   return null
 }
 
-export function Srdicko({ id, velke }: { id: string; velke?: boolean }) {
+export function Srdicko({
+  id, jmeno, velke,
+}: {
+  id: string
+  /** jméno do popisku pro čtečku — samotné srdíčko nic neříká */
+  jmeno?: string
+  velke?: boolean
+}) {
   const { je, prepni } = useOblibene()
   const [poskoc, setPoskoc] = useState(false)
   const oblibene = je(id)
@@ -32,7 +41,10 @@ export function Srdicko({ id, velke }: { id: string; velke?: boolean }) {
         if (!oblibene) { setPoskoc(true); window.setTimeout(() => setPoskoc(false), 450) }
         prepni(id)
       }}
-      aria-label={oblibene ? 'Odebrat z oblíbených' : 'Přidat do oblíbených'}
+      aria-pressed={oblibene}
+      aria-label={jmeno
+        ? (oblibene ? `Odebrat ${jmeno} z oblíbených` : `Přidat ${jmeno} do oblíbených`)
+        : (oblibene ? 'Odebrat z oblíbených' : 'Přidat do oblíbených')}
       title={oblibene ? 'Odebrat z oblíbených' : 'Uložit mezi oblíbená'}
       className={`srdicko ${velke ? 'text-2xl' : 'text-lg'} ${poskoc ? 'srdce-poskoc' : ''} transition-transform hover:scale-125 ${oblibene ? '' : 'opacity-45 hover:opacity-100'}`}
     >
@@ -59,20 +71,23 @@ function delkaTridy(jmeno: string, poradi?: number | null): string {
   return ''
 }
 
-export default function NameCard({ jmeno, poradi }: { jmeno: Jmeno; poradi?: number }) {
+export default function NameCard({
+  jmeno, poradi, odkaz = false,
+}: {
+  jmeno: Jmeno
+  poradi?: number
+  /** true = jméno má vlastní stránku, karta je tedy skutečný odkaz */
+  odkaz?: boolean
+}) {
   const zeme = zemePodleKodu(jmeno.zeme)
   const kat = KATEGORIE_INFO[jmeno.kategorie]
   const stitek = hlavniStitek(jmeno)
 
-  return (
-    <article
-      className="karta-jmena karta-klikatelna"
-      onClick={() => otevriDetail(jmeno.id)}
-      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); otevriDetail(jmeno.id) } }}
-      role="button"
-      tabIndex={0}
-      aria-label={`Zobrazit detail jména ${jmeno.jmeno}`}
-    >
+  // Karta, která vede na jinou stránku, musí být odkaz — dá se otevřít
+  // v novém panelu a čtečka ji ohlásí správně. Karta, která jen vysouvá
+  // panel, zůstává tlačítkem. Div s role="button" není ani jedno.
+  const obsah = (
+    <>
       {/* Jméno má celý řádek pro sebe. Delší jména dostanou menší písmo,
           aby se nikdy nelámala uprostřed slova. */}
       <h3 className={`karta-jmeno ${delkaTridy(jmeno.jmeno, poradi)}`}>
@@ -96,8 +111,32 @@ export default function NameCard({ jmeno, poradi }: { jmeno: Jmeno; poradi?: num
         {stitek && (
           <span className={`karta-stitek ${stitek.trida}`}>{stitek.text}</span>
         )}
-        <span className="ml-auto"><Srdicko id={jmeno.id} /></span>
+        <span className="ml-auto"><Srdicko id={jmeno.id} jmeno={jmeno.jmeno} /></span>
       </div>
+    </>
+  )
+
+  if (odkaz) {
+    return (
+      <article className="karta-jmena karta-klikatelna">
+        <Link href={`/jmeno/${slugJmena(jmeno.jmeno)}`} className="karta-odkaz">
+          <span className="sr-only">Otevřít detail jména {jmeno.jmeno}</span>
+        </Link>
+        {obsah}
+      </article>
+    )
+  }
+
+  return (
+    <article className="karta-jmena karta-klikatelna">
+      <button
+        type="button"
+        className="karta-odkaz"
+        onClick={() => otevriDetail(jmeno.id)}
+      >
+        <span className="sr-only">Zobrazit podrobnosti jména {jmeno.jmeno}</span>
+      </button>
+      {obsah}
     </article>
   )
 }

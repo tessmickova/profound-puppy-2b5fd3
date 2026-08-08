@@ -2208,3 +2208,26 @@ body:has(.svetjmen-shell) { background-color: #faf6ef; }
   .plochy-telo { display: none; }
   .plochy-koupe-popisek { min-width: 0; width: 100%; }
 }
+
+/* ── Karta jména jako odkaz ──────────────────────────────────────────────
+   Karta byla <article role="button"> — pro čtečku i pro prostřední tlačítko
+   myši nic. Teď je uvnitř skutečný odkaz (nebo tlačítko), roztažený přes
+   celou kartu; ostatní obsah leží nad ním, aby srdíčko šlo zmáčknout. */
+.karta-jmena { position: relative; }
+.karta-odkaz {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  border-radius: inherit;
+}
+.karta-odkaz:focus-visible { outline: 2px solid #d97757; outline-offset: 2px; }
+.karta-jmena > :not(.karta-odkaz) { position: relative; z-index: 2; pointer-events: none; }
+.karta-jmena .srdicko { pointer-events: auto; }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}

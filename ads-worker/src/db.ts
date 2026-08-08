@@ -1,7 +1,7 @@
 // Práce s databází. Držíme to na jednom místě, ať je vidět, jaká data
 // o inzerentech vůbec vznikají.
 
-import { KAPACITA, OBDOBI, kapacitaPlochy, plochaPodleId, type Obdobi } from './plochy'
+import { KAPACITA, OBDOBI_PODLE_ID, kapacitaPlochy, plochaPodleId, type ObdobiId } from './plochy'
 
 export interface Prostredi {
   DB: D1Database
@@ -11,6 +11,12 @@ export interface Prostredi {
   PROVOZOVATEL: string
   PROVOZOVATEL_ICO: string
   PROVOZOVATEL_EMAIL: string
+  /** sídlo provozovatele na faktuře */
+  PROVOZOVATEL_SIDLO?: string
+  /** DIČ; prázdné = neplátce DPH */
+  PROVOZOVATEL_DIC?: string
+  /** kanonická adresa webu — odsud berou právní odkazy svůj původ */
+  WEB_URL?: string
   ADMIN_TOKEN?: string
 }
 
@@ -121,9 +127,9 @@ export async function objednavkaPodleTokenu(env: Prostredi, token: string) {
 }
 
 /** Spočítá konec platnosti od data zahájení. */
-export function platiDo(od: string, obdobi: Obdobi): string {
+export function platiDo(od: string, obdobi: ObdobiId): string {
   const d = new Date(`${od}T00:00:00Z`)
-  d.setUTCDate(d.getUTCDate() + OBDOBI[obdobi].dnu)
+  d.setUTCDate(d.getUTCDate() + OBDOBI_PODLE_ID[obdobi].dnu)
   return d.toISOString().slice(0, 10)
 }
 
@@ -151,4 +157,11 @@ export async function zrusNezaplacene(env: Prostredi): Promise<number> {
       WHERE stav = 'ceka_na_platbu' AND substr(vytvoreno, 1, 10) < ?1`,
   ).bind(hranice).run()
   return vysledek.meta.changes ?? 0
+}
+
+/** Zahodí počítadla starší než 24 hodin — jinak by tabulka rostla donekonečna. */
+export async function smazStareLimity(env: Prostredi): Promise<number> {
+  const hranice = Math.floor(Date.now() / 3_600_000) - 24
+  const { meta } = await env.DB.prepare('DELETE FROM limity WHERE okno < ?1').bind(hranice).run()
+  return meta?.changes ?? 0
 }

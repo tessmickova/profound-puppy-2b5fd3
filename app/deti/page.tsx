@@ -11,7 +11,7 @@ import {
 } from '@/lib/names/seo'
 
 export const metadata: Metadata = {
-  title: 'Jména pro děti — nejlepší shody podle příjmení a měsíce narození | Svět jmen',
+  title: 'Jména pro děti — nejlepší shody podle příjmení a měsíce narození',
   description:
     'Jména pro holčičky a kluky z celého světa. Chytré hledání nejlepší shody: souzvuk s příjmením, měsíc narození, styl i země inspirace.',
   alternates: { canonical: '/deti' },

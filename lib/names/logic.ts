@@ -624,3 +624,8 @@ export function rychlaAnalyza(j: Jmeno, jeVCesku: boolean): Postreh[] {
 
   return postrehy
 }
+
+/** První písmeno velké — na začátek věty nebo nadpisu. */
+export function velke(text: string): string {
+  return text ? text[0].toUpperCase() + text.slice(1) : text
+}

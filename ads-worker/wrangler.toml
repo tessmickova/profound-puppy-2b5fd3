@@ -21,6 +21,10 @@ binding = "LOGA"
 bucket_name = "svetjmen-ads-loga"
 
 [vars]
+# Kanonická adresa webu. Odsud vedou odkazy na podmínky a soukromí —
+# musí ukazovat tam, kde web opravdu běží.
+WEB_URL = "https://svetjmen.tereza-holtzerova.workers.dev"
+
 # Odkud smí web volat API. Víc domén oddělte čárkou.
 POVOLENE_ORIGINY = "https://jmenaprodeti.cz,https://www.jmenaprodeti.cz,https://svetjmen.tereza-holtzerova.workers.dev,http://localhost:3000"
 # Bankovní spojení do pokynů k platbě
@@ -28,6 +32,9 @@ BANKOVNI_UCET = "VYPLNIT/0000"
 PROVOZOVATEL = "VYPLNIT s.r.o."
 PROVOZOVATEL_ICO = "00000000"
 PROVOZOVATEL_EMAIL = "reklama@jmenaprodeti.cz"
+# Sídlo a DIČ na fakturu. DIČ nechte prázdné, když provozovatel není plátce.
+PROVOZOVATEL_SIDLO = "VYPLNIT — sídlo"
+PROVOZOVATEL_DIC = ""
 
 # Tajemství (nastavit přes `wrangler secret put`, ne sem):
 #   ADMIN_TOKEN — token pro schvalování a správu kampaní

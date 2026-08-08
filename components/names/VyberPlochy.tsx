@@ -11,23 +11,15 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { Check, Loader2 } from 'lucide-react'
-import { PLOCH, POZIC } from '@/lib/names/reklamy'
+import { CENA_MESIC_KC, OBDOBI, PLOCH, POZIC, ROTACE_SLOUPCE_MS, cenaKc, type ObdobiId } from '@/shared/reklama'
 import { ADRESA_REKLAM } from '@/lib/names/reklamniServer'
 import { PRAVNI } from '@/lib/names/pravni'
 
 /** Kam psát, když reklamní služba není po ruce. */
 const EMAIL = PRAVNI.emailReklama
 
-/** Ceník je jeden pro všechny plochy. */
-const CENA_MESIC = 5000
-
-const OBDOBI = [
-  { id: 'mesic', nazev: '1 měsíc', mesicu: 1 },
-  { id: 'dva', nazev: '2 měsíce', mesicu: 2 },
-  { id: 'tri', nazev: '3 měsíce', mesicu: 3 },
-] as const
-
-type ObdobiId = typeof OBDOBI[number]['id']
+/** Ceník i délky kampaní jsou v `shared/reklama.ts` — tady se jen čtou. */
+const CENA_MESIC = CENA_MESIC_KC
 
 interface Slot {
   id: string
@@ -68,8 +60,7 @@ export default function VyberPlochy() {
   const vlevo = pozice.slice(0, POZIC / 2)
   const vpravo = pozice.slice(POZIC / 2)
 
-  const mesicu = OBDOBI.find(o => o.id === obdobi)!.mesicu
-  const celkem = CENA_MESIC * mesicu
+  const celkem = cenaKc(obdobi)
   const vybranySlot = vybrano ? sloty?.[vybrano] : null
   const obsazena = Boolean(vybrano && vybranySlot && vybranySlot.volno === 0)
 
@@ -106,9 +97,9 @@ export default function VyberPlochy() {
         <div>
           <h2 className="plochy-nadpis">Vyberte si své místo</h2>
           <p className="plochy-popis">
-            Web má deset pozic — pět vlevo, pět vpravo. Každá se po patnácti
-            sekundách překlopí na druhou stranu, kde je jiná kampaň. Ploch je
-            proto {PLOCH} a každá je samostatně k mání.
+            Web má {POZIC} pozic — polovina vlevo, polovina vpravo. Každá se po{' '}
+            {ROTACE_SLOUPCE_MS / 1000} sekundách překlopí na druhou stranu, kde je
+            jiná kampaň. Ploch je proto {PLOCH} a každá je samostatně k mání.
           </p>
         </div>
         <div className="plochy-strany" role="group" aria-label="Strana pozice">

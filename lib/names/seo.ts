@@ -1,13 +1,13 @@
-// Sdílené SEO údaje. Doména se mění jednou proměnnou, ať se nemusí hledat
-// po celém projektu.
+// Sdílené SEO údaje. Vše podstatné je v `lib/config.ts`; tady zůstávají jen
+// texty a generátory strukturovaných dat.
+
+import { WEB as ZAKLAD } from '@/lib/config'
 
 export const WEB = {
-  url: process.env.NEXT_PUBLIC_URL ?? 'https://jmenaprodeti.cz',
-  nazev: 'Svět jmen',
-  popis:
-    'Jména pro děti i zvířata podle zemí celého světa — s významem, oblíbeností, '
-    + 'jmeninami a chytrým výběrem podle příjmení, rodiny a plemene.',
-  jazyk: 'cs-CZ',
+  url: ZAKLAD.puvod,
+  nazev: ZAKLAD.nazev,
+  popis: ZAKLAD.popis,
+  jazyk: ZAKLAD.jazyk,
 }
 
 /** Otázky, na které se web přímo ptá — čte je Google i jazykové modely. */
