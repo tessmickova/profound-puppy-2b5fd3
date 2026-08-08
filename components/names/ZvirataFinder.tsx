@@ -284,7 +284,7 @@ export default function ZvirataFinder() {
   }, [vysledky, abecedne])
 
   return (
-    <Rozvrzeni uzsi plochy={['zvirata-filtr', 'zvirata-nad', 'zvirata-v-mrizce', 'zvirata-pod', 'zvirata-bocni']}>
+    <Rozvrzeni>
       <div className="grid items-start gap-6 lg:grid-cols-[268px_1fr]">
         {panelOtevren && <div className="filtr-zaves" onClick={() => setPanelOtevren(false)} aria-hidden />}
         {panel}

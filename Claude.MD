@@ -72,10 +72,11 @@ Mapa světa na úvodu **už není** — země jsou jen ve filtru a v patičce.
 - **VolbaPodrobnosti.tsx** — přepínače toho, co se u jmen ukazuje.
 - **RychleOdpovedi.tsx** — krátké odpovědi na časté otázky; text je vidět
   na stránce a zároveň jde stránkou jako strukturovaná data.
-- **Reklama.tsx** — jedna nativní reklamní plocha (viz níže).
-- **ReklamniPas.tsx** — reklamní pruh připnutý úplně nahoře, jen na telefonu.
-  Místo karet v něm jede pomalý pás s názvy firem; každý název je odkaz, takže
-  celý pruh je jedno velké CTA. Od 640 px se nevykresluje.
+- **ReklamniRam.tsx** — celá reklama na webu. Na širokém okně dva sloupce
+  přišpendlené k oknu po pěti pozicích, jinak lišta 52 px úplně nahoře.
+  Pozice se po 15 s překlápí na druhou stranu, lišta se střídá po 10 s.
+- **VyberPlochy.tsx** — náhled ploch na `/reklama`: zmenšený web, ve kterém si
+  zákazník klepnutím vybere konkrétní místo a délku 1–3 měsíce.
 - **RodinaProfil.tsx**, **OblibeneSeznam.tsx**, **Paticka.tsx**.
 
 ## Knihovna (`lib/names/`)
@@ -117,16 +118,24 @@ a oblíbenost. Vrací skóre 0–100 a české vysvětlení, proč zrovna tohle 
 
 ## Jak to funguje na webu
 
-Reklamní plocha vypadá jako běžná karta webu — stejná paleta, stejné rohy.
-Každá plocha se po **30 sekundách** překlopí na další kreativu (nejvýš čtyři),
-překlopení se pozastaví při najetí myší a při zaměření klávesnicí. Označení
-„sponzorováno" je vždy vidět, odkazy mají `rel="sponsored nofollow noopener"`.
+Reklama má vlastní rám kolem obsahu, do stránek nezasahuje. Na širokém okně
+(od 1240 px) jsou to **dva sloupce přišpendlené k oknu** po pěti pozicích:
+roluje jen obsah, reklama zůstává. Na užších oknech, tabletech a telefonech
+se sloupce schovají a nastoupí **lišta 52 px úplně nahoře** — od 700 px se
+dvěma kampaněmi vedle sebe, pod 700 px s jednou.
 
-Ploch je **31** — pět na každém typu stránky a k tomu `mobil-pas`, pruh nahoře
-na telefonu, který běží na všech stránkách. Jejich seznam a ceník je
-v `ads-worker/src/plochy.ts`; jména ploch používá web v `Rozvrzeni`, pruh
-v `ReklamniPas`. Na jedné ploše se střídají čtyři kampaně, pruh jich unese
-deset (vlastní kapacita u plochy).
+Každá pozice má **dvě strany** a po **15 sekundách** se překlopí na tu druhou.
+Pozic je deset, prodaných ploch tedy **dvacet**, každá za **5 000 Kč/měsíc**
+a na **1–3 měsíce**. V liště se kampaně střídají po **10 sekundách**.
+
+Rotace se zastaví při najetí myší, doteku i zaměření klávesnicí a dá se vypnout
+tlačítkem pauzy; při `prefers-reduced-motion` se nic neotáčí. Označení
+„reklama" je vidět vždycky, odkazy mají `rel="sponsored nofollow noopener"`.
+Volná plocha se ukáže jako nabídka „Tady může být vaše značka" s odkazem
+na `/reklama`.
+
+Seznam ploch a ceník je v `ads-worker/src/plochy.ts`, vykreslení v
+`components/names/ReklamniRam.tsx`, prodejní náhled v `VyberPlochy.tsx`.
 
 ## Jak web přijde ke kreativám
 

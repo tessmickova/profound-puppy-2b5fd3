@@ -51,7 +51,7 @@ export default function RodinaProfil() {
   }
 
   return (
-    <Rozvrzeni plochy={['rodina-1', 'rodina-2', 'rodina-3', 'rodina-4', 'rodina-5']}>
+    <Rozvrzeni>
       <section className="mb-8 rounded-3xl border border-[#e8dfd2] bg-white p-6 shadow-sm">
         <h2 className="[font-family:var(--font-syne)] text-xl font-bold">Kdo už doma je</h2>
         <p className="mt-1 text-sm text-[#8a7f71]">

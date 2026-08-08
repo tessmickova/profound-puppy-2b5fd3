@@ -2,15 +2,16 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import Shell from '@/components/names/Shell'
 import { ADRESA_REKLAM, PRAVNI } from '@/lib/names/pravni'
+import VyberPlochy from '@/components/names/VyberPlochy'
 
 export const metadata: Metadata = {
   title: 'Reklama na Světě jmen — nativní plochy pro firmy',
   description:
-    'Inzerát, který vypadá jako zbytek webu. Plochy na měsíc, půl roku nebo rok, pevný formát, žádné blikající bannery.',
+    'Dvacet ploch po stranách obsahu, 5 000 Kč za měsíc. Vyberete si v náhledu přesně to místo, které kupujete, a zaplatíte na jeden až tři měsíce.',
 }
 
 const KROKY = [
-  { c: '1', h: 'Vyberete plochu', t: 'Vidíte, které plochy jsou volné a co která stojí. Na jedné se střídají nejvýš čtyři inzeráty, každý je vidět půl minuty.' },
+  { c: '1', h: 'Kliknete na místo', t: 'V náhledu níž vidíte přesně tu plochu, kterou kupujete — i to, jestli je volná.' },
   { c: '2', h: 'Naklikáte inzerát', t: 'Značka nebo logo, nadpis, dvě věty, tlačítko a odkaz. Formát je daný, náhled vidíte hned vedle.' },
   { c: '3', h: 'Zaplatíte převodem', t: 'Kampaň spustíme po připsání platby, nejpozději následující pracovní den.' },
   { c: '4', h: 'Na konci sama zhasne', t: 'Nic se neobnovuje automaticky. Plocha se uvolní a nabídne dalšímu — nebo si ji vezmete znovu.' },
@@ -28,8 +29,13 @@ export default function ReklamaStranka() {
           Světa jmen a vidí ho lidé, kteří právě vybírají jméno pro dítě nebo pro
           zvíře — tedy chvíli před nákupem známky, pelíšku, knížky nebo focení.
         </p>
+        <p className="mt-2 text-lg font-semibold text-[#2b2723]">
+          Jedna plocha stojí 5 000 Kč za měsíc. Kupuje se na jeden, dva nebo tři měsíce.
+        </p>
 
-        <ol className="mt-8 grid gap-3 sm:grid-cols-2">
+        <div className="mt-8"><VyberPlochy /></div>
+
+        <ol className="mt-10 grid gap-3 sm:grid-cols-2">
           {KROKY.map(k => (
             <li key={k.c} className="rounded-2xl border border-[#e8dfd2] bg-white p-5">
               <span className="inline-flex h-7 w-7 items-center justify-center rounded-[9px] bg-[#2b2723] text-sm font-bold text-[#faf6ef]">

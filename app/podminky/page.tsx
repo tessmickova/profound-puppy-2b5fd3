@@ -81,7 +81,7 @@ export default function PodminkyStranka() {
             platby, nejpozději následující pracovní den.
           </li>
           <li>
-            Na jedné ploše se střídají nejvýš čtyři inzeráty. Negarantujeme počet
+            Na jedné pozici se střídají dvě plochy — každá je vidět patnáct sekund. Negarantujeme počet
             zobrazení ani proklik — garantujeme místo po celou zaplacenou dobu.
           </li>
           <li>

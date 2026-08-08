@@ -38,7 +38,7 @@ export default function Domov() {
 
   return (
     <Shell>
-      <Rozvrzeni plochy={['domov-nad-mapou', 'domov-po-mape', 'domov-mezi', 'domov-bocni', 'domov-pred-patickou']}>
+      <Rozvrzeni>
         <section className="hero-zare mb-10 text-center">
           <p className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-[#efe0cc] bg-white px-3 py-1 text-[12.5px] font-medium text-[#8a6d2f]">
             <Sparkles size={13} aria-hidden /> {JMENA.length} jmen z {ZEME.length} zemí — zdarma a bez registrace

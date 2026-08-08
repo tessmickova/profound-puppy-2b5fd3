@@ -1,19 +1,22 @@
 // Nativní reklamní plochy. Kreativy záměrně vypadají jako ostatní obsah webu
 // (stejné karty, stejná paleta) — žádné blikající bannery. Každá plocha se
-// po 30 sekundách překlopí na další kreativu.
+// po patnácti sekundách překlopí na druhou stranu, kde je jiná kampaň.
 //
 // Toto jsou ukázková data pro vývoj a náhled. V ostrém provozu je nahradí
 // odpověď reklamní služby (viz `reklamniServer.ts`) — tvar `Inzerat` je
 // v obou případech stejný.
 
-export type ReklamniPlocha =
-  | 'mobil-pas'
-  | 'domov-nad-mapou' | 'domov-po-mape' | 'domov-mezi' | 'domov-pred-patickou' | 'domov-bocni'
-  | 'zvirata-filtr' | 'zvirata-nad' | 'zvirata-v-mrizce' | 'zvirata-pod' | 'zvirata-bocni'
-  | 'deti-filtr' | 'deti-nad' | 'deti-v-mrizce' | 'deti-pod' | 'deti-bocni'
-  | 'zeme-1' | 'zeme-2' | 'zeme-3' | 'zeme-4' | 'zeme-5'
-  | 'rodina-1' | 'rodina-2' | 'rodina-3' | 'rodina-4' | 'rodina-5'
-  | 'oblibene-1' | 'oblibene-2' | 'oblibene-3' | 'oblibene-4' | 'oblibene-5'
+/** Ploch je dvacet: deset pozic po dvou stranách. */
+export type ReklamniPlocha = `plocha-${number}`
+
+/** Kolik pozic web má — pět vlevo, pět vpravo. */
+export const POZIC = 10
+
+/** Kolik ploch se dá koupit dohromady (každá pozice má dvě strany). */
+export const PLOCH = POZIC * 2
+
+/** Seznam id všech ploch v pořadí, v jakém je vidí zákazník v náhledu. */
+export const PLOCHY: string[] = Array.from({ length: PLOCH }, (_, i) => `plocha-${i + 1}`)
 
 export interface Inzerat {
   id: string
@@ -58,36 +61,20 @@ const OBECNE: Inzerat[] = [
   { id: 'r-obec-4', nadpis: 'Jazykový kurz pro rodiče', text: 'Chcete jméno, které zvládnou i v cizině? Naučte se ho správně vyslovit.', cta: 'Vyzkoušet lekci', odkaz: '#', znacka: 'Lingvo', ikona: 'languages' },
 ]
 
-/** Kreativy pro každou plochu — plocha se po 30 s překlopí na další. */
-export const REKLAMY: Record<string, Inzerat[]> = {
-  // Pruh nahoře na telefonu — jede na všech stránkách, proto je v něm
-  // průřez všemi obory.
-  'mobil-pas': [...DETI, ...OBECNE, ...PSI, ...KOCKY],
+/**
+ * Ukázkové kreativy pro vývoj a náhled — v ostrém provozu je nahradí odpověď
+ * reklamní služby. Rozdělují se po ploše, ať náhled nevypadá jednotvárně.
+ */
+const UKAZKY = [...DETI, ...OBECNE, ...PSI, ...KOCKY]
 
-  'domov-nad-mapou': OBECNE,
-  'domov-po-mape': [...DETI, ...OBECNE].slice(0, 4),
-  'domov-mezi': PSI,
-  'domov-pred-patickou': [...OBECNE].reverse(),
-  'domov-bocni': KOCKY,
+export const REKLAMY: Record<string, Inzerat[]> = Object.fromEntries(
+  PLOCHY.map((id, i) => [id, [UKAZKY[i % UKAZKY.length]]]),
+)
 
-  'zvirata-filtr': PSI,
-  'zvirata-nad': KOCKY,
-  'zvirata-v-mrizce': [...PSI].reverse(),
-  'zvirata-pod': [...KOCKY, ...OBECNE].slice(0, 4),
-  'zvirata-bocni': OBECNE,
+export const inzeratyProPlochu = (plocha: string): Inzerat[] => REKLAMY[plocha] ?? []
 
-  'deti-filtr': DETI,
-  'deti-nad': [...DETI].reverse(),
-  'deti-v-mrizce': OBECNE,
-  'deti-pod': [...DETI, ...OBECNE].slice(0, 4),
-  'deti-bocni': [...OBECNE].reverse(),
+/** Jak dlouho je vidět jedna strana pozice ve sloupci, než se překlopí. */
+export const INTERVAL_MS = 15_000
 
-  'zeme-1': OBECNE, 'zeme-2': DETI, 'zeme-3': PSI, 'zeme-4': KOCKY, 'zeme-5': [...OBECNE].reverse(),
-  'rodina-1': DETI, 'rodina-2': OBECNE, 'rodina-3': PSI, 'rodina-4': KOCKY, 'rodina-5': [...DETI].reverse(),
-  'oblibene-1': OBECNE, 'oblibene-2': DETI, 'oblibene-3': KOCKY, 'oblibene-4': PSI, 'oblibene-5': [...OBECNE].reverse(),
-}
-
-export const inzeratyProPlochu = (plocha: string): Inzerat[] => REKLAMY[plocha] ?? OBECNE
-
-/** Jak dlouho je jedna kreativa vidět, než se plocha překlopí. */
-export const INTERVAL_MS = 30_000
+/** Jak dlouho je vidět jedna reklama v liště nahoře na telefonu. */
+export const INTERVAL_LISTA_MS = 10_000

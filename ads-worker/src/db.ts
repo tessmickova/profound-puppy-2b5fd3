@@ -76,6 +76,29 @@ export async function inzeratyProPlochu(env: Prostredi, plocha: string) {
   return results ?? []
 }
 
+/** Kreativy všech ploch najednou — web se ptá jedním dotazem. */
+export async function inzeratyVsech(env: Prostredi): Promise<Record<string, RadekInzeratu[]>> {
+  const dnes = dnesISO()
+  const { results } = await env.DB.prepare(
+    `SELECT o.plocha AS plocha, i.id, i.znacka, i.nadpis, i.text, i.cta, i.odkaz, i.ikona, i.logo_klic
+       FROM inzeraty i
+       JOIN objednavky o ON o.id = i.objednavka_id
+      WHERE o.stav = 'aktivni'
+        AND (o.plati_od IS NULL OR o.plati_od <= ?1)
+        AND (o.plati_do IS NULL OR o.plati_do >= ?1)
+      ORDER BY o.plocha, o.vytvoreno`,
+  ).bind(dnes).all<RadekInzeratu & { plocha: string }>()
+
+  const podle: Record<string, RadekInzeratu[]> = {}
+  for (const r of results ?? []) {
+    const def = plochaPodleId(r.plocha)
+    const strop = def ? kapacitaPlochy(def) : KAPACITA
+    const dosud = podle[r.plocha] ?? (podle[r.plocha] = [])
+    if (dosud.length < strop) dosud.push(r)
+  }
+  return podle
+}
+
 /** Kolik kampaní na ploše drží místo — aktivní i zaplacení čekatelé. */
 export async function obsazenost(env: Prostredi): Promise<Record<string, number>> {
   const dnes = dnesISO()

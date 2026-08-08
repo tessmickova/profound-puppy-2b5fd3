@@ -235,6 +235,26 @@ export function samoobsluha(env: Prostredi): string {
     stav.ceny = {};
     d.plochy.forEach(function (p) { stav.ceny[p.id] = { ceny: p.ceny, nazev: p.nazev, volno: p.volno }; });
 
+    // Zákazník přichází z náhledu na webu, kde si plochu i délku už vybral.
+    var zAdresy = new URLSearchParams(location.search);
+    if (zAdresy.get('plocha') && stav.ceny[zAdresy.get('plocha')]) {
+      var radek = document.querySelector('tr[data-id="' + zAdresy.get('plocha') + '"]');
+      if (radek && !radek.classList.contains('obsazena')) {
+        radek.classList.add('je-vybrana');
+        radek.scrollIntoView({ block: 'nearest' });
+        stav.plocha = zAdresy.get('plocha');
+        $('s-plocha').textContent = stav.ceny[stav.plocha].nazev;
+        vykresliObdobi(d.obdobi);
+        $('krok-obdobi').hidden = false;
+        $('krok-inzerat').hidden = false;
+        $('krok-firma').hidden = false;
+        var chtene = zAdresy.get('obdobi');
+        var prepinac = document.querySelector('#obdobi input[value="' + chtene + '"]');
+        if (prepinac) { prepinac.checked = true; prepinac.dispatchEvent(new Event('change', { bubbles: true })); }
+        prekresli();
+      }
+    }
+
     $('tabulka').addEventListener('click', function (e) {
       var tr = e.target.closest('tr[data-id]');
       if (!tr || tr.classList.contains('obsazena')) return;
@@ -270,7 +290,7 @@ export function samoobsluha(env: Prostredi): string {
   function vykresliObdobi(obdobi) {
     var c = stav.ceny[stav.plocha].ceny;
     var mesicne = c.mesic;
-    var popisky = { mesic:'', pulrok:'jeden měsíc zdarma', rok:'tři měsíce zdarma' };
+    var popisky = {};
     $('obdobi').innerHTML = obdobi.map(function (o) {
       return '<label><input type="radio" name="obdobi" value="' + o.id + '">' + o.nazev +
         '<span class="cena">' + korun(c[o.id]) + '</span>' +
@@ -279,8 +299,8 @@ export function samoobsluha(env: Prostredi): string {
     }).join('');
     $('obdobi').addEventListener('change', function (e) {
       stav.obdobi = e.target.value;
-      var nazvy = { mesic:'měsíc', pulrok:'6 měsíců', rok:'rok' };
-      $('s-obdobi').textContent = nazvy[stav.obdobi];
+      var vybrane = obdobi.filter(function (o) { return o.id === stav.obdobi; })[0];
+      $('s-obdobi').textContent = vybrane ? vybrane.nazev : stav.obdobi;
       $('s-cena').textContent = korun(c[stav.obdobi]) + ' bez DPH';
       prekresli();
     });

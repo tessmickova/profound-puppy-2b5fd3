@@ -33,9 +33,12 @@ porovnává v konstantním čase.
 
 ## Nákupní tok
 
-1. **Výběr plochy.** Samoobsluha ukáže všech 31 ploch, kolik je na které volno
-   a cenu za měsíc. Obsazená plocha se nedá vybrat.
-2. **Délka.** Měsíc, 6 měsíců (jeden měsíc zdarma) nebo rok (tři měsíce zdarma).
+1. **Výběr plochy.** Zákazník začíná na `/reklama`, kde je zmenšený náhled webu
+   se všemi dvaceti plochami — klepnutím si vybere přesně to místo, které
+   kupuje, a přepínačem „strana A / B" si prohlédne obě strany pozice.
+   Odtud odejde do samoobsluhy s předvyplněnou plochou i délkou.
+2. **Délka.** Jeden, dva nebo tři měsíce. Delší období zatím neprodáváme —
+   dokud není jasná návštěvnost, dalo by se jen prodělat.
 3. **Inzerát.** Značka, nadpis (48 znaků), text (150 znaků), tlačítko a odkaz.
    Formát je daný, náhled se překresluje při psaní. Místo ikony může firma po
    zaplacení nahrát logo.
@@ -52,13 +55,13 @@ porovnává v konstantním čase.
 
 ## Ceník
 
-Cena vychází z toho, kolik lidí plochu uvidí. Za měsíc bez DPH: pruh nahoře na
-telefonu 3 200 Kč, úvodní strana 1 400–2 400 Kč, stránky dětí a zvířat
-1 200–2 000 Kč, rodinný profil 1 100–1 500 Kč, uložená jména 900–1 300 Kč,
-stránky zemí 800–1 200 Kč.
+Všech dvacet ploch stojí stejně: **5 000 Kč za měsíc bez DPH**. Reklama běží
+na všech stránkách webu, takže rozlišovat plochy podle stránky nemá smysl —
+liší se jen tím, jak vysoko ve sloupci jsou.
 
-Násobky za období: měsíc ×1, půl roku ×5, rok ×9. Ceník je jedna tabulka
-v `src/plochy.ts` — mění se tam a nikde jinde.
+Násobky za období: měsíc ×1, dva měsíce ×2, tři měsíce ×3. Žádné množstevní
+slevy zatím nedáváme. Cena i délky jsou v `src/plochy.ts` — mění se tam
+a nikde jinde.
 
 ## Databáze
 
@@ -72,23 +75,36 @@ Tři tabulky (`schema.sql`), nic navíc:
 
 Loga leží v objektovém úložišti, ne v databázi.
 
-## Kapacita a sloty
+## Pozice, plochy a kapacita
 
-Na jedné ploše se střídají nejvýš **čtyři** kampaně (`KAPACITA` v `plochy.ts`),
-každá je vidět 30 sekund. Plocha si může říct o vlastní počet — pátý parametr
-u `p(...)`; čte se přes `kapacitaPlochy()`. Volné místo se počítá z aktivních
-objednávek i z těch, které čekají na platbu — jinak by se plocha prodala
-dvakrát.
+Web má **deset pozic**: pět v levém sloupci, pět v pravém. Každá pozice má dvě
+strany a po **patnácti sekundách** se překlopí na tu druhou, kde je jiná
+kampaň. Prodaných ploch je proto **dvacet** a na každé běží právě jedna
+kampaň (`KAPACITA = 1`).
 
-## Pruh nahoře na telefonu (`mobil-pas`)
+Číslování je to, co vidí zákazník: pozice 1 drží plochy 1 a 2, pozice 2 plochy
+3 a 4 a tak dál. Liché číslo je strana A, sudé strana B.
 
-Jediná plocha, která běží na **všech** stránkách, a jediná, která se
-nepřeklápí: je připnutá úplně nahoře nad hlavičkou a jede v ní pomalý pás
-(150 s na smyčku, zhruba čtyřikrát pomaleji než pásy jmen). Vidět je z inzerátu
-jen **název firmy a text tlačítka** — celý blok je odkaz, takže pruh funguje
-jako CTA. Vejde se do něj **deset** kampaní najednou, proto stojí víc než
-ostatní plochy. Na displeji od 640 px se pruh vůbec nevykresluje, tam má
-reklama postranní sloupce.
+Volné místo se počítá z aktivních objednávek i z těch, které čekají na platbu —
+jinak by se plocha prodala dvakrát.
+
+## Kde reklama na webu je
+
+- **Široké okno (od 1240 px):** dva sloupce přišpendlené k oknu, pět pozic
+  v každém. Roluje jen obsah, reklama zůstává. Šířka sloupce se počítá
+  z okna (`clamp(158px, 13.5vw, 214px)`), takže se s displejem plynule
+  zmenšuje a nikdy nepřeteče.
+- **Užší okna, tablety a telefony:** sloupce se schovají a nastoupí lišta
+  **52 px** přišpendlená úplně nahoře. Od 700 px jsou v ní dvě kampaně vedle
+  sebe, pod 700 px jedna, a po **deseti sekundách** naskočí další.
+
+Rotace se zastaví při najetí myší, doteku i zaměření z klávesnice a dá se
+vypnout tlačítkem pauzy. Kdo má v systému vypnuté animace
+(`prefers-reduced-motion`), uvidí prosté prostřídání bez otáčení. Označení
+„reklama" je na kartě i v liště vidět vždycky.
+
+Volná plocha se nevykreslí jako díra — ukáže se jako nabídka „Tady může být
+vaše značka, volné místo N/20" s odkazem na `/reklama`.
 
 ## Bezpečnost
 

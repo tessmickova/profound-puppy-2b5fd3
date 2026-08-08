@@ -12,20 +12,19 @@ export const ADRESA_REKLAM = process.env.NEXT_PUBLIC_ADS_API ?? ''
 /** Jak dlouho čekáme na reklamní službu, než na ni zapomeneme. */
 const LIMIT_MS = 2500
 
-/** Odpověď si držíme na jedno načtení stránky, ať se plochy neptají pořád dokola. */
-const pamet = new Map<string, Promise<Inzerat[] | null>>()
+/** Odpověď hromadného dotazu si držíme na jedno načtení stránky. */
+let vsechnyCekajici: Promise<Record<string, Inzerat[]> | null> | null = null
 
-async function stahni(plocha: string): Promise<Inzerat[] | null> {
+async function stahniVsechny(): Promise<Record<string, Inzerat[]> | null> {
   const stopka = new AbortController()
   const casovac = setTimeout(() => stopka.abort(), LIMIT_MS)
   try {
-    const odpoved = await fetch(
-      `${ADRESA_REKLAM}/api/reklamy?plocha=${encodeURIComponent(plocha)}`,
-      { signal: stopka.signal, cache: 'no-store' },
-    )
+    const odpoved = await fetch(`${ADRESA_REKLAM}/api/reklamy-vse`, {
+      signal: stopka.signal, cache: 'no-store',
+    })
     if (!odpoved.ok) return null
-    const data = await odpoved.json() as { inzeraty?: Inzerat[] }
-    return Array.isArray(data.inzeraty) ? data.inzeraty : null
+    const data = await odpoved.json() as { plochy?: Record<string, Inzerat[]> }
+    return data.plochy && typeof data.plochy === 'object' ? data.plochy : null
   } catch {
     return null
   } finally {
@@ -33,12 +32,12 @@ async function stahni(plocha: string): Promise<Inzerat[] | null> {
   }
 }
 
-export function nactiInzeraty(plocha: string): Promise<Inzerat[] | null> {
+/**
+ * Kreativy všech ploch jedním dotazem. Ploch je dvacet a ptát se na každou
+ * zvlášť by znamenalo dvacet spojení hned po načtení stránky.
+ */
+export function nactiVsechnyInzeraty(): Promise<Record<string, Inzerat[]> | null> {
   if (!ADRESA_REKLAM) return Promise.resolve(null)
-  let cekajici = pamet.get(plocha)
-  if (!cekajici) {
-    cekajici = stahni(plocha)
-    pamet.set(plocha, cekajici)
-  }
-  return cekajici
+  if (!vsechnyCekajici) vsechnyCekajici = stahniVsechny()
+  return vsechnyCekajici
 }

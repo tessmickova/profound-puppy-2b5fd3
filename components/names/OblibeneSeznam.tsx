@@ -12,8 +12,6 @@ import { useOblibene } from '@/lib/names/oblibene'
 import NameCard from './NameCard'
 import Rozvrzeni from './Rozvrzeni'
 import NadpisSekce from './NadpisSekce'
-
-const PLOCHY = ['oblibene-1', 'oblibene-2', 'oblibene-3', 'oblibene-4', 'oblibene-5']
 const PORADI: Kategorie[] = ['pes', 'fenka', 'kocour', 'kocka', 'kun', 'kralik', 'papousek', 'krecek', 'kluk', 'holka']
 
 export default function OblibeneSeznam() {
@@ -31,7 +29,7 @@ export default function OblibeneSeznam() {
 
   if (!skupiny.length) {
     return (
-      <Rozvrzeni plochy={PLOCHY}>
+      <Rozvrzeni>
         <div className="rounded-3xl border border-dashed border-[#e8dfd2] p-12 text-center">
           <p className="text-4xl">🤍</p>
           <p className="mt-3 text-[#6b6156]">
@@ -47,7 +45,7 @@ export default function OblibeneSeznam() {
   }
 
   return (
-    <Rozvrzeni plochy={PLOCHY}>
+    <Rozvrzeni>
       {skupiny.map(({ kat, jmena }) => (
         <section key={kat} className="mb-10">
           <div className="mb-3">

@@ -1,19 +1,29 @@
 // Katalog reklamních ploch a ceník.
 //
-// Plocha = jedno místo na webu. Na každé ploše se střídá až KAPACITA kampaní,
-// takže „volný slot" znamená, že plocha ještě nemá plný počet aktivních
-// objednávek. Názvy ploch se musí shodovat s tím, co web posílá v ?plocha=.
+// Web má deset pevných pozic: pět v levém sloupci, pět v pravém. Každá pozice
+// se po patnácti sekundách překlopí na druhou stranu, kde je jiná reklama —
+// pozic je tedy deset, ale prodaných ploch dvacet. Číslo plochy odpovídá tomu,
+// co vidí zákazník v náhledu na `/reklama`: pozice 1 drží plochy 1 a 2,
+// pozice 2 plochy 3 a 4 a tak dál.
 
-/** Kolik kampaní se na jedné ploše střídá, když plocha neurčí vlastní počet. */
-export const KAPACITA = 4
+/** Kolik kampaní se na jedné ploše střídá. Plocha je jedna strana pozice. */
+export const KAPACITA = 1
 
-export type Obdobi = 'mesic' | 'pulrok' | 'rok'
+/** Kolik pozic má web dohromady (pět vlevo, pět vpravo). */
+export const POZIC = 10
 
+export type Obdobi = 'mesic' | 'dva' | 'tri'
+
+// Delší období zatím neprodáváme. Až bude jasné, jakou má web návštěvnost,
+// dá se ceník otevřít výš — zpětně zlevňovat by se nedalo.
 export const OBDOBI: Record<Obdobi, { nazev: string; dnu: number; nasobek: number }> = {
-  mesic:  { nazev: 'měsíc',   dnu: 30,  nasobek: 1 },
-  pulrok: { nazev: '6 měsíců', dnu: 182, nasobek: 5 },   // šestý měsíc zdarma
-  rok:    { nazev: 'rok',     dnu: 365, nasobek: 9 },    // tři měsíce zdarma
+  mesic: { nazev: 'měsíc',    dnu: 30, nasobek: 1 },
+  dva:   { nazev: '2 měsíce', dnu: 60, nasobek: 2 },
+  tri:   { nazev: '3 měsíce', dnu: 90, nasobek: 3 },
 }
+
+/** Cena jedné plochy za měsíc v Kč bez DPH. Všechny plochy stojí stejně. */
+export const CENA_MESIC = 5000
 
 export interface Plocha {
   id: string
@@ -22,59 +32,31 @@ export interface Plocha {
   stranka: string
   /** cena za měsíc v Kč bez DPH */
   cena_mesic: number
-  /** kolik kampaní se na této ploše střídá; bez uvedení platí KAPACITA */
-  kapacita?: number
+  /** pořadí pozice 1–10 (1–5 levý sloupec, 6–10 pravý) */
+  pozice: number
+  /** která strana pozice: 'a' je vidět jako první, 'b' po překlopení */
+  strana: 'a' | 'b'
 }
 
-const p = (id: string, nazev: string, stranka: string, cena_mesic: number, kapacita?: number): Plocha =>
-  ({ id, nazev, stranka, cena_mesic, ...(kapacita ? { kapacita } : {}) })
-
 /**
- * Ceník vychází z toho, kolik lidí plochu uvidí: úvodní strana nejvíc,
- * stránky zemí nejmíň. Postranní sloupce jsou levnější než plochy v obsahu.
+ * Dvacet ploch: pozice 1–5 vlevo, 6–10 vpravo, každá o dvou stranách.
+ * Číslo plochy je to, co si zákazník naklikne v náhledu.
  */
-export const PLOCHY: Plocha[] = [
-  // Jediná plocha, která běží na všech stránkách — proto je nejdražší a vejde
-  // se do ní víc firem najednou. Na telefonu je připnutá úplně nahoře a jede
-  // v ní pomalý pás s názvy firem.
-  p('mobil-pas',            'Telefon — pruh nahoře',     'Všechny stránky (jen telefon)', 3200, 10),
-
-  p('domov-nad-mapou',      'Úvod — nad obsahem',        'Úvodní strana', 2400),
-  p('domov-po-mape',        'Úvod — pod hledáním',       'Úvodní strana', 2200),
-  p('domov-mezi',           'Úvod — mezi sekcemi',       'Úvodní strana', 2000),
-  p('domov-pred-patickou',  'Úvod — před patičkou',      'Úvodní strana', 1600),
-  p('domov-bocni',          'Úvod — postranní sloupec',  'Úvodní strana', 1400),
-
-  p('deti-filtr',           'Děti — u filtru',           'Jména pro děti', 2000),
-  p('deti-nad',             'Děti — nad výsledky',       'Jména pro děti', 1900),
-  p('deti-v-mrizce',        'Děti — mezi jmény',         'Jména pro děti', 1800),
-  p('deti-pod',             'Děti — pod výsledky',       'Jména pro děti', 1400),
-  p('deti-bocni',           'Děti — postranní sloupec',  'Jména pro děti', 1200),
-
-  p('zvirata-filtr',        'Zvířata — u filtru',        'Jména pro zvířata', 2000),
-  p('zvirata-nad',          'Zvířata — nad výsledky',    'Jména pro zvířata', 1900),
-  p('zvirata-v-mrizce',     'Zvířata — mezi jmény',      'Jména pro zvířata', 1800),
-  p('zvirata-pod',          'Zvířata — pod výsledky',    'Jména pro zvířata', 1400),
-  p('zvirata-bocni',        'Zvířata — postranní sloupec', 'Jména pro zvířata', 1200),
-
-  p('rodina-1',             'Rodinný profil — 1',        'Rodinný profil', 1500),
-  p('rodina-2',             'Rodinný profil — 2',        'Rodinný profil', 1400),
-  p('rodina-3',             'Rodinný profil — 3',        'Rodinný profil', 1300),
-  p('rodina-4',             'Rodinný profil — 4',        'Rodinný profil', 1200),
-  p('rodina-5',             'Rodinný profil — 5',        'Rodinný profil', 1100),
-
-  p('oblibene-1',           'Uložená jména — 1',         'Uložená jména', 1300),
-  p('oblibene-2',           'Uložená jména — 2',         'Uložená jména', 1200),
-  p('oblibene-3',           'Uložená jména — 3',         'Uložená jména', 1100),
-  p('oblibene-4',           'Uložená jména — 4',         'Uložená jména', 1000),
-  p('oblibene-5',           'Uložená jména — 5',         'Uložená jména', 900),
-
-  p('zeme-1',               'Stránky zemí — 1',          'Stránky zemí', 1200),
-  p('zeme-2',               'Stránky zemí — 2',          'Stránky zemí', 1100),
-  p('zeme-3',               'Stránky zemí — 3',          'Stránky zemí', 1000),
-  p('zeme-4',               'Stránky zemí — 4',          'Stránky zemí', 900),
-  p('zeme-5',               'Stránky zemí — 5',          'Stránky zemí', 800),
-]
+export const PLOCHY: Plocha[] = Array.from({ length: POZIC * 2 }, (_, i) => {
+  const cislo = i + 1
+  const pozice = Math.ceil(cislo / 2)
+  const strana: 'a' | 'b' = cislo % 2 === 1 ? 'a' : 'b'
+  const sloupec = pozice <= 5 ? 'levý' : 'pravý'
+  const vSloupci = pozice <= 5 ? pozice : pozice - 5
+  return {
+    id: `plocha-${cislo}`,
+    nazev: `Plocha ${cislo}`,
+    stranka: `${sloupec} sloupec, ${vSloupci}. shora — strana ${strana.toUpperCase()}`,
+    cena_mesic: CENA_MESIC,
+    pozice,
+    strana,
+  }
+})
 
 export const plochaPodleId = (id: string): Plocha | undefined =>
   PLOCHY.find(x => x.id === id)
@@ -83,7 +65,7 @@ export const cena = (plocha: Plocha, obdobi: Obdobi): number =>
   plocha.cena_mesic * OBDOBI[obdobi].nasobek
 
 /** Kolik kampaní se na dané ploše střídá. */
-export const kapacitaPlochy = (plocha: Plocha): number => plocha.kapacita ?? KAPACITA
+export const kapacitaPlochy = (_plocha: Plocha): number => KAPACITA
 
 /** Ikony, ze kterých si firma vybírá, když nemá logo. Musí sedět s webem. */
 export const IKONY = [

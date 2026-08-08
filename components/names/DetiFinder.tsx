@@ -196,10 +196,8 @@ export default function DetiFinder() {
     </div>
   )
 
-  const PLOCHY = ['deti-filtr', 'deti-nad', 'deti-v-mrizce', 'deti-pod', 'deti-bocni']
-
   return (
-    <Rozvrzeni uzsi plochy={PLOCHY}>
+    <Rozvrzeni>
       {taby}
 
       {rezim === 'prochazet' && (

@@ -8,6 +8,7 @@
 //   GET  /                          samoobsluha pro firmy
 //   GET  /api/sloty                 volné plochy a ceník
 //   GET  /api/reklamy?plocha=…      kreativy pro plochu (volá web)
+//   GET  /api/reklamy-vse            kreativy pro všechny plochy najednou
 //   POST /api/objednavka            vytvoření objednávky + inzerátu
 //   GET  /api/objednavka/:token     stav objednávky
 //   POST /api/objednavka/:token/logo  nahrání loga
@@ -15,7 +16,7 @@
 //   POST /api/admin/…               potvrzení platby a přehled (jen s tokenem)
 
 import {
-  dnesISO, inzeratyProPlochu, novyId, novyVs, objednavkaPodleTokenu,
+  dnesISO, inzeratyProPlochu, inzeratyVsech, novyId, novyVs, objednavkaPodleTokenu,
   obsazenost, platiDo, zhasniProsle, zrusNezaplacene,
   type Prostredi,
 } from './db'
@@ -107,6 +108,31 @@ async function dejReklamy(url: URL, env: Prostredi, cors: Record<string, string>
   }, cors)
 }
 
+/**
+ * Všechny plochy jedním dotazem. Web má dvacet ploch a ptát se dvacetkrát by
+ * bylo zbytečně drahé — tohle je jeden dotaz do databáze a jedna odpověď.
+ */
+async function dejVsechnyReklamy(url: URL, env: Prostredi, cors: Record<string, string>) {
+  const zaklad = `${url.origin}/logo/`
+  const vse = await inzeratyVsech(env)
+  const plochy: Record<string, unknown[]> = {}
+  for (const p of PLOCHY) {
+    plochy[p.id] = (vse[p.id] ?? []).map(r => ({
+      id: r.id,
+      znacka: r.znacka,
+      nadpis: r.nadpis,
+      text: r.text,
+      cta: r.cta,
+      odkaz: r.odkaz,
+      ikona: r.logo_klic ? null : (r.ikona ?? 'sparkles'),
+      logo: r.logo_klic ? zaklad + r.logo_klic : null,
+    }))
+  }
+  return json({ plochy }, {
+    headers: { 'Cache-Control': 'public, max-age=300' },
+  }, cors)
+}
+
 async function dejSloty(env: Prostredi, cors: Record<string, string>) {
   const obsazeno = await obsazenost(env)
   return json({
@@ -117,13 +143,13 @@ async function dejSloty(env: Prostredi, cors: Record<string, string>) {
       id: p.id,
       nazev: p.nazev,
       stranka: p.stranka,
+      pozice: p.pozice,
+      strana: p.strana,
       kapacita: kapacitaPlochy(p),
       volno: Math.max(0, kapacitaPlochy(p) - (obsazeno[p.id] ?? 0)),
-      ceny: {
-        mesic: cena(p, 'mesic'),
-        pulrok: cena(p, 'pulrok'),
-        rok: cena(p, 'rok'),
-      },
+      ceny: Object.fromEntries(
+        (Object.keys(OBDOBI) as Obdobi[]).map(o => [o, cena(p, o)]),
+      ),
     })),
   }, {}, cors)
 }
@@ -323,6 +349,7 @@ export default {
       }
 
       if (req.method === 'GET' && cesta === '/api/reklamy') return dejReklamy(url, env, cors)
+      if (req.method === 'GET' && cesta === '/api/reklamy-vse') return dejVsechnyReklamy(url, env, cors)
       if (req.method === 'GET' && cesta === '/api/sloty') return dejSloty(env, cors)
       if (req.method === 'POST' && cesta === '/api/objednavka') return vytvorObjednavku(req, env, cors)
 
