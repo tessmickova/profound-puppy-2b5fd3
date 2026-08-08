@@ -1,49 +1,19 @@
 'use client'
 
-// Srdíčka — oblíbená jména v localStorage, sdílená přes všechny komponenty.
+// Srdíčka. Data i logika jsou v `vyber.ts`, kde k oblíbeným patří i opak —
+// vyřazená jména. Tenhle soubor zůstává jako zkratka pro místa, která
+// potřebují jen srdíčka.
 
-import { useSyncExternalStore } from 'react'
+import { prepniOblibene, useVyber } from './vyber'
 
-const KLIC = 'svet-jmen-oblibene'
-const PRAZDNE: string[] = []
-
-let cache: string[] = PRAZDNE
-let nacteno = false
-const posluchaci = new Set<() => void>()
-
-function nacti() {
-  try {
-    cache = JSON.parse(localStorage.getItem(KLIC) ?? '[]')
-  } catch {
-    cache = []
-  }
-  nacteno = true
-}
-
-function subscribe(cb: () => void) {
-  if (!nacteno) {
-    nacti()
-    queueMicrotask(() => posluchaci.forEach(p => p()))
-  }
-  posluchaci.add(cb)
-  return () => { posluchaci.delete(cb) }
-}
-
-const getSnapshot = () => cache
-const getServerSnapshot = () => PRAZDNE
-
-export function prepniOblibene(id: string) {
-  cache = cache.includes(id) ? cache.filter(x => x !== id) : [...cache, id]
-  try { localStorage.setItem(KLIC, JSON.stringify(cache)) } catch {}
-  posluchaci.forEach(p => p())
-}
+export { prepniOblibene }
 
 export function useOblibene() {
-  const ids = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
+  const v = useVyber()
   return {
-    ids,
-    pocet: ids.length,
-    je: (id: string) => ids.includes(id),
-    prepni: prepniOblibene,
+    ids: v.oblibena,
+    pocet: v.pocetOblibenych,
+    je: v.jeOblibene,
+    prepni: v.prepniOblibene,
   }
 }

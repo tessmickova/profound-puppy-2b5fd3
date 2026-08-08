@@ -20,7 +20,7 @@ import {
 import type { Filtr, Razeni } from '@/lib/names/logic'
 import { KATEGORIE_INFO, VSECHNY_STYLY } from '@/lib/names/types'
 import type { Energie, Kategorie, PohlaviZvirete, Velikost } from '@/lib/names/types'
-import { useOblibene } from '@/lib/names/oblibene'
+import { useVyber } from '@/lib/names/vyber'
 import NameCard from './NameCard'
 import Vyber from './Vyber'
 import Rozvrzeni from './Rozvrzeni'
@@ -57,7 +57,7 @@ export default function ZvirataFinder() {
   const [rychle, setRychle] = useState<string[]>([])
   const [nahodne, setNahodne] = useState<string | null>(null)
   const [panelOtevren, setPanelOtevren] = useState(false)
-  const { ids: oblibena } = useOblibene()
+  const { oblibena, vyrazena } = useVyber()
 
   const vybranePlemeno = VSECHNA_PLEMENA.find(p => p.nazev === plemeno)
   const vybranyZivot = ZPUSOBY_ZIVOTA.find(z => z.id === zivot)
@@ -78,8 +78,10 @@ export default function ZvirataFinder() {
     if (rychle.includes('trendy')) kandidati = kandidati.filter(jeTrendy)
     if (rychle.includes('original')) kandidati = kandidati.filter(jeOriginal)
     if (rychle.includes('volatelne')) kandidati = kandidati.filter(dobreSeVola)
+    // Vyřazená jména z výsledků mizí — o to při vyřazování jde.
+    if (vyrazena.length) kandidati = kandidati.filter(j => !vyrazena.includes(j.id))
     return razeni === 'doporucene' ? kandidati : serad(kandidati, razeni)
-  }, [zakladni, filtr, razeni, vybranePlemeno, vybranyZivot, rychle, oblibena])
+  }, [zakladni, filtr, razeni, vybranePlemeno, vybranyZivot, rychle, oblibena, vyrazena])
 
   const pismena = useMemo(() => {
     const zac = new Set(zakladni.map(j => j.jmeno[0].toUpperCase()))

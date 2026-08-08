@@ -6,11 +6,12 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { RotateCcw, X } from 'lucide-react'
 import { KATEGORIE_INFO, POHLAVI_INFO } from '@/lib/names/types'
 import type { Jmeno } from '@/lib/names/types'
 import { zemePodleKodu } from '@/lib/names/data'
 import { jeHit, jeOriginal, jeTrendy } from '@/lib/names/logic'
-import { useOblibene } from '@/lib/names/oblibene'
+import { useVyber } from '@/lib/names/vyber'
 import { otevriDetail } from '@/lib/names/detail'
 import { slugJmena } from '@/lib/names/slug'
 
@@ -30,7 +31,7 @@ export function Srdicko({
   jmeno?: string
   velke?: boolean
 }) {
-  const { je, prepni } = useOblibene()
+  const { jeOblibene: je, prepniOblibene: prepni } = useVyber()
   const [poskoc, setPoskoc] = useState(false)
   const oblibene = je(id)
   return (
@@ -49,6 +50,32 @@ export function Srdicko({
       className={`srdicko ${velke ? 'text-2xl' : 'text-lg'} ${poskoc ? 'srdce-poskoc' : ''} transition-transform hover:scale-125 ${oblibene ? '' : 'opacity-45 hover:opacity-100'}`}
     >
       {oblibene ? '❤️' : '🤍'}
+    </button>
+  )
+}
+
+/**
+ * Vyřazení jména.
+ *
+ * Ke srdíčku patří i opak: když člověk projde stovky jmen, potřebuje si
+ * odškrtnout ta, u kterých už nechce znovu přemýšlet. Vyřazené jméno
+ * z výsledků zmizí a dá se kdykoli vrátit na stránce uložených jmen.
+ */
+export function Vyradit({ id, jmeno }: { id: string; jmeno?: string }) {
+  const { jeVyrazene, prepniVyrazene } = useVyber()
+  const vyrazene = jeVyrazene(id)
+  return (
+    <button
+      type="button"
+      onClick={e => { e.stopPropagation(); prepniVyrazene(id) }}
+      aria-pressed={vyrazene}
+      aria-label={jmeno
+        ? (vyrazene ? `Vrátit ${jmeno} mezi jména` : `Vyřadit ${jmeno} z výběru`)
+        : (vyrazene ? 'Vrátit mezi jména' : 'Vyřadit z výběru')}
+      title={vyrazene ? 'Vrátit mezi jména' : 'Tohle jméno mi nesedí — vyřadit'}
+      className={`vyradit ${vyrazene ? 'je-vyrazene' : ''}`}
+    >
+      {vyrazene ? <RotateCcw size={14} aria-hidden /> : <X size={15} aria-hidden />}
     </button>
   )
 }
@@ -111,7 +138,10 @@ export default function NameCard({
         {stitek && (
           <span className={`karta-stitek ${stitek.trida}`}>{stitek.text}</span>
         )}
-        <span className="ml-auto"><Srdicko id={jmeno.id} jmeno={jmeno.jmeno} /></span>
+        <span className="karta-akce">
+          <Vyradit id={jmeno.id} jmeno={jmeno.jmeno} />
+          <Srdicko id={jmeno.id} jmeno={jmeno.jmeno} />
+        </span>
       </div>
     </>
   )

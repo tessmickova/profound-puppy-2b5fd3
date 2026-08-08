@@ -41,9 +41,11 @@ export default function SoukromiStranka() {
             zadáte do rodinného vyhledávače — zůstávají v úložišti vašeho
             prohlížeče. Nikam se neodesílají a my se k nim nedostaneme. Smažete je
             tlačítkem v aplikaci nebo vymazáním dat prohlížeče. Konkrétně jde
-            o tři záznamy: <code>svet-jmen-oblibene</code> (uložená jména),
-            {' '}<code>svet-jmen-rodina</code> (členové rodiny) a
+            o tři záznamy: <code>svet-jmen-vyber</code> (uložená i vyřazená
+            jména), <code>svet-jmen-rodina</code> (členové rodiny) a
             {' '}<code>svetjmen-podrobnosti</code> (co se má u jmen ukazovat).
+            Firmy, které si u nás koupí reklamu, mají navíc
+            {' '}<code>svetjmen-inzerent-klic</code> s přístupem k vlastní kampani.
           </li>
           <li>
             <strong>Jména blízkých.</strong> Do vyhledávače se dají zadat jména

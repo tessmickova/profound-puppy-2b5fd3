@@ -4,7 +4,6 @@ import { Baby, Cat, Dog, Sparkles, Users } from 'lucide-react'
 import Shell from '@/components/names/Shell'
 import NameCard from '@/components/names/NameCard'
 import Rozvrzeni from '@/components/names/Rozvrzeni'
-import Hledani from '@/components/names/Hledani'
 import PasyJmen from '@/components/names/PasyJmen'
 import NadpisSekce from '@/components/names/NadpisSekce'
 import type { Druh } from '@/components/names/NadpisSekce'
@@ -51,12 +50,6 @@ export default function Domov() {
             Vybírat jméno má být radost, ne tabulka. Řekněte nám, koho čekáte —
             a my vybereme jména, která sedí k vašemu příjmení, rodině i povaze.
           </p>
-
-          {/* Nejčastější důvod návštěvy je konkrétní jméno. Hledání proto
-              patří nad rozcestník, ne až někam do filtru. */}
-          <div className="mt-6">
-            <Hledani velke />
-          </div>
         </section>
 
         <section className="mb-14">

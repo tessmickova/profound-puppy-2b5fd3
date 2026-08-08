@@ -19,7 +19,7 @@ import {
 import type { Filtr, Razeni } from '@/lib/names/logic'
 import { KATEGORIE_INFO, MESICE_NAZVY, VSECHNY_STYLY } from '@/lib/names/types'
 import type { Energie, Kategorie, Styl } from '@/lib/names/types'
-import { useOblibene } from '@/lib/names/oblibene'
+import { useVyber } from '@/lib/names/vyber'
 import NameCard from './NameCard'
 import Vyber from './Vyber'
 import ShodaKarta from './ShodaKarta'
@@ -85,7 +85,7 @@ export default function DetiFinder() {
   const [rychle, setRychle] = useState<string[]>([])
   const [nahodne, setNahodne] = useState<string | null>(null)
   const [panelOtevren, setPanelOtevren] = useState(false)
-  const { ids: oblibena } = useOblibene()
+  const { oblibena, vyrazena } = useVyber()
 
   const [pohlavi, setPohlavi] = useState<'kluk' | 'holka'>('holka')
   const [prijmeni, setPrijmeni] = useState('')
@@ -108,8 +108,10 @@ export default function DetiFinder() {
     if (rychle.includes('unisex')) kandidati = kandidati.filter(j => j.unisex)
     if (rychle.includes('mezinarodni')) kandidati = kandidati.filter(jeMezinarodni)
     if (rychle.includes('svatek')) kandidati = kandidati.filter(j => j.svatek)
+    // Vyřazená jména z výsledků mizí — o to při vyřazování jde.
+    if (vyrazena.length) kandidati = kandidati.filter(j => !vyrazena.includes(j.id))
     return serad(kandidati, razeni)
-  }, [detska, filtr, razeni, rychle, oblibena])
+  }, [detska, filtr, razeni, rychle, oblibena, vyrazena])
 
   const pismena = useMemo(() => {
     const zac = new Set(detska.map(j => j.jmeno[0].toUpperCase()))

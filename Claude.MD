@@ -63,6 +63,8 @@ Mapa světa na úvodu **už není** — země jsou jen ve filtru a v patičce.
   jen jména a nic víc. `druh="lide"` nebo `"zvirata"` mění barevný tón.
 - **NadpisSekce.tsx** — nadpis s ikonou v barevném čtverečku; lidé chladná modrá
   s kojencem, zvířata teplá okrová s tlapkou.
+- **Hledani.tsx** — hledání konkrétního jména v hlavičce; funguje s diakritikou
+  i bez ní, našeptává, ovládá se klávesnicí.
 - **Vyber.tsx** — vlastní rozbalovací nabídka místo systémového `<select>`.
   Ovládá se klávesnicí (šipky, Enter, Esc, psaní), má `role="listbox"`
   a vypadá jako zbytek webu. Systémový select už není nikde. Před otevřením si
@@ -93,6 +95,7 @@ Mapa světa na úvodu **už není** — země jsou jen ve filtru a v patičce.
 | `seo.ts` | JSON-LD (WebSite, FAQPage, ItemList, BreadcrumbList), časté dotazy |
 | `pravni.ts` | údaje provozovatele sdílené právními stránkami |
 | `podrobnosti.ts` | co se má u nalezených jmen ukazovat — volba se pamatuje v prohlížeči |
+| `vyber.ts` | osobní výběr návštěvníka — uložená i vyřazená jména |
 | `reklamy.ts` | typ `Inzerat` + ukázkové kreativy pro vývoj |
 | `reklamniServer.ts` | jediné místo, kde web ví o reklamní službě |
 

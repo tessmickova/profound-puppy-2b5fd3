@@ -2402,3 +2402,101 @@ body:has(.svetjmen-shell) { background-color: #faf6ef; }
 
 /* Odkaz uvnitř věty výjimku má, ale nic nestojí dát mu taky plný cíl. */
 .jmeno-udaje a { display: inline-block; min-height: 24px; line-height: 24px; }
+
+/* ── Vyřazení jména ──────────────────────────────────────────────────────
+   Ke srdíčku patří i opak. Tlačítko je tiché — všimne si ho, kdo ho hledá,
+   a nepřebíjí srdíčko, které je hlavní akcí karty. */
+.karta-akce { margin-left: auto; display: inline-flex; align-items: center; gap: 2px; }
+.vyradit {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 999px;
+  background: none;
+  color: #c4b8a7;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: color .15s ease, background .15s ease;
+}
+.vyradit:hover { background: #f3ecdf; color: #6b6156; }
+.vyradit.je-vyrazene { color: #b3403a; background: #fdeaea; }
+.vyradit:focus-visible { outline: 2px solid #d97757; outline-offset: 1px; }
+
+/* Vyřazené jméno v přehledu uložených je vidět, ale tlumeně. */
+.karta-jmena.je-vyrazena { opacity: .62; }
+.karta-jmena.je-vyrazena .karta-jmeno { text-decoration: line-through; text-decoration-color: #c4b8a7; }
+
+/* ── Můj výběr: uložená a vyřazená ───────────────────────────────────────
+   Vyřazená jména mizí z výsledků, takže musí být místo, kde je vidět,
+   co člověk vyřadil, a kde to jde vzít zpátky. */
+.tab-pocet {
+  margin-left: 6px;
+  border-radius: 999px;
+  background: #f3ecdf;
+  padding: 1px 7px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #6b6156;
+}
+.tab.je-aktivni .tab-pocet { background: rgba(250, 246, 239, .22); color: #faf6ef; }
+
+.vyber-lista {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+  border: 1px dashed #e8dfd2;
+  border-radius: 16px;
+  background: #faf6ef;
+  padding: 14px 16px;
+}
+.vyber-lista p { margin: 0; max-width: 52ch; font-size: 13.5px; color: #6b6156; }
+
+.vyber-tlacitko {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 38px;
+  border: 1px solid #e8dfd2;
+  border-radius: 999px;
+  background: #fff;
+  padding: 8px 16px;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #2b2723;
+  text-decoration: none;
+  cursor: pointer;
+}
+.vyber-tlacitko:hover { border-color: #c4b8a7; }
+.vyber-tlacitko.je-hlavni { background: #2b2723; border-color: #2b2723; color: #faf6ef; }
+.vyber-tlacitko.je-hlavni:hover { background: #3a342e; }
+
+.vyber-prazdno {
+  border: 1px dashed #e8dfd2;
+  border-radius: 24px;
+  padding: 40px 24px;
+  text-align: center;
+  color: #6b6156;
+}
+.vyber-prazdno-znak { margin: 0 0 10px; font-size: 34px; }
+.vyber-prazdno p { margin: 0 auto; max-width: 46ch; font-size: 14.5px; line-height: 1.6; }
+.vyber-prazdno-akce { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 20px; }
+
+/* Vyřazená jména jsou vidět, ale tlumeně — je jasné, že jsou stranou. */
+.mrizka-jmen.je-vyrazene .karta-jmena { opacity: .66; }
+.mrizka-jmen.je-vyrazene .karta-jmeno { text-decoration: line-through; text-decoration-color: #c4b8a7; }
+
+/* ── Karta se dvěma tlačítky ─────────────────────────────────────────────
+   Ke srdíčku přibyl křížek a spodní řádek karty přestal vejít do sloupce
+   mřížky — karta pak roztáhla celou stránku. Řádek proto smí zalomit
+   a karta se nesmí bránit zúžení. */
+.mrizka-jmen > * { min-width: 0; }
+.karta-jmena { min-width: 0; }
+.karta-spodek { min-width: 0; flex-wrap: wrap; row-gap: 6px; }
+.karta-akce { flex: none; }
+.karta-stitek { flex: none; }
