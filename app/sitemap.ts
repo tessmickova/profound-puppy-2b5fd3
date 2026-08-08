@@ -35,6 +35,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...KATEGORIE.map(k => zaznam(`/jmena/${KATEGORIE_INFO[k].slug}`, 0.85, 'weekly')),
     ...ENTITY_SE_STRANKOU.map(e => zaznam(`/jmeno/${e.slug}`, 0.7, 'monthly')),
     ...ZEME.map(z => zaznam(`/zeme/${z.kod}`, 0.6, 'monthly')),
+    zaznam('/zeme', 0.6, 'monthly'),
     zaznam('/metodika', 0.5, 'yearly'),
     zaznam('/reklama', 0.3, 'yearly'),
     zaznam('/podminky', 0.2, 'yearly'),

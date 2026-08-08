@@ -21,7 +21,7 @@ export default function ReklamaStranka() {
   return (
     <Shell>
       <div className="mx-auto max-w-3xl">
-        <h1 className="[font-family:var(--font-syne)] text-3xl font-bold sm:text-4xl">
+        <h1 className="[font-family:var(--font-nadpis)] text-3xl font-bold sm:text-4xl">
           Reklama, která vypadá jako zbytek webu
         </h1>
         <p className="mt-3 text-lg text-[#6b6156]">
@@ -41,7 +41,7 @@ export default function ReklamaStranka() {
               <span className="inline-flex h-7 w-7 items-center justify-center rounded-[9px] bg-[#2b2723] text-sm font-bold text-[#faf6ef]">
                 {k.c}
               </span>
-              <h2 className="mt-3 [font-family:var(--font-syne)] text-base font-bold">{k.h}</h2>
+              <h2 className="mt-3 [font-family:var(--font-nadpis)] text-base font-bold">{k.h}</h2>
               <p className="mt-1 text-sm text-[#6b6156]">{k.t}</p>
             </li>
           ))}

@@ -12,7 +12,7 @@ export default function VolbaPodrobnosti() {
   return (
     <div>
       <div className="podrobnosti-hlava">
-        <h3 className="flex items-center gap-1.5 [font-family:var(--font-syne)] text-[13px] font-bold text-[#2b2723]">
+        <h3 className="flex items-center gap-1.5 [font-family:var(--font-nadpis)] text-[13px] font-bold text-[#2b2723]">
           <Eye size={13} aria-hidden /> Co u jmen ukázat
         </h3>
         <button

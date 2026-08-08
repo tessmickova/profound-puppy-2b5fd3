@@ -26,7 +26,12 @@ export async function generateMetadata({ params }: { params: Promise<{ kod: stri
   }
 }
 
-const PORADI_KATEGORII: Kategorie[] = ['pes', 'fenka', 'kocour', 'kocka', 'kun', 'kralik', 'papousek', 'krecek', 'kluk', 'holka']
+// Dětská jména patří nahoru: kdo hledá „česká jména", myslí v drtivé většině
+// jména pro děti. Zvířata mají vlastní blok pod nimi.
+const PORADI_KATEGORII: Kategorie[] = [
+  'holka', 'kluk',
+  'pes', 'fenka', 'kocour', 'kocka', 'kun', 'kralik', 'papousek', 'krecek',
+]
 
 export default async function ZemeStranka({ params }: { params: Promise<{ kod: string }> }) {
   const { kod } = await params
@@ -49,7 +54,7 @@ export default async function ZemeStranka({ params }: { params: Promise<{ kod: s
 
       <header className="mb-10 rounded-3xl border border-[#e8dfd2] bg-white p-8 text-center shadow-sm">
         <div className="text-6xl">{zeme.vlajka}</div>
-        <h1 className="mt-3 [font-family:var(--font-syne)] text-4xl font-extrabold">{zeme.nazev}</h1>
+        <h1 className="mt-3 [font-family:var(--font-nadpis)] text-4xl">{zeme.nazev}</h1>
         <p className="mx-auto mt-2 max-w-xl text-[#6b6156]">{zeme.poznamka}</p>
         <p className="mt-3 text-sm text-[#8a7f71]">
           {jmena.length} vybraných jmen · kontinent {kontinent?.nazev}

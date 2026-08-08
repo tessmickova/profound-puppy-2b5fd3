@@ -1,98 +1,111 @@
 import Link from 'next/link'
-import { KONTINENTY, ZEME } from '@/lib/names/data'
+import { ZEME } from '@/lib/names/data'
 import { KATEGORIE_INFO } from '@/lib/names/types'
 import type { Kategorie } from '@/lib/names/types'
+import { PRAVNI } from '@/lib/names/pravni'
 
-// Patička je zároveň rozcestník: odkud se dá dostat všude, včetně zemí,
-// které po odstranění mapy nemají jiné místo v navigaci.
+// Patička slouží lidem, ne vyhledávači.
+//
+// Dřív v ní byl výpis všech 25 zemí na každé stránce webu — pro člověka
+// nepřehledná zeď odkazů, pro crawler tisíce opakovaných řádků. Zůstaly
+// hlavní cesty a nejčastější země; kompletní seznam má vlastní stránku.
 
-const ZVIRATA: Kategorie[] = ['pes', 'fenka', 'kocour', 'kocka', 'kun', 'kralik', 'papousek', 'krecek']
+const DETI: Kategorie[] = ['holka', 'kluk']
+const ZVIRATA: Kategorie[] = ['pes', 'fenka', 'kocka', 'kocour']
 
-const NASTROJE = [
-  { href: '/deti', text: 'Jména pro holčičky', param: '?kategorie=holka' },
-  { href: '/deti', text: 'Jména pro chlapečky', param: '?kategorie=kluk' },
-  { href: '/deti', text: 'Nejlepší shoda s příjmením', param: '' },
-  { href: '/deti', text: 'Ladí k sourozenci', param: '' },
-  { href: '/rodina', text: 'Rodinný profil', param: '' },
-  { href: '/oblibene', text: 'Uložená jména', param: '' },
-]
+/** Země, které lidi hledají nejčastěji. Zbytek je za odkazem „všechny země". */
+const HLAVNI_ZEME = ['cz', 'sk', 'gb', 'de', 'fr', 'it']
 
-const PRAVNI_ODKAZY = [
+const O_PROJEKTU = [
+  { href: '/metodika', text: 'Jak vybíráme jména' },
   { href: '/reklama', text: 'Reklama na webu' },
   { href: '/podminky', text: 'Podmínky' },
   { href: '/soukromi', text: 'Ochrana údajů' },
-  { href: '/aurora', text: 'AuroraDog' },
 ]
+
+function Sloupec({ nadpis, deti }: { nadpis: string; deti: React.ReactNode }) {
+  return (
+    <div>
+      <h2 className="mb-3 [font-family:var(--font-nadpis)] text-[15px] font-bold">{nadpis}</h2>
+      <ul className="space-y-1.5 text-[13.5px]">{deti}</ul>
+    </div>
+  )
+}
+
+const Odkaz = ({ href, children }: { href: string; children: React.ReactNode }) => (
+  <li>
+    <Link href={href} className="text-[#6b6156] hover:text-[#2b2723] hover:underline">
+      {children}
+    </Link>
+  </li>
+)
 
 export default function Paticka() {
   return (
     <footer className="mt-16 border-t border-[#e8dfd2] bg-[#f6f0e6]">
       <div className="mx-auto max-w-6xl px-4 py-10">
         <nav className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4" aria-label="Rozcestník webu">
-          <div>
-            <h2 className="mb-3 [font-family:var(--font-syne)] text-[15px] font-bold">Pro děti</h2>
-            <ul className="space-y-1.5 text-[13.5px]">
-              {NASTROJE.map(n => (
-                <li key={n.text}>
-                  <Link href={`${n.href}${n.param}`} className="text-[#6b6156] hover:text-[#2b2723] hover:underline">
-                    {n.text}
-                  </Link>
-                </li>
+          <Sloupec
+            nadpis="Pro děti"
+            deti={<>
+              {DETI.map(k => (
+                <Odkaz key={k} href={`/jmena/${KATEGORIE_INFO[k].slug}`}>
+                  Jména pro {KATEGORIE_INFO[k].proKoho}
+                </Odkaz>
               ))}
-            </ul>
-          </div>
+              <Odkaz href="/deti">Shoda s příjmením a rodinou</Odkaz>
+              <Odkaz href="/rodina">Rodinný profil</Odkaz>
+            </>}
+          />
 
-          <div>
-            <h2 className="mb-3 [font-family:var(--font-syne)] text-[15px] font-bold">Pro zvířata</h2>
-            <ul className="space-y-1.5 text-[13.5px]">
+          <Sloupec
+            nadpis="Pro zvířata"
+            deti={<>
               {ZVIRATA.map(k => (
-                <li key={k}>
-                  <Link href={`/zvirata?kategorie=${k}`} className="text-[#6b6156] hover:text-[#2b2723] hover:underline">
-                    Jména pro {KATEGORIE_INFO[k].proKoho}
-                  </Link>
-                </li>
+                <Odkaz key={k} href={`/jmena/${KATEGORIE_INFO[k].slug}`}>
+                  Jména pro {KATEGORIE_INFO[k].proKoho}
+                </Odkaz>
               ))}
-            </ul>
-          </div>
+              <Odkaz href="/zvirata">Podle plemene a povahy</Odkaz>
+            </>}
+          />
 
-          <div className="lg:col-span-2">
-            <h2 className="mb-3 [font-family:var(--font-syne)] text-[15px] font-bold">
-              Jména podle zemí <span className="font-normal text-[#8a7f71]">({ZEME.length})</span>
-            </h2>
-            <div className="grid gap-x-6 gap-y-4 sm:grid-cols-2">
-              {KONTINENTY.map(k => {
-                const zeme = ZEME.filter(z => z.kontinent === k.id)
-                if (!zeme.length) return null
+          <Sloupec
+            nadpis="Podle země"
+            deti={<>
+              {HLAVNI_ZEME.map(kod => {
+                const z = ZEME.find(x => x.kod === kod)
+                if (!z) return null
                 return (
-                  <div key={k.id}>
-                    <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-[#a2988a]">{k.nazev}</p>
-                    <ul className="flex flex-wrap gap-x-3 gap-y-1 text-[13px]">
-                      {zeme.map(z => (
-                        <li key={z.kod}>
-                          <Link href={`/zeme/${z.kod}`} className="text-[#6b6156] hover:text-[#2b2723] hover:underline">
-                            <span aria-hidden>{z.vlajka}</span> {z.nazev}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                  <Odkaz key={kod} href={`/zeme/${kod}`}>
+                    <span aria-hidden>{z.vlajka}</span> {z.pridavne[0].toUpperCase() + z.pridavne.slice(1)} jména
+                  </Odkaz>
                 )
               })}
-            </div>
-          </div>
+              <Odkaz href="/zeme">Všechny země ({ZEME.length})</Odkaz>
+            </>}
+          />
+
+          <Sloupec
+            nadpis="O projektu"
+            deti={<>
+              {O_PROJEKTU.map(o => <Odkaz key={o.href} href={o.href}>{o.text}</Odkaz>)}
+              <Odkaz href="/oblibene">Uložená jména</Odkaz>
+            </>}
+          />
         </nav>
 
-        <div className="mt-9 flex flex-wrap items-center justify-between gap-3 border-t border-[#e8dfd2] pt-5 text-[12.5px] text-[#8a7f71]">
-          <p>Svět jmen — vybírat jméno má být radost. Zdarma, bez registrace, bez sbírání údajů.</p>
-          <ul className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
-            {PRAVNI_ODKAZY.map(o => (
-              <li key={o.href}>
-                <Link href={o.href} className="underline decoration-dotted hover:text-[#2b2723]">
-                  {o.text}
-                </Link>
-              </li>
-            ))}
-          </ul>
+        <div className="mt-9 flex flex-wrap items-center justify-between gap-3 border-t border-[#e8dfd2] pt-6 text-[12.5px] text-[#8a7f71]">
+          <p>
+            Svět jmen — katalog jmen pro děti i zvířata. Zdarma, bez registrace.
+          </p>
+          <p>
+            {PRAVNI.provozovatel}
+            {PRAVNI.ico ? `, IČO ${PRAVNI.ico}` : ''} ·{' '}
+            <a href={`mailto:${PRAVNI.email}`} className="hover:text-[#2b2723] hover:underline">
+              {PRAVNI.email}
+            </a>
+          </p>
         </div>
       </div>
     </footer>

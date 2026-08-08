@@ -52,11 +52,21 @@ export const JMENA_V_CESKU: string[] = [...new Set([...DOMACI, ...PRISLA_ZE_SVET
 
 /** Rozdělí seznam na dva pásy tak, aby oba byly zhruba stejně dlouhé
  *  a sousední jména v nich spolu nesouvisela (nevznikne blok jedné země). */
+/**
+ * Kolik jmen se do jednoho pásu vejde.
+ *
+ * Pás je dekorace: jede pořád dokola a nikdo ho nečte celý. Dřív v něm byla
+ * všechna jména, a protože se seznam kvůli nekonečné smyčce vykresluje
+ * dvakrát, vznikly stovky textových uzlů navíc na každé stránce. Menší výběr
+ * vypadá stejně a je znatelně levnější — pro prohlížeč i pro čtečku.
+ */
+const NA_PAS = 26
+
 export function pasyJmen(): [string[], string[]] {
   const horni: string[] = []
   const dolni: string[] = []
   JMENA_V_CESKU.forEach((j, i) => (i % 2 === 0 ? horni : dolni).push(j))
-  return [horni, dolni]
+  return [horni.slice(0, NA_PAS), dolni.slice(0, NA_PAS)]
 }
 
 // ── jména mazlíčků, se kterými se v Česku potkáte na každé procházce ─────────
@@ -101,5 +111,5 @@ export function pasyZvirat(): [string[], string[]] {
   const horni: string[] = []
   const dolni: string[] = []
   ZVIRATA_V_CESKU.forEach((j, i) => (i % 2 === 0 ? horni : dolni).push(j))
-  return [horni, dolni]
+  return [horni.slice(0, NA_PAS), dolni.slice(0, NA_PAS)]
 }

@@ -53,7 +53,7 @@ export default function RodinaProfil() {
   return (
     <Rozvrzeni>
       <section className="mb-8 rounded-3xl border border-[#e8dfd2] bg-white p-6 shadow-sm">
-        <h2 className="[font-family:var(--font-syne)] text-xl font-bold">Kdo už doma je</h2>
+        <h2 className="[font-family:var(--font-nadpis)] text-xl font-bold">Kdo už doma je</h2>
         <p className="mt-1 text-sm text-[#8a7f71]">
           Naklikejte svou rodinu včetně zvířat. Profil se ukládá jen ve vašem prohlížeči —
           žádná registrace není potřeba a nikam se nic neposílá.
@@ -119,7 +119,7 @@ export default function RodinaProfil() {
         </div>
       ) : (
         <>
-          <h2 className="mb-1 [font-family:var(--font-syne)] text-2xl font-bold">Kdo by k vám ještě ladil</h2>
+          <h2 className="mb-1 [font-family:var(--font-nadpis)] text-2xl font-bold">Kdo by k vám ještě ladil</h2>
           <p className="mb-4 text-sm text-[#8a7f71]">
             Doporučení se počítají ze jmen, která už doma máte — podle stylu, původu, rytmu
             i toho, aby se nová jména s těmi současnými nepletla a nerýmovala.

@@ -69,7 +69,7 @@ export default function DetailPanel() {
               {jmeno.pohlavi && jmeno.pohlavi !== 'unisex' && ` ${POHLAVI_INFO[jmeno.pohlavi].znak}`}
               {' · '}{zeme?.vlajka} {zeme?.nazev}
             </p>
-            <h2 className="[font-family:var(--font-syne)] text-[30px] font-extrabold leading-tight">
+            <h2 className="[font-family:var(--font-nadpis)] text-[30px] font-extrabold leading-tight">
               {jmeno.jmeno}
             </h2>
           </div>
@@ -136,7 +136,7 @@ export default function DetailPanel() {
               <div className="h-2 flex-1 overflow-hidden rounded-full bg-[#f3ecdf]">
                 <div className="h-full rounded-full bg-gradient-to-r from-[#e7a15c] to-[#d97757]" style={{ width: `${jmeno.popularita}%` }} />
               </div>
-              <span className="[font-family:var(--font-syne)] text-lg font-extrabold text-[#d97757]">
+              <span className="[font-family:var(--font-nadpis)] text-lg font-extrabold text-[#d97757]">
                 {jmeno.popularita}
               </span>
             </div>

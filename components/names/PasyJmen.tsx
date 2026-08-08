@@ -23,9 +23,13 @@ function Pas({ jmena, smer }: { jmena: string[]; smer: 'vpravo' | 'vlevo' }) {
 export default function PasyJmen({ druh = 'lide' }: { druh?: 'lide' | 'zvirata' }) {
   const [horni, dolni] = druh === 'zvirata' ? pasyZvirat() : pasyJmen()
   return (
+    // Pásy nic nesdělují — jsou to jen jména plující kolem. Pro čtečku
+    // obrazovky je proto schováváme celé; obsah, který je v nich, je
+    // dostupný v katalogu.
     <section
       className={`pasy pasy-${druh} mb-14`}
-      aria-label={druh === 'zvirata' ? 'Jména mazlíčků používaná v Česku' : 'Jména používaná v Česku'}
+      aria-hidden
+      role="presentation"
     >
       <Pas jmena={horni} smer="vpravo" />
       <Pas jmena={dolni} smer="vlevo" />

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function OblibeneStranka() {
   return (
     <Shell>
-      <h1 className="mb-2 [font-family:var(--font-syne)] text-3xl font-extrabold">Vaše oblíbená jména ❤️</h1>
+      <h1 className="mb-2 [font-family:var(--font-nadpis)] text-3xl font-extrabold">Vaše oblíbená jména ❤️</h1>
       <p className="mb-8 max-w-2xl text-[#6b6156]">
         Vše, co jste označili srdíčkem. Ukládá se jen ve vašem prohlížeči — nikam se nic neposílá.
       </p>

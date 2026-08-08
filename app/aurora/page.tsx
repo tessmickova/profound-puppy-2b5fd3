@@ -35,7 +35,7 @@ import toast                     from 'react-hot-toast'
 import clsx                      from 'clsx'
 
 const orbitron = Orbitron({ subsets: ['latin'], variable: '--font-orbitron', weight: ['400','700','900'] })
-const syne     = Syne({ subsets: ['latin'], variable: '--font-syne', weight: ['400','600','700','800'] })
+const syne     = Syne({ subsets: ['latin'], variable: '--font-nadpis', weight: ['400','600','700','800'] })
 const ibm      = IBM_Plex_Mono({ subsets: ['latin'], variable: '--font-ibm-mono', weight: ['300','400','600'] })
 
 const TABS = [

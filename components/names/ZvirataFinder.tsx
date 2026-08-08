@@ -125,7 +125,7 @@ export default function ZvirataFinder() {
   const panel = (
     <aside className={`filtr-panel space-y-1 self-start rounded-3xl border border-[#e8dfd2] bg-white p-4 shadow-sm lg:sticky lg:top-20 ${panelOtevren ? 'je-otevreny' : ''}`}>
       <div className="flex items-center justify-between pb-1">
-        <h2 className="flex items-center gap-1.5 [font-family:var(--font-syne)] text-base font-bold">
+        <h2 className="flex items-center gap-1.5 [font-family:var(--font-nadpis)] text-base font-bold">
           <SlidersHorizontal size={16} aria-hidden /> Filtr
           {aktivni.length > 0 && <span className="filtr-pocet">{aktivni.length}</span>}
         </h2>
@@ -300,7 +300,7 @@ export default function ZvirataFinder() {
                 {aktivni.length > 0 && <span className="filtr-pocet">{aktivni.length}</span>}
               </button>
               <p className="text-[13px] text-[#6b6156]">
-                <strong className="[font-family:var(--font-syne)] text-lg text-[#2b2723]">{vysledky.length}</strong> jmen
+                <strong className="[font-family:var(--font-nadpis)] text-lg text-[#2b2723]">{vysledky.length}</strong> jmen
                 {vybranePlemeno && <> pro <strong>{vybranePlemeno.nazev}</strong></>}
               </p>
             </div>
@@ -358,7 +358,7 @@ export default function ZvirataFinder() {
           {skupiny ? (
             skupiny.map(([pismeno, jmena]) => (
               <div key={pismeno} className="mb-6">
-                <h3 className="mb-2 border-b border-[#e8dfd2] pb-1 [font-family:var(--font-syne)] text-2xl font-bold text-[#c4b8a7]">{pismeno}</h3>
+                <h3 className="mb-2 border-b border-[#e8dfd2] pb-1 [font-family:var(--font-nadpis)] text-2xl font-bold text-[#c4b8a7]">{pismeno}</h3>
                 <div className="nastup mrizka-jmen">
                   {jmena.map(j => <NameCard key={j.id} jmeno={j} />)}
                 </div>

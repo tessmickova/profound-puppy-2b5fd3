@@ -1,11 +1,31 @@
 import type { Metadata, Viewport } from 'next'
-import { Orbitron, Syne, IBM_Plex_Mono } from 'next/font/google'
+import { Orbitron, Baloo_2, Nunito, IBM_Plex_Mono } from 'next/font/google'
 import { Toaster } from 'react-hot-toast'
 import { jsonLdProvozovatel, jsonLdWeb, WEB } from '@/lib/names/seo'
 import './globals.css'
 
+// Nadpisy: Baloo 2 — zaoblené konce tahů působí vlídně (jde o jména dětí
+// a zvířat), ale kresba zůstává moderní a v tučném řezu čitelná. Syne měla
+// tvrdé geometrické tvary a hlavně se načítala jen s podmnožinou `latin`,
+// takže česká diakritika padala do náhradního písma a nadpisy se rozjížděly.
+const nadpis = Baloo_2({
+  subsets: ['latin', 'latin-ext'],
+  variable: '--font-nadpis',
+  weight: ['500', '600', '700', '800'],
+  display: 'swap',
+})
+
+// Text: Nunito — zaoblený groteskový bezpatkový font, dobře se čte v malých
+// velikostech a ladí s nadpisy, aniž by se s nimi pral.
+const text = Nunito({
+  subsets: ['latin', 'latin-ext'],
+  variable: '--font-text',
+  weight: ['400', '600', '700'],
+  display: 'swap',
+})
+
+// Zbytek patří AuroraDogu, který sdílí stejný layout.
 const orbitron = Orbitron({ subsets: ['latin'], variable: '--font-orbitron', weight: ['400','700','900'] })
-const syne     = Syne({ subsets: ['latin'], variable: '--font-syne', weight: ['400','600','700','800'] })
 const ibm      = IBM_Plex_Mono({ subsets: ['latin'], variable: '--font-ibm-mono', weight: ['300','400','600'] })
 
 export const metadata: Metadata = {
@@ -37,7 +57,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="cs" className="dark" data-theme="dark" data-fontscale="normal" suppressHydrationWarning>
-      <body className={`${orbitron.variable} ${syne.variable} ${ibm.variable}`}>
+      <body className={`${orbitron.variable} ${nadpis.variable} ${text.variable} ${ibm.variable}`}>
         <script dangerouslySetInnerHTML={{ __html: `
           (function(){
             try {

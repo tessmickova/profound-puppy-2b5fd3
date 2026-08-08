@@ -4,6 +4,7 @@ import { Baby, Cat, Dog, Sparkles, Users } from 'lucide-react'
 import Shell from '@/components/names/Shell'
 import NameCard from '@/components/names/NameCard'
 import Rozvrzeni from '@/components/names/Rozvrzeni'
+import Hledani from '@/components/names/Hledani'
 import PasyJmen from '@/components/names/PasyJmen'
 import NadpisSekce from '@/components/names/NadpisSekce'
 import type { Druh } from '@/components/names/NadpisSekce'
@@ -43,13 +44,19 @@ export default function Domov() {
           <p className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-[#efe0cc] bg-white px-3 py-1 text-[12.5px] font-medium text-[#8a6d2f]">
             <Sparkles size={13} aria-hidden /> {JMENA.length} jmen z {ZEME.length} zemí — zdarma a bez registrace
           </p>
-          <h1 className="[font-family:var(--font-syne)] text-[32px] font-extrabold leading-[1.08] tracking-tight sm:text-5xl">
+          <h1 className="[font-family:var(--font-nadpis)] text-[32px] font-extrabold leading-[1.08] tracking-tight sm:text-5xl">
             Najděte jméno, které <span className="text-[#d97757]">k vám patří</span>
           </h1>
           <p className="mx-auto mt-3 max-w-xl text-[15px] leading-relaxed text-[#6b6156]">
             Vybírat jméno má být radost, ne tabulka. Řekněte nám, koho čekáte —
             a my vybereme jména, která sedí k vašemu příjmení, rodině i povaze.
           </p>
+
+          {/* Nejčastější důvod návštěvy je konkrétní jméno. Hledání proto
+              patří nad rozcestník, ne až někam do filtru. */}
+          <div className="mt-6">
+            <Hledani velke />
+          </div>
         </section>
 
         <section className="mb-14">
@@ -104,11 +111,11 @@ export default function Domov() {
         />
 
         <section className="mt-14">
-          <h2 className="mb-4 [font-family:var(--font-syne)] text-2xl font-bold">Časté otázky o výběru jména</h2>
+          <h2 className="mb-4 [font-family:var(--font-nadpis)] text-2xl font-bold">Časté otázky o výběru jména</h2>
           <div className="grid gap-2.5">
             {CASTE_DOTAZY.map(d => (
               <details key={d.otazka} className="rounded-2xl border border-[#e8dfd2] bg-white p-4 transition-colors hover:border-[#d9cfbe]">
-                <summary className="cursor-pointer [font-family:var(--font-syne)] text-[15.5px] font-bold">
+                <summary className="cursor-pointer [font-family:var(--font-nadpis)] text-[15.5px] font-bold">
                   {d.otazka}
                 </summary>
                 <p className="mt-2 text-sm leading-relaxed text-[#6b6156]">{d.odpoved}</p>

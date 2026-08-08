@@ -583,7 +583,7 @@
   color: #a2988a;
 }
 .reklama-nadpis {
-  font-family: var(--font-syne), system-ui, sans-serif;
+  font-family: var(--font-nadpis), system-ui, sans-serif;
   font-size: 16px;
   font-weight: 700;
   line-height: 1.2;
@@ -726,7 +726,7 @@
   border: 1px solid #efe7da;
   border-radius: 999px;
   background: #fff;
-  font-family: var(--font-syne), system-ui, sans-serif;
+  font-family: var(--font-nadpis), system-ui, sans-serif;
   font-size: 14.5px;
   font-weight: 700;
   letter-spacing: -.01em;
@@ -772,7 +772,7 @@
   gap: 10px;
 }
 .karta-jmeno {
-  font-family: var(--font-syne), system-ui, sans-serif;
+  font-family: var(--font-nadpis), system-ui, sans-serif;
   font-size: 18px;
   font-weight: 800;
   line-height: 1.15;
@@ -900,7 +900,7 @@
   border-radius: 14px;
   background: #f6ece2;
   border: 1px solid #ecdfd0;
-  font-family: var(--font-syne), system-ui, sans-serif;
+  font-family: var(--font-nadpis), system-ui, sans-serif;
   font-size: 22px;
   font-weight: 800;
   color: #d97757;
@@ -996,7 +996,7 @@
   align-items: center;
   gap: 7px;
   margin: 0;
-  font-family: var(--font-syne), system-ui, sans-serif;
+  font-family: var(--font-nadpis), system-ui, sans-serif;
   font-size: 17px;
   font-weight: 800;
   letter-spacing: -.01em;
@@ -1076,7 +1076,7 @@
   align-items: center;
   gap: 10px;
   margin: 0;
-  font-family: var(--font-syne), system-ui, sans-serif;
+  font-family: var(--font-nadpis), system-ui, sans-serif;
   font-weight: 800;
   letter-spacing: -.02em;
 }
@@ -1117,7 +1117,7 @@ h3.nadpis-sekce .nadpis-znak { width: 28px; height: 28px; border-radius: 9px; }
   line-height: 1.7;
 }
 .pravni-text h1 {
-  font-family: var(--font-syne), system-ui, sans-serif;
+  font-family: var(--font-nadpis), system-ui, sans-serif;
   font-size: clamp(28px, 5vw, 38px);
   font-weight: 800;
   line-height: 1.15;
@@ -1125,7 +1125,7 @@ h3.nadpis-sekce .nadpis-znak { width: 28px; height: 28px; border-radius: 9px; }
   color: #2b2723;
 }
 .pravni-text h2 {
-  font-family: var(--font-syne), system-ui, sans-serif;
+  font-family: var(--font-nadpis), system-ui, sans-serif;
   font-size: 20px;
   font-weight: 700;
   color: #2b2723;
@@ -1190,7 +1190,7 @@ h3.nadpis-sekce .nadpis-znak { width: 28px; height: 28px; border-radius: 9px; }
   min-height: 30px;
 }
 .shoda-jmeno {
-  font-family: var(--font-syne), system-ui, sans-serif;
+  font-family: var(--font-nadpis), system-ui, sans-serif;
   font-size: 20px;
   font-weight: 700;
   line-height: 1.2;
@@ -1201,7 +1201,7 @@ h3.nadpis-sekce .nadpis-znak { width: 28px; height: 28px; border-radius: 9px; }
 .shoda-vlajka { margin-left: 7px; font-size: 15px; }
 .shoda-vpravo { display: flex; flex: none; align-items: center; gap: 8px; }
 .shoda-skore {
-  font-family: var(--font-syne), system-ui, sans-serif;
+  font-family: var(--font-nadpis), system-ui, sans-serif;
   font-size: 22px;
   font-weight: 800;
   color: #d97757;
@@ -1322,7 +1322,7 @@ h3.nadpis-sekce .nadpis-znak { width: 28px; height: 28px; border-radius: 9px; }
   padding-top: 26px;
 }
 .odpovedi-nadpis {
-  font-family: var(--font-syne), system-ui, sans-serif;
+  font-family: var(--font-nadpis), system-ui, sans-serif;
   font-size: 20px;
   font-weight: 700;
   color: #2b2723;
@@ -1340,7 +1340,7 @@ h3.nadpis-sekce .nadpis-znak { width: 28px; height: 28px; border-radius: 9px; }
   padding: 16px 18px;
 }
 .odpoved h3 {
-  font-family: var(--font-syne), system-ui, sans-serif;
+  font-family: var(--font-nadpis), system-ui, sans-serif;
   font-size: 15px;
   font-weight: 700;
   line-height: 1.35;
@@ -1777,7 +1777,7 @@ h1, h2, .vyhledavac-hlava h2 { text-wrap: balance; }
   text-decoration: none;
 }
 .reklamni-pas-znacka {
-  font-family: var(--font-syne), system-ui, sans-serif;
+  font-family: var(--font-nadpis), system-ui, sans-serif;
   font-size: 13px;
   font-weight: 700;
   letter-spacing: -.01em;
@@ -1900,7 +1900,7 @@ body:has(.svetjmen-shell) { background-color: #faf6ef; }
 .reklamni-dlazdice img { width: 100%; height: 100%; object-fit: contain; padding: 3px; }
 .reklamni-lista-logo { width: 18px; height: 18px; object-fit: contain; }
 .reklamni-nadpis {
-  font-family: var(--font-syne), system-ui, sans-serif;
+  font-family: var(--font-nadpis), system-ui, sans-serif;
   font-size: 13px;
   font-weight: 700;
   line-height: 1.25;
@@ -2000,7 +2000,7 @@ body:has(.svetjmen-shell) { background-color: #faf6ef; }
 .reklamni-lista-box > svg, .reklamni-lista-box > img { flex: none; color: #a5683a; }
 .reklamni-lista-znacka {
   flex: none;
-  font-family: var(--font-syne), system-ui, sans-serif;
+  font-family: var(--font-nadpis), system-ui, sans-serif;
   font-size: 12.5px;
   font-weight: 700;
   color: #2b2723;
@@ -2050,7 +2050,7 @@ body:has(.svetjmen-shell) { background-color: #faf6ef; }
 }
 .plochy-nadpis {
   margin: 0;
-  font-family: var(--font-syne), system-ui, sans-serif;
+  font-family: var(--font-nadpis), system-ui, sans-serif;
   font-size: 18px;
   font-weight: 800;
   letter-spacing: -.01em;
@@ -2123,7 +2123,7 @@ body:has(.svetjmen-shell) { background-color: #faf6ef; }
   cursor: not-allowed;
 }
 .plochy-cislo {
-  font-family: var(--font-syne), system-ui, sans-serif;
+  font-family: var(--font-nadpis), system-ui, sans-serif;
   font-size: 16px;
   font-weight: 800;
 }
@@ -2170,7 +2170,7 @@ body:has(.svetjmen-shell) { background-color: #faf6ef; }
   color: #a2988a;
 }
 .plochy-cena {
-  font-family: var(--font-syne), system-ui, sans-serif;
+  font-family: var(--font-nadpis), system-ui, sans-serif;
   font-size: 22px;
   font-weight: 800;
   color: #d97757;
@@ -2231,3 +2231,174 @@ body:has(.svetjmen-shell) { background-color: #faf6ef; }
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
+
+/* ── Písmo Světa jmen ────────────────────────────────────────────────────
+   Nadpisy nese Baloo 2, běžný text Nunito. Obojí má zaoblené konce tahů,
+   takže web působí vlídně — jde o jména dětí a zvířat — a přitom zůstává
+   moderní a v tučném řezu čitelný. Předchozí Syne měla tvrdou geometrickou
+   kresbu a načítala se bez `latin-ext`, takže česká diakritika v nadpisech
+   padala do náhradního písma a řádky se rozjížděly. */
+.svetjmen-shell {
+  font-family: var(--font-text), system-ui, -apple-system, sans-serif;
+  /* Nunito má o něco menší výšku malých písmen — vyrovnáme prokladem. */
+  line-height: 1.6;
+  letter-spacing: 0;
+}
+.svetjmen-shell h1,
+.svetjmen-shell h2,
+.svetjmen-shell h3,
+.svetjmen-shell .karta-jmeno,
+.svetjmen-shell .pas-box {
+  font-family: var(--font-nadpis), system-ui, sans-serif;
+  /* Baloo 2 je sama o sobě podsaditá; 800 už působí přeplácaně. */
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  line-height: 1.2;
+}
+/* Velké nadpisy snesou o kousek pevnější řez, drobné naopak lehčí. */
+.svetjmen-shell h1 { font-weight: 800; letter-spacing: -0.015em; }
+.svetjmen-shell h3 { font-weight: 700; }
+
+/* ── Hledání jména ───────────────────────────────────────────────────────
+   Nejčastější důvod návštěvy je „co znamená tohle jméno" — proto je pole
+   nahoře a nabízí hned po prvním písmenu. */
+.hledani { position: relative; width: 100%; max-width: 560px; margin: 0 auto; }
+.hledani-pole {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #e8dfd2;
+  border-radius: 999px;
+  background: #fff;
+  padding: 0 16px;
+  box-shadow: 0 2px 10px rgba(43, 39, 35, .05);
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.hledani-pole:focus-within {
+  border-color: #d97757;
+  box-shadow: 0 0 0 4px rgba(217, 119, 87, .14);
+}
+.hledani-lupa { flex: none; color: #a2988a; }
+.hledani-pole input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: none;
+  padding: 12px 0;
+  font: inherit;
+  font-size: 15px;
+  color: #2b2723;
+  outline: none;
+}
+.hledani.je-velke .hledani-pole { padding: 0 20px; }
+.hledani.je-velke .hledani-pole input { padding: 16px 0; font-size: 17px; }
+.hledani-smazat {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 999px;
+  background: #f3ecdf;
+  color: #6b6156;
+  cursor: pointer;
+}
+.hledani-smazat:hover { background: #e8dfd2; }
+
+.hledani-navrhy {
+  position: absolute;
+  z-index: 50;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  max-height: 320px;
+  overflow-y: auto;
+  border: 1px solid #e8dfd2;
+  border-radius: 18px;
+  background: #fff;
+  padding: 6px;
+  box-shadow: 0 16px 40px rgba(43, 39, 35, .16);
+  text-align: left;
+}
+.hledani-navrh {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  border: none;
+  border-radius: 12px;
+  background: none;
+  padding: 10px 12px;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.hledani-navrh.je-na-rade { background: #f6f0e6; }
+.hledani-navrh:focus-visible { outline: 2px solid #d97757; outline-offset: -2px; }
+.hledani-jmeno {
+  font-family: var(--font-nadpis), system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #2b2723;
+}
+.hledani-pro { font-size: 12.5px; color: #8a7f71; white-space: nowrap; }
+.hledani-nic { margin: 0; padding: 14px 12px; font-size: 13.5px; color: #6b6156; }
+.hledani-nic a { color: #d97757; text-decoration: underline; }
+
+/* Hledání v hlavičce si bere jen tolik místa, kolik zbude vedle navigace. */
+.hlavicka-hledani { flex: 1; min-width: 0; max-width: 320px; margin-left: 16px; }
+.hlavicka-hledani .hledani-pole { box-shadow: none; }
+.hlavicka-hledani .hledani-pole input { padding: 8px 0; font-size: 14px; }
+
+/* ── Přehled zemí ────────────────────────────────────────────────────────
+   Seznam, který se z patičky přestěhoval na vlastní stránku. */
+.zeme-mrizka {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  list-style: none;
+  margin: 0 0 28px;
+  padding: 0;
+}
+.zeme-dlazdice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #efe7da;
+  border-radius: 16px;
+  background: #fff;
+  padding: 12px 14px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color .15s ease, transform .15s ease;
+}
+.zeme-dlazdice:hover { border-color: #d97757; transform: translateY(-1px); }
+.zeme-vlajka { font-size: 22px; flex: none; }
+.zeme-nazev {
+  font-family: var(--font-nadpis), system-ui, sans-serif;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #2b2723;
+}
+.zeme-pocet { margin-left: auto; font-size: 12px; color: #8a7f71; white-space: nowrap; }
+
+/* ── Drobečková navigace ─────────────────────────────────────────────────
+   Odkazy v drobečkové navigaci nejsou součástí věty, takže na ně platí
+   minimální velikost cíle 24 px (WCAG 2.2, 2.5.8). Prosté zvětšení řádku
+   by rozhodilo mezery, proto přidáme svislé odsazení a rovnáme na střed. */
+.drobky { display: flex; flex-wrap: wrap; align-items: center; gap: 2px; }
+.drobky a,
+.drobky > span[aria-current] {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 1px 2px;
+  border-radius: 6px;
+}
+.drobky a:hover { color: #2b2723; text-decoration: underline; }
+.drobky a:focus-visible { outline: 2px solid #d97757; outline-offset: 1px; }
+
+/* Odkaz uvnitř věty výjimku má, ale nic nestojí dát mu taky plný cíl. */
+.jmeno-udaje a { display: inline-block; min-height: 24px; line-height: 24px; }

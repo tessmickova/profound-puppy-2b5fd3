@@ -8,6 +8,7 @@ import { useRodina } from '@/lib/names/rodina'
 import Paticka from './Paticka'
 import DetailPanel from './DetailPanel'
 import ReklamniRam from './ReklamniRam'
+import Hledani from './Hledani'
 
 // Navigace je dvojí: v hlavičce na velkých displejích, jako spodní lišta
 // na telefonu. Obojí ukazuje stejných pět míst, aby se uživatel neztratil.
@@ -31,10 +32,15 @@ export default function Shell({ children }: { children: React.ReactNode }) {
       <ReklamniRam />
       <header className="hlavicka sticky top-0 z-40 border-b border-[#e8dfd2] bg-[#faf6ef]/92 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center gap-2 px-3 py-2.5 sm:px-4">
-          <Link href="/" className="flex shrink-0 items-center gap-1.5 [font-family:var(--font-syne)] text-base font-extrabold tracking-tight sm:text-lg">
+          <Link href="/" className="flex shrink-0 items-center gap-1.5 [font-family:var(--font-nadpis)] text-base font-extrabold tracking-tight sm:text-lg">
             <PawPrint size={20} className="text-[#d97757]" aria-hidden />
             <span>Svět jmen</span>
           </Link>
+
+          {/* Hledání konkrétního jména je dosažitelné odkudkoli. */}
+          <div className="hlavicka-hledani hidden md:block">
+            <Hledani />
+          </div>
 
           {/* hlavní navigace — na telefonu ji nahradí spodní lišta */}
           <nav className="ml-auto hidden items-center gap-0.5 text-[13px] sm:flex" aria-label="Hlavní navigace">
