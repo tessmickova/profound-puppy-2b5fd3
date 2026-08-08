@@ -19,6 +19,7 @@ const HLAVNI_ZEME = ['cz', 'sk', 'gb', 'de', 'fr', 'it']
 const O_PROJEKTU = [
   { href: '/metodika', text: 'Jak vybíráme jména' },
   { href: '/reklama', text: 'Reklama na webu' },
+  { href: '/reklama/ucet', text: 'Účet inzerenta' },
   { href: '/podminky', text: 'Podmínky' },
   { href: '/soukromi', text: 'Ochrana údajů' },
 ]

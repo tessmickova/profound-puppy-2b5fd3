@@ -10,8 +10,12 @@
 // zůstane a jen se u ploch nepíše, jestli jsou volné — koupit se dá stejně.
 
 import { useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { Check, Loader2 } from 'lucide-react'
-import { CENA_MESIC_KC, OBDOBI, PLOCH, POZIC, ROTACE_SLOUPCE_MS, cenaKc, type ObdobiId } from '@/shared/reklama'
+import {
+  CENA_MESIC_KC, OBDOBI, PLOCH, POZIC, ROTACE_SLOUPCE_MS, cenaKc, jePlocha,
+  type ObdobiId,
+} from '@/shared/reklama'
 import { ADRESA_REKLAM } from '@/lib/names/reklamniServer'
 import { PRAVNI } from '@/lib/names/pravni'
 
@@ -36,10 +40,18 @@ const plochaPozice = (pozice: number, strana: 'a' | 'b') =>
 const korun = (c: number) => c.toLocaleString('cs-CZ')
 
 export default function VyberPlochy() {
+  // Zákazník sem obvykle přichází klepnutím na konkrétní volné místo.
+  // Předvolíme mu ho, včetně správné strany pozice, ať nemusí hledat znovu.
+  const params = useSearchParams()
+  const zAdresy = params.get('plocha')
+  const predvolena = zAdresy && jePlocha(zAdresy) ? zAdresy : null
+
   const [sloty, setSloty] = useState<Record<string, Slot> | null>(null)
   const [nacita, setNacita] = useState(Boolean(ADRESA_REKLAM))
-  const [strana, setStrana] = useState<'a' | 'b'>('a')
-  const [vybrano, setVybrano] = useState<string | null>(null)
+  const [strana, setStrana] = useState<'a' | 'b'>(
+    predvolena && cislo(predvolena) % 2 === 0 ? 'b' : 'a',
+  )
+  const [vybrano, setVybrano] = useState<string | null>(predvolena)
   const [obdobi, setObdobi] = useState<ObdobiId>('mesic')
 
   useEffect(() => {

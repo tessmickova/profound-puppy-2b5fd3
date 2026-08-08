@@ -143,7 +143,7 @@ function hlavickyCors(req: Request, env: Prostredi): Record<string, string> {
   if (origin && originy(env).includes(origin)) {
     return {
       'Access-Control-Allow-Origin': origin,
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Methods': 'GET, POST, PATCH, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
       'Vary': 'Origin',
     }
@@ -461,6 +461,13 @@ async function dejObjednavku(token: string, env: Prostredi, url: URL, cors: Reco
     vs: o.vs,
     plati_od: o.plati_od,
     plati_do: o.plati_do,
+    platba: {
+      ucet: env.BANKOVNI_UCET,
+      vs: o.vs,
+      prijemce: env.PROVOZOVATEL,
+      zprava: `Reklama ${o.plocha}`,
+    },
+    kontakt: env.PROVOZOVATEL_EMAIL,
     inzerat: i ? {
       znacka: i.znacka, nadpis: i.nadpis, text: i.text, cta: i.cta, odkaz: i.odkaz,
       ikona: i.logo_klic ? null : i.ikona,
@@ -521,6 +528,56 @@ async function dejLogo(klic: string, env: Prostredi) {
       'X-Content-Type-Options': 'nosniff',
     },
   })
+}
+
+/**
+ * Úprava textu běžící kampaně.
+ *
+ * Podmínky slibují, že text i odkaz jde během kampaně změnit; plocha ani
+ * délka se měnit nedají — to by se obcházel ceník. Prochází stejnou
+ * validací jako objednávka, protože vstup je stejně nedůvěryhodný.
+ */
+async function upravInzerat(
+  req: Request, token: string, env: Prostredi, cors: Record<string, string>,
+) {
+  const o = await objednavkaPodleTokenu(env, token)
+  if (!o) return chyba('Objednávku neznáme.', 404, cors)
+  if (o.stav === 'zrusena' || o.stav === 'vyprsela') return chyba('Kampaň už neběží.', 409, cors)
+
+  const delka = Number(req.headers.get('Content-Length') ?? '0')
+  if (delka > MAX_TELO) return chyba('Data formuláře jsou příliš velká.', 413, cors)
+
+  let telo: Record<string, unknown>
+  try {
+    const surove = await req.text()
+    if (surove.length > MAX_TELO) return chyba('Data formuláře jsou příliš velká.', 413, cors)
+    const rozbalene: unknown = JSON.parse(surove)
+    if (!rozbalene || typeof rozbalene !== 'object' || Array.isArray(rozbalene)) {
+      return chyba('Nečitelná data formuláře.', 400, cors)
+    }
+    telo = rozbalene as Record<string, unknown>
+  } catch {
+    return chyba('Nečitelná data formuláře.', 400, cors)
+  }
+
+  const znacka = text(telo.znacka, MEZE.znacka)
+  const nadpis = text(telo.nadpis, MEZE.nadpis)
+  const popis = text(telo.text, MEZE.text)
+  const cta = text(telo.cta, MEZE.cta)
+  const odkaz = text(telo.odkaz, MEZE.odkaz)
+
+  if (znacka.length < 2) return chyba('Vyplňte jméno značky.', 400, cors)
+  if (nadpis.length < 6) return chyba('Nadpis je moc krátký.', 400, cors)
+  if (popis.length < 20) return chyba('Text inzerátu je moc krátký.', 400, cors)
+  if (cta.length < 3) return chyba('Vyplňte text tlačítka.', 400, cors)
+  if (!odkazOk(odkaz)) return chyba('Odkaz musí být běžná adresa začínající http:// nebo https://', 400, cors)
+
+  await env.DB.prepare(
+    `UPDATE inzeraty SET znacka = ?1, nadpis = ?2, text = ?3, cta = ?4, odkaz = ?5
+      WHERE objednavka_id = ?6`,
+  ).bind(znacka, nadpis, popis, cta, odkaz, o.id).run()
+
+  return json({ ulozeno: true }, {}, cors)
 }
 
 // ── správa ───────────────────────────────────────────────────────────────
@@ -594,6 +651,12 @@ async function obsluz(req: Request, env: Prostredi): Promise<Response> {
 
       const stav = cesta.match(/^\/api\/objednavka\/([a-z0-9]+)$/)
       if (req.method === 'GET' && stav) return dejObjednavku(stav[1], env, url, cors)
+      if (req.method === 'PATCH' && stav) {
+        if (await prekrocenLimit(req, env, 'uprava', 30)) {
+          return chyba('Příliš mnoho pokusů. Zkuste to prosím za hodinu.', 429, cors)
+        }
+        return upravInzerat(req, stav[1], env, cors)
+      }
 
       const souborLoga = cesta.match(/^\/logo\/([a-z0-9-]+\.(?:png|jpg|webp))$/)
       if (req.method === 'GET' && souborLoga) return dejLogo(souborLoga[1], env)

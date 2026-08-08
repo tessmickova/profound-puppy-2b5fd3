@@ -134,7 +134,9 @@ i zaměření klávesnicí; tlačítko pauzy je **jen v liště nahoře**. Při
 `prefers-reduced-motion` se nic neotáčí. Označení „reklama" je vidět vždycky,
 odkazy mají `rel="sponsored nofollow noopener"`. Na kartě je **logo firmy**;
 ikona je jen náhrada, dokud ho firma nenahraje. Volná plocha se ukáže jako
-nabídka „Tady může být vaše značka" s odkazem na `/reklama`.
+nabídka „Volné místo pro vaši reklamu" s odkazem rovnou na rezervaci té
+konkrétní plochy. Rezervací vzniká účet inzerenta bez hesla — přístupovým
+klíčem se na `/reklama/ucet` dostane ke stavu kampaně, platbě i úpravě textu.
 
 Seznam ploch a ceník je v `ads-worker/src/plochy.ts`, vykreslení v
 `components/names/ReklamniRam.tsx`, prodejní náhled v `VyberPlochy.tsx`.

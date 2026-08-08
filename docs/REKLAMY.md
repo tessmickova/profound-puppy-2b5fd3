@@ -114,8 +114,24 @@ Sloupce mají stejný papírový podklad jako zbytek webu: překrývají odsazen
 stránky a bez vlastního pozadí by po stranách prosvítalo tmavé pozadí
 dokumentu, které patří AuroraDogu (sdílí stejné `<body>`).
 
-Volná plocha se nevykreslí jako díra — ukáže se jako nabídka „Tady může být
-vaše značka, volné místo N/20" s odkazem na `/reklama`.
+Volná plocha se nevykreslí jako díra — ukáže se jako nabídka **„Volné místo
+pro vaši reklamu"** s číslem plochy a tlačítkem *Rezervovat*. Odkaz míří
+rovnou na rezervaci té konkrétní plochy (`/reklama?plocha=plocha-N`), takže
+zákazník nemusí hledat, na které místo zrovna klepl; náhled si ji předvolí
+i se správnou stranou pozice.
+
+## Účet inzerenta
+
+Účet **záměrně nemá heslo**. Rezervací vzniká objednávka a s ní přístupový
+klíč — ten je zároveň účtem. Nezakládáme tím firmě profil, nesbíráme o ní nic
+navíc a nemusíme řešit obnovu hesla. Klíč se ukládá do prohlížeče
+(`svetjmen-inzerent-klic`), takže se příště načte sám.
+
+Na `/reklama/ucet` firma vidí stav kampaně, pokyny k platbě a může upravit
+text, tlačítko, odkaz i logo — přesně jak slibují podmínky. Plocha ani délka
+se měnit nedají, tím by se obcházel ceník. Úprava jde přes
+`PATCH /api/objednavka/:token` a prochází **stejnou validací jako objednávka**;
+`javascript:` odkaz ani prázdný nadpis neprojdou.
 
 ## Bezpečnost
 

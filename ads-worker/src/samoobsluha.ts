@@ -117,7 +117,7 @@ export function samoobsluha(env: Prostredi): string {
   .schovano { display:none; }
 </style>
 </head>
-<body>
+<body data-web="${esc(web)}">
 <div class="obal">
   <h1>Reklama, která vypadá jako zbytek webu</h1>
   <p class="podnadpis">
@@ -226,6 +226,8 @@ export function samoobsluha(env: Prostredi): string {
     'sparkles':'✦','type':'A','users':'👪','globe':'🌍','calendar':'📅','languages':'文'
   };
   var stav = { plocha:null, obdobi:null, ikona:'sparkles', ceny:null, logo:null };
+  // Adresa webu ze serveru — odkaz na účet musí vést tam, kde web běží.
+  var WEB_ADRESA = document.body.dataset.web || '';
   var $ = function (id) { return document.getElementById(id); };
 
   function korun(n) { return n.toLocaleString('cs-CZ') + ' Kč'; }
@@ -401,8 +403,10 @@ export function samoobsluha(env: Prostredi): string {
           '<dt>Variabilní symbol</dt><dd>' + d.platba.vs + '</dd>' +
           '</dl></div>' +
           '<div id="logo-stav"></div>' +
-          '<p style="font-size:14px;margin-top:14px">Stav kampaně i nahrání loga najdete na téhle adrese — uložte si ji, je to zároveň váš přístup:<br>' +
-          '<code style="word-break:break-all">' + location.origin + '/api/objednavka/' + d.token + '</code></p>';
+          '<p style="font-size:14px;margin-top:14px"><strong>Tohle je klíč k vašemu účtu inzerenta.</strong> ' +
+          'Uložte si ho — otevřete jím stav kampaně, pokyny k platbě i úpravu textu:<br>' +
+          '<code style="word-break:break-all;font-size:15px">' + d.token + '</code></p>' +
+          '<p style="font-size:14px"><a href="' + WEB_ADRESA + '/reklama/ucet" target="_blank" rel="noopener">Otevřít účet inzerenta →</a></p>';
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }).catch(function () {
         $('hlaska').innerHTML = '<p class="hlaska chyba">Spojení se nepodařilo navázat. Zkuste to prosím znovu.</p>';

@@ -182,15 +182,19 @@ function Karta({ plocha, mapa, tvar }: { plocha: string; mapa: Mapa; tvar: 'pred
   const Ikona = inzerat ? (IKONY[inzerat.ikona ?? ''] ?? Sparkles) : Sparkles
 
   if (!inzerat) {
+    // Volné místo není díra v rozvržení, ale nabídka. Odkaz míří rovnou
+    // na rezervaci téhle konkrétní plochy, ne na obecnou stránku o reklamě —
+    // zákazník tak nemusí hledat, na které místo zrovna klepl.
     return (
       <Link
-        href="/reklama"
+        href={`/reklama?plocha=plocha-${cislo}`}
         className={`reklamni-karta je-volna je-${tvar === 'prední' ? 'pred' : 'za'}`}
       >
         <span className="reklamni-znak">reklama</span>
         <span className="reklamni-dlazdice" aria-hidden><Sparkles size={20} strokeWidth={1.75} /></span>
-        <span className="reklamni-nadpis">Tady může být vaše značka</span>
-        <span className="reklamni-popis">volné místo {cislo}/{PLOCH}</span>
+        <span className="reklamni-nadpis">Volné místo pro vaši reklamu</span>
+        <span className="reklamni-popis">plocha {cislo} z {PLOCH}</span>
+        <span className="reklamni-cta">Rezervovat <span aria-hidden>→</span></span>
       </Link>
     )
   }
@@ -263,10 +267,11 @@ function RadekListy({ plocha, mapa }: { plocha: string; mapa: Mapa }) {
 
   if (!inzerat) {
     return (
-      <Link href="/reklama" className="reklamni-lista-box je-volna">
+      <Link href={`/reklama?plocha=plocha-${cislo}`} className="reklamni-lista-box je-volna">
         <Sparkles size={15} strokeWidth={1.75} aria-hidden />
-        <span className="reklamni-lista-nadpis">Tady může být vaše značka</span>
-        <span className="reklamni-lista-cta">volné místo {cislo}/{PLOCH}</span>
+        <span className="reklamni-lista-znacka">Volné místo</span>
+        <span className="reklamni-lista-nadpis">pro vaši reklamu — plocha {cislo} z {PLOCH}</span>
+        <span className="reklamni-lista-cta">Rezervovat <span aria-hidden>→</span></span>
       </Link>
     )
   }
