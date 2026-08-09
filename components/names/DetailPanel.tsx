@@ -7,8 +7,9 @@ import { useEffect } from 'react'
 import { X } from 'lucide-react'
 import { JMENA, jeMezinarodni, zemePodleKodu } from '@/lib/names/data'
 import { JMENA_V_CESKU } from '@/lib/names/vCesku'
-import { jeHit, jeOriginal, jeTrendy, numerologie, rychlaAnalyza } from '@/lib/names/logic'
-import { KATEGORIE_INFO, POHLAVI_INFO } from '@/lib/names/types'
+import { jeHit, numerologie, rychlaAnalyza } from '@/lib/names/logic'
+import { vlnaJmena } from '@/lib/names/vlny'
+import { KATEGORIE_INFO, POHLAVI_INFO, VLNA_INFO } from '@/lib/names/types'
 import { useDetail } from '@/lib/names/detail'
 import { useOblibene } from '@/lib/names/oblibene'
 
@@ -48,11 +49,11 @@ export default function DetailPanel() {
   const vCesku = JMENA_V_CESKU.includes(jmeno.jmeno)
   const postrehy = rychlaAnalyza(jmeno, vCesku)
   const oblibene = je(jmeno.id)
+  const vlna = vlnaJmena(jmeno)
 
   const stitky = [
+    vlna && { text: VLNA_INFO[vlna].stitek, trida: VLNA_INFO[vlna].trida },
     jeHit(jmeno) && { text: 'hit', trida: 'bg-[#fdeaea] text-[#b3403a]' },
-    jeTrendy(jmeno) && { text: 'trendy', trida: 'bg-[#e7f0fb] text-[#3563a8]' },
-    jeOriginal(jmeno) && { text: 'originál', trida: 'bg-[#f2ecfa] text-[#6d4fa1]' },
     jeMezinarodni(jmeno) && { text: 'mezinárodní', trida: 'bg-[#e4f0f4] text-[#2f6f84]' },
     jmeno.unisex && { text: 'unisex', trida: 'bg-[#eef2e4] text-[#5f7233]' },
   ].filter(Boolean) as { text: string; trida: string }[]

@@ -7,19 +7,26 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { RotateCcw, X } from 'lucide-react'
-import { KATEGORIE_INFO, POHLAVI_INFO } from '@/lib/names/types'
+import { KATEGORIE_INFO, POHLAVI_INFO, VLNA_INFO } from '@/lib/names/types'
 import type { Jmeno } from '@/lib/names/types'
 import { zemePodleKodu } from '@/lib/names/data'
-import { jeHit, jeOriginal, jeTrendy } from '@/lib/names/logic'
+import { jeHit } from '@/lib/names/logic'
+import { vlnaJmena } from '@/lib/names/vlny'
 import { useVyber } from '@/lib/names/vyber'
 import { otevriDetail } from '@/lib/names/detail'
 import { slugJmena } from '@/lib/names/slug'
 
-/** Jeden štítek navíc — víc jich na kartu nepatří. */
+/**
+ * Jeden štítek navíc — víc jich na kartu nepatří.
+ *
+ * Přednost má dobové zařazení: „vrací se" nebo „jméno generace rodičů"
+ * odpoví na otázku, kterou si rodič klade. „Hit" je jen o líbivosti a
+ * nastupuje tam, kde vlnu neznáme.
+ */
 function hlavniStitek(j: Jmeno): { text: string; trida: string } | null {
+  const vlna = vlnaJmena(j)
+  if (vlna) return { text: VLNA_INFO[vlna].stitek, trida: VLNA_INFO[vlna].trida }
   if (jeHit(j)) return { text: 'hit', trida: 'bg-[#fdeaea] text-[#b3403a]' }
-  if (jeTrendy(j)) return { text: 'trendy', trida: 'bg-[#e7f0fb] text-[#3563a8]' }
-  if (jeOriginal(j)) return { text: 'originál', trida: 'bg-[#f2ecfa] text-[#6d4fa1]' }
   return null
 }
 

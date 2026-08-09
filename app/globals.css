@@ -2861,3 +2861,7 @@ body:has(.svetjmen-shell) { background-color: #faf6ef; }
 @media (max-width: 559px) {
   .jmeno-nastroj h2 { font-size: 18px; }
 }
+
+/* Poznámka o původu údaje — patří k tvrzení, ne pod čáru na konci stránky. */
+.jmeno-poznamka { display: block; margin-top: 4px; font-size: 12.5px; color: #8a7f71; }
+.jmeno-poznamka a { color: #d97757; }

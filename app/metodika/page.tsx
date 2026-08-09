@@ -71,10 +71,44 @@ export default function MetodikaStranka() {
           při zařazení jména do katalogu.
         </p>
         <p>
-          Ze stejného důvodu neříkáme „trend právě teď“ — průběžně aktualizovaná
-          data o oblíbenosti nemáme. Štítky jako <em>hit</em>, <em>trendy</em>
-          {' '}nebo <em>originál</em> jsou <strong>redakční zařazení</strong>
-          {' '}odvozené z tohoto skóre, ne z návštěvnosti ani ze statistik matrik.
+          Skóre líbivosti <strong>neříká nic o době</strong>, ve které se jméno
+          dávalo. Na to je samostatný údaj níž.
+        </p>
+
+        <h2>Dobové zařazení: kde jméno stojí na české vlně</h2>
+        <p>
+          Dřív u nás štítek <em>originál</em> dostávalo jméno jen podle toho, že
+          mělo nižší skóre líbivosti. Bylo to špatně a bylo to vidět:{' '}
+          <strong>Denisa vycházela jako „originál“</strong>. Denisa přitom není
+          originální jméno ani trochu — je to naprosto běžné české jméno, jen se
+          dávalo generaci dnešních maminek, ne dnešním miminkám. Stejně dopadly
+          Blanka, Ludmila, Zuzana nebo Richard.
+        </p>
+        <p>
+          Jsou to dvě různé věci: <strong>jak je jméno vzácné</strong> a{' '}
+          <strong>v jaké době se dávalo</strong>. Kryšpín je vzácný pořád. Denisa
+          nebyla vzácná nikdy. Rozálie byla vzácná a teď se vrací. Do jednoho
+          čísla se to nevejde, takže má každé jméno vlastní dobové zařazení:
+        </p>
+        <ul>
+          <li><strong>teď nejčastější</strong> — patří k nejčastějším jménům dnešních miminek</li>
+          <li><strong>jde nahoru</strong> — dává se čím dál víc, dá se čekat přírůstek</li>
+          <li><strong>vrací se</strong> — jméno prababiček a pradědečků zpátky v módě</li>
+          <li><strong>stálice</strong> — dává se v každé generaci</li>
+          <li><strong>jméno generace rodičů</strong> — běžné, ale jeho doba byla o generaci dřív</li>
+          <li><strong>vzácné</strong> — vzácné bez ohledu na dobu</li>
+        </ul>
+        <p>
+          Je to <strong>redakční zařazení, ne statistika</strong>. Data ČSÚ ani
+          matrik k dispozici nemáme, a kdybychom z nich dělali, že vycházíme,
+          bylo by to horší než přiznaný odhad. Proto je u zařazení vždycky uvedený
+          rok revize — bez roku by za dvě sezóny nikdo nepoznal, že zestaralo.
+        </p>
+        <p>
+          Zařazení má zatím jen <strong>českých dětských jmen</strong>. Cizí
+          záznamy popisují jméno v jeho zemi, ne to, co se dává v Česku, a
+          o módě zvířecích jmen žádná použitelná data nejsou. Kde nevíme, tam
+          nic netvrdíme a jméno zůstane bez štítku.
         </p>
 
         <h2>Shoda podle pravidel Světa jmen</h2>

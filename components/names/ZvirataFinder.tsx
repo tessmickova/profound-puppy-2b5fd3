@@ -14,7 +14,7 @@ import {
 import { JMENA, ZEME } from '@/lib/names/data'
 import { PLEMENA_KOCEK, PLEMENA_PSU, VSECHNA_PLEMENA } from '@/lib/names/breeds'
 import {
-  dobreSeVola, filtruj, jeHit, jeOriginal, jeTrendy, jmenaProPlemeno, kolator,
+  dobreSeVola, filtruj, jeHit, jmenaProPlemeno, kolator,
   PRAZDNY_FILTR, RAZENI_MOZNOSTI, serad, ZPUSOBY_ZIVOTA,
 } from '@/lib/names/logic'
 import type { Filtr, Razeni } from '@/lib/names/logic'
@@ -75,8 +75,11 @@ export default function ZvirataFinder() {
     kandidati = filtruj(kandidati, f)
     if (rychle.includes('srdce')) kandidati = kandidati.filter(j => oblibena.includes(j.id))
     if (rychle.includes('hit')) kandidati = kandidati.filter(jeHit)
-    if (rychle.includes('trendy')) kandidati = kandidati.filter(jeTrendy)
-    if (rychle.includes('original')) kandidati = kandidati.filter(jeOriginal)
+    // Zvířecí jména dobové zařazení nemají — o módě zvířecích jmen žádná
+    // použitelná data nejsou. Místo vymyšleného „trendy" nabízíme styl,
+    // který v datech opravdu je.
+    if (rychle.includes('moderni')) kandidati = kandidati.filter(j => j.styly.includes('moderní'))
+    if (rychle.includes('tradicni')) kandidati = kandidati.filter(j => j.styly.includes('tradiční'))
     if (rychle.includes('volatelne')) kandidati = kandidati.filter(dobreSeVola)
     // Vyřazená jména z výsledků mizí — o to při vyřazování jde.
     if (vyrazena.length) kandidati = kandidati.filter(j => !vyrazena.includes(j.id))
@@ -164,11 +167,11 @@ export default function ZvirataFinder() {
           <Chip aktivni={rychle.includes('hit')} onClick={() => setRychle(prepni(rychle, 'hit'))} title="Dlouhodobě nejoblíbenější">
             <Flame size={12} /> hity
           </Chip>
-          <Chip aktivni={rychle.includes('trendy')} onClick={() => setRychle(prepni(rychle, 'trendy'))} title="Moderní jména, která právě letí">
-            <TrendingUp size={12} /> trendy
+          <Chip aktivni={rychle.includes('moderni')} onClick={() => setRychle(prepni(rychle, 'moderni'))} title="Jména se současným zvukem">
+            <TrendingUp size={12} /> moderní
           </Chip>
-          <Chip aktivni={rychle.includes('original')} onClick={() => setRychle(prepni(rychle, 'original'))} title="Méně obvyklá, ale krásná">
-            <Gem size={12} /> originální
+          <Chip aktivni={rychle.includes('tradicni')} onClick={() => setRychle(prepni(rychle, 'tradicni'))} title="Klasika, kterou zná každý">
+            <Gem size={12} /> tradiční
           </Chip>
           <Chip aktivni={rychle.includes('volatelne')} onClick={() => setRychle(prepni(rychle, 'volatelne'))} title="1–2 slabiky, samohláska na konci, nezní jako povel">
             <Megaphone size={12} /> dobře se volá

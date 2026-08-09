@@ -116,6 +116,8 @@ ani našeptávačem nepohne. První otázka je „koho pojmenováváte", druhá
 | `reklamniServer.ts` | jediné místo, kde web ví o reklamní službě |
 | `rozhodovani.ts` | rozhodovací jádro — odhad vkusu z voleb, doporučení s důvody, porovnání finalistů, test jména |
 | `cestina.ts` | oslovení (5. pád), genitiv, iniciály, hláskování, podoba bez diakritiky, zvuk v cizině |
+| `vlny.ts` | dobové zařazení jmen — kde jméno stojí na české vlně (redakční, s rokem revize) |
+| `adresy.ts` | jediný seznam veřejných adres; sdílí ho mapa webu, IndexNow i kontrola SEO |
 
 ### Jak se počítá „nejlepší shoda"
 
@@ -125,6 +127,34 @@ a oblíbenost. Vrací skóre 0–100 a české vysvětlení, proč zrovna tohle 
 
 `rodinnaHarmonie()` navíc vrací štítek — „ladí s oběma rodiči" nebo
 „ladí s celou rodinou" —, když jméno sedí k víc členům najednou.
+
+### Dobové zařazení jmen (`vlny.ts`)
+
+Štítek „originál" se dřív počítal jako `popularita <= 80`. `popularita` je
+ale **redakční skóre líbivosti, ne četnost** — a tak vycházela *Denisa* jako
+originální jméno. Denisa není vzácná ani trochu; jen se dávala generaci
+dnešních maminek. Stejně dopadly Blanka, Ludmila, Zuzana, Richard.
+
+Jsou to dvě nezávislé osy a do jednoho čísla se nevejdou:
+
+    jak je jméno vzácné  ×  v které době se dávalo
+
+Proto má jméno vlastní `vlna`: `vrchol`, `stoupa`, `retro`, `stalice`,
+`dozniva`, `vzacne`. Z ní se počítají všechny štítky i rychlé filtry
+(`jeVyhled`, `jeVrchol`, `jeStalice`, `jeVzacne`, `jeDoznivajici`).
+
+Tři pravidla, která se nesmí porušit:
+
+- **`undefined` znamená „nevíme", ne „průměrné".** Jméno bez vlny se
+  neoznačuje. Vlnu mají zatím jen česká dětská jména — cizí záznamy popisují
+  jméno v jeho zemi a o módě zvířecích jmen žádná data nejsou.
+- **Je to redakční zařazení, ne statistika.** Data ČSÚ v repozitáři nejsou
+  a nikde se netvrdí, že z nich vycházíme.
+- **Vždy s rokem.** `ROK_REVIZE` se vypisuje uživateli; bez něj by za dvě
+  sezóny nikdo nepoznal, že zařazení zestaralo.
+
+Kontrola dat hlásí překlep v klíči jako kritickou chybu — jinak by se štítek
+tiše nezobrazil. Testy v `testy/vlny.test.ts` hlídají mimo jiné přímo Denisu.
 
 ### Jak se počítá doporučení v hledači
 

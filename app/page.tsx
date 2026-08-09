@@ -10,7 +10,8 @@ import PasyJmen from '@/components/names/PasyJmen'
 import NadpisSekce from '@/components/names/NadpisSekce'
 import type { Druh } from '@/components/names/NadpisSekce'
 import { JMENA, ZEME } from '@/lib/names/data'
-import { jeOriginal, jeTrendy, serad } from '@/lib/names/logic'
+import { jeStalice, jeVrchol, jeVyhled, serad } from '@/lib/names/logic'
+import { VYHLED } from '@/lib/names/vlny'
 import { CASTE_DOTAZY, jsonLdDotazy, jsonLdSeznam, WEB } from '@/lib/names/seo'
 
 // Úvodní stránka není katalog, ale rozcestník podle toho, **kde v
@@ -82,8 +83,12 @@ const CESTY = [
 export default function Domov() {
   const topZvirata = serad(JMENA.filter(j => !['kluk', 'holka'].includes(j.kategorie)), 'popularita').slice(0, 6)
   const topDeti = serad(JMENA.filter(j => ['kluk', 'holka'].includes(j.kategorie)), 'popularita').slice(0, 6)
-  const trendy = serad(JMENA.filter(jeTrendy), 'popularita').slice(0, 6)
-  const originaly = serad(JMENA.filter(jeOriginal), 'popularita').slice(0, 6)
+  // Na tohle se maminky ptají nejčastěji: co se bude dávat teď a příští
+  // rok. Odpovídá dobové zařazení (`vlna`), ne styl „moderní" — ten
+  // o době neříká nic.
+  const vyhled = serad(JMENA.filter(jeVyhled), 'popularita').slice(0, 6)
+  const nejcastejsi = serad(JMENA.filter(jeVrchol), 'popularita').slice(0, 6)
+  const stalice = serad(JMENA.filter(jeStalice), 'popularita').slice(0, 6)
 
   return (
     <Shell>
@@ -135,18 +140,18 @@ export default function Domov() {
 
         <Sekce
           druh="lide"
-          nadpis="Nejlíbivější dětská jména"
-          popis="Žebříček napříč všemi zeměmi — od české klasiky po jižní temperament."
-          jmena={topDeti}
-          odkaz={{ href: '/deti', text: 'všechna dětská jména' }}
+          nadpis={`Jména, kterých bude přibývat — ${VYHLED[0]} a ${VYHLED[1]}`}
+          popis="Jména, která jdou nahoru, a prababiččina jména, co se vracejí. Redakční zařazení podle toho, jak se dnes v Česku jména dávají — ne statistika."
+          jmena={vyhled}
+          odkaz={{ href: '/deti', text: 'zobrazit všechna' }}
         />
 
         <Sekce
           druh="lide"
-          nadpis="Populární trendy právě teď"
-          popis="Moderní jména, která letí nahoru — poznáte je podle štítku."
-          jmena={trendy}
-          odkaz={{ href: '/deti', text: 'filtrovat trendy' }}
+          nadpis="Nejčastější jména dnešních miminek"
+          popis="Tahle uslyšíte na hřišti nejčastěji. Někdo to bere jako doporučení, někdo jako důvod hledat dál."
+          jmena={nejcastejsi}
+          odkaz={{ href: '/deti', text: 'všechna dětská jména' }}
         />
 
         <PasyJmen druh="zvirata" />
@@ -160,10 +165,10 @@ export default function Domov() {
         />
 
         <Sekce
-          druh="zvirata"
-          nadpis="Originální a pěkná"
-          popis="Skryté poklady — jména, která nepotkáte na každém hřišti ani v každém parku."
-          jmena={originaly}
+          druh="lide"
+          nadpis="Stálice, které nezestárnou"
+          popis="Dávají se v každé generaci. Za dvacet let nebudou znít ani staromódně, ani jako móda jednoho roku."
+          jmena={stalice}
           odkaz={{ href: '/deti', text: 'objevit další' }}
         />
 

@@ -75,22 +75,29 @@ jméno „přeroste". Každý článek musí končit v nástroji, ne v dalším 
 *Blokuje:* nic technicky; je to psaní, které musí být poctivé — bez
 vymyšlených statistik a bez rad, na které nemáme podklad.
 
+**8. Víc českých dětských jmen v katalogu**
+Dobové zařazení (`vlna`) má zatím 52 jmen — tolik jich je v katalogu vedeno
+pod Českem. Jména, která dnes české maminky běžně dávají, ale v katalogu jsou
+jen pod cizí zemí (Mia, Emma, Laura, Matylda, Stela, Ella, Jonáš, Oskar,
+Lukáš), tím pádem štítek nedostanou. Je to omezení dat, ne logiky.
+*Blokuje:* nic — je to práce na datech.
+
 ---
 
 ## P2 — jen s daty, jinak vůbec
 
-**8. Nejčastější jména v ČR podle roku**
+**9. Nejčastější jména v ČR podle roku**
 Nejsilnější dotaz v celé oblasti a zároveň ten, který se nejvíc kazí:
 weby uvádějí žebříčky bez roku a bez zdroje.
 *Blokuje:* data ČSÚ nebo MV ČR. Bez uvedeného zdroje a roku **nevzniká**.
 
-**9. Původ a etymologie jmen**
+**10. Původ a etymologie jmen**
 `puvod` je prázdný u všech 1 243 záznamů. Země v datech znamená, kde se
 jméno nosí, ne odkud pochází — a tenhle rozdíl je na webu popsaný právě
 proto, aby se nezaměňoval.
 *Blokuje:* doložitelný zdroj etymologie. Opsat to odjinud nejde.
 
-**10. Jména podle plemene psa**
+**11. Jména podle plemene psa**
 `breeds.ts` má 54 plemen s ručně vybranými jmény. Vlastní stránky by dávaly
 smysl, ale 54 stránek generovaných ze šablony je přesně ta hranice, za
 kterou začíná doorway. Vydat se dají jen ta plemena, kde je co říct nad

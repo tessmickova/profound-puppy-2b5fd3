@@ -6,7 +6,8 @@ import TestJmena from '@/components/names/TestJmena'
 import PorovnaniJmen from '@/components/names/PorovnaniJmen'
 import UlozitJmeno from '@/components/names/UlozitJmeno'
 import { ENTITY_SE_STRANKOU, entitaPodleSlugu, podobna, zemeEntity } from '@/lib/names/entita'
-import { KATEGORIE_INFO } from '@/lib/names/types'
+import { KATEGORIE_INFO, VLNA_INFO } from '@/lib/names/types'
+import { ROK_REVIZE, vlnaJmena } from '@/lib/names/vlny'
 import { WEB } from '@/lib/names/seo'
 import { velke } from '@/lib/names/logic'
 
@@ -49,6 +50,9 @@ export default async function JmenoStranka({ params }: { params: Promise<{ slug:
   const zeme = zemeEntity(e)
   const dalsi = podobna(e)
   const proKoho = e.kategorie.map(k => KATEGORIE_INFO[k])
+  // Vlna patří jménu, ne jednotlivému záznamu — vezmeme první výskyt,
+  // který ji má (české dětské jméno).
+  const vlna = e.vyskyty.map(vlnaJmena).find(Boolean)
 
   // DefinedTerm sedí na to, co stránka opravdu je: heslo se slovníkovým
   // významem. Recenze ani hodnocení si nevymýšlíme.
@@ -118,6 +122,18 @@ export default async function JmenoStranka({ params }: { params: Promise<{ slug:
             <dt>Délka</dt>
             <dd>{e.delka} písmen, {e.slabiky} {e.slabiky === 1 ? 'slabika' : e.slabiky < 5 ? 'slabiky' : 'slabik'}</dd>
           </div>
+          {vlna && (
+            <div>
+              <dt>Jak je na tom dnes</dt>
+              <dd>
+                <strong>{VLNA_INFO[vlna].stitek}</strong> — {VLNA_INFO[vlna].popis}{' '}
+                <span className="jmeno-poznamka">
+                  Redakční zařazení, revize {ROK_REVIZE}. Není to statistika ČSÚ —{' '}
+                  <Link href="/metodika">jak k němu docházíme</Link>.
+                </span>
+              </dd>
+            </div>
+          )}
           <div>
             <dt>Redakční hodnocení líbivosti</dt>
             <dd>

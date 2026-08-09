@@ -2,19 +2,40 @@
 
 import type { Energie, Jmeno, Kategorie, PohlaviZvirete, Styl, Velikost } from './types'
 import type { Plemeno } from './types'
+import { vlnaJmena } from './vlny'
 
 export const kolator = new Intl.Collator('cs')
 
-// ── štítky: hity, trendy a originální krásky ─────────────────────────────────
+// ── štítky ───────────────────────────────────────────────────────────────────
+//
+// Dřív se počítaly z `popularita` a ze stylu. To bylo špatně: `popularita`
+// je redakční skóre líbivosti, ne četnost, a styl „moderní" neříká nic
+// o době. Kvůli tomu dostávala **Denisa štítek „originál"** — přitom to
+// není originální jméno, jen jméno generace dnešních maminek.
+//
+// Dobovou informaci nese `vlna` (viz `lib/names/vlny.ts`). Jméno, které
+// vlnu nemá, se neoznačuje — „nevíme" není totéž co „průměrné".
 
 /** 🔥 Hit — dlouhodobě nejoblíbenější jména. */
 export const jeHit = (j: Jmeno) => j.popularita >= 88
 
-/** 📈 Trendy — moderní jména, která právě letí nahoru. */
-export const jeTrendy = (j: Jmeno) => j.styly.includes('moderní')
+/** 📈 Jde nahoru nebo se vrací — na tohle se ptá „co se bude dávat". */
+export const jeVyhled = (j: Jmeno) => {
+  const v = vlnaJmena(j)
+  return v === 'stoupa' || v === 'retro'
+}
 
-/** 💎 Originál — méně obvyklá, ale krásná jména (skryté poklady). */
-export const jeOriginal = (j: Jmeno) => j.popularita <= 80
+/** 💎 Vzácné bez ohledu na dobu. Skutečný originál, ne odkvetlá klasika. */
+export const jeVzacne = (j: Jmeno) => vlnaJmena(j) === 'vzacne'
+
+/** 👶 Nejčastější jména dnešních miminek. */
+export const jeVrchol = (j: Jmeno) => vlnaJmena(j) === 'vrchol'
+
+/** ⏳ Stálice — dává se v každé generaci. */
+export const jeStalice = (j: Jmeno) => vlnaJmena(j) === 'stalice'
+
+/** 🕰️ Jméno generace rodičů — dnes se dává málo. */
+export const jeDoznivajici = (j: Jmeno) => vlnaJmena(j) === 'dozniva'
 
 // ── volatelnost psích jmen (kynologická doporučení: 1–2 slabiky, samohláska
 //    na konci, žádná podobnost s povelem) ─────────────────────────────────────

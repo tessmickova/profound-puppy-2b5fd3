@@ -120,6 +120,53 @@ export const KATEGORIE_INFO: Record<Kategorie, {
   holka:    { nazev: 'Holčička', mnozne: 'Holčičky', proKoho: 'holčičky',  slug: 'holcicky',  emoji: '👧' },
 }
 
+/**
+ * Kde jméno stojí na české vlně. Redakční zařazení, ne statistika —
+ * podrobnosti a důvod, proč to nejde odvodit z oblíbenosti, jsou
+ * v `lib/names/vlny.ts`.
+ */
+export type Vlna = 'vrchol' | 'stoupa' | 'retro' | 'stalice' | 'dozniva' | 'vzacne'
+
+export const VLNA_INFO: Record<Vlna, {
+  /** krátký štítek na kartě */
+  stitek: string
+  /** věta do detailu */
+  popis: string
+  /** barevný tón štítku — dobová informace má svůj, ať se nepletou */
+  trida: string
+}> = {
+  vrchol: {
+    stitek: 'teď nejčastější',
+    popis: 'Patří k nejčastějším jménům dnešních miminek — na hřišti ho uslyšíte často.',
+    trida: 'bg-[#fdeaea] text-[#b3403a]',
+  },
+  stoupa: {
+    stitek: 'jde nahoru',
+    popis: 'Dává se čím dál víc. Čekejte, že ho bude přibývat.',
+    trida: 'bg-[#e7f0fb] text-[#3563a8]',
+  },
+  retro: {
+    stitek: 'vrací se',
+    popis: 'Jméno prababiček a pradědečků, které se po generaci vrátilo zpátky do módy.',
+    trida: 'bg-[#f6ecdd] text-[#8a6320]',
+  },
+  stalice: {
+    stitek: 'stálice',
+    popis: 'Dává se v každé generaci. Nikdy nebylo ani zvláštní, ani mimo.',
+    trida: 'bg-[#eef2e4] text-[#5f7233]',
+  },
+  dozniva: {
+    stitek: 'jméno generace rodičů',
+    popis: 'Běžné jméno, ale doba, kdy se dávalo, byla o generaci dřív. Dnešním miminkám se dává málo.',
+    trida: 'bg-[#efe9e2] text-[#6b6156]',
+  },
+  vzacne: {
+    stitek: 'vzácné',
+    popis: 'Vzácné bez ohledu na dobu. Pravděpodobně bude ve třídě jediné.',
+    trida: 'bg-[#f2ecfa] text-[#6d4fa1]',
+  },
+}
+
 export const VSECHNY_STYLY: Styl[] = [
   'tradiční', 'moderní', 'hravé', 'elegantní', 'přírodní', 'mytologické', 'královské', 'sportovní',
 ]

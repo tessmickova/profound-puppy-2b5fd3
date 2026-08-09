@@ -9,6 +9,7 @@ import { VSECHNA_PLEMENA } from '../lib/names/breeds'
 import { VSECHNY_ENTITY, ENTITY_SE_STRANKOU } from '../lib/names/entita'
 import { slugJmena } from '../lib/names/slug'
 import { KATEGORIE_INFO } from '../lib/names/types'
+import { poctyVln, ROK_REVIZE, ZARAZENA_JMENA } from '../lib/names/vlny'
 
 const kriticke: string[] = []
 const drobnosti: string[] = []
@@ -83,9 +84,28 @@ for (const p of VSECHNA_PLEMENA) {
   }
 }
 
+// ── dobové zařazení jmen (vlny) ──────────────────────────────────────────
+// Klíč, který v datech neexistuje, by tiše nedělal nic — štítek by se
+// nezobrazil a nikdo by si toho nevšiml.
+const ceskaDetska = new Set(
+  JMENA.filter(j => j.zeme === 'cz' && (j.kategorie === 'kluk' || j.kategorie === 'holka'))
+    .map(j => j.jmeno),
+)
+for (const jmeno of ZARAZENA_JMENA) {
+  if (!ceskaDetska.has(jmeno)) {
+    kriticke.push(`vlna je zapsaná pro „${jmeno}", ale takové české dětské jméno v datech není`)
+  }
+}
+const bezVlny = [...ceskaDetska].filter(j => !ZARAZENA_JMENA.includes(j))
+if (bezVlny.length) {
+  drobnosti.push(`bez dobového zařazení zůstává ${bezVlny.length} českých dětských jmen: ${bezVlny.join(', ')}`)
+}
+
 // ── výsledek ─────────────────────────────────────────────────────────────
 console.log(`Kontrola dat: ${JMENA.length} jmen, ${VSECHNY_ENTITY.length} entit, `
   + `${ENTITY_SE_STRANKOU.length} s vlastní stránkou, ${VSECHNA_PLEMENA.length} plemen.`)
+console.log(`Dobové zařazení (revize ${ROK_REVIZE}): `
+  + Object.entries(poctyVln()).map(([v, p]) => `${v} ${p}`).join(', '))
 
 if (drobnosti.length) {
   console.log(`\nDrobnosti k opravě (${drobnosti.length}):`)
