@@ -252,3 +252,25 @@ export function jsonLdPostup() {
     ],
   }
 }
+
+/**
+ * Obecný návod pro problémové stránky. Kroky posíláme do strukturovaných
+ * dat jen tam, kde na stránce **doopravdy stojí** — jinak by to bylo
+ * značkování obsahu, který uživatel nevidí.
+ */
+export function jsonLdNavod(
+  nazev: string,
+  cas: string,
+  kroky: { nazev: string; text: string }[],
+) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    name: nazev,
+    inLanguage: WEB.jazyk,
+    totalTime: cas,
+    step: kroky.map((k, i) => ({
+      '@type': 'HowToStep', position: i + 1, name: k.nazev, text: k.text,
+    })),
+  }
+}

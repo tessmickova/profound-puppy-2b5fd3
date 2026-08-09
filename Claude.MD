@@ -30,7 +30,12 @@ Papoušci 63, Křečci 62) a **54 plemen** s ručně vybranými jmény.
 
 | Cesta | Soubor | Obsah |
 |---|---|---|
-| `/` | `app/page.tsx` | rodinný vyhledávač uprostřed, jezdící pásy jmen, nejoblíbenější jména, rozcestník |
+| `/` | `app/page.tsx` | rozcestník podle stavu rozhodování: „koho pojmenováváte" → „kde jste teď" → objevování |
+| `/vybrat-jmeno-pro-dite` | `app/vybrat-jmeno-pro-dite/page.tsx` | „nevím, kde začít" — hledač dvojic pro děti |
+| `/vybrat-jmeno-pro-zvire` | `app/vybrat-jmeno-pro-zvire/page.tsx` | totéž pro osm druhů zvířat |
+| `/porovnat-jmena` | `app/porovnat-jmena/page.tsx` | porovnání 2–5 finalistů vedle sebe |
+| `/jmeno-k-prijmeni` | `app/jmeno-k-prijmeni/page.tsx` | test celého jména s příjmením |
+| `/jak-vybrat-jmeno-kdyz-se-nemuzeme-shodnout` | tamtéž `/page.tsx` | postup pro dvojici, která se neshodne, + porovnání |
 | `/deti` | `app/deti/page.tsx` | filtr + režim „nejlepší shoda"; pásy lidských jmen |
 | `/zvirata` | `app/zvirata/page.tsx` | filtr podle druhu, plemene a způsobu života; pásy zvířecích jmen |
 | `/zeme/[kod]` | `app/zeme/[kod]/page.tsx` | jména jedné země (25 statických stránek) |
@@ -41,7 +46,9 @@ Papoušci 63, Křečci 62) a **54 plemen** s ručně vybranými jmény.
 | `/soukromi` | `app/soukromi/page.tsx` | ochrana osobních údajů |
 
 Mapa světa na úvodu **už není** — země jsou jen ve filtru a v patičce.
-Úvodní strana patří obsahu, reklamy jsou po stranách.
+Na úvodu není ani vyhledávání v katalogu: kdo neví, kde začít, se seznamem
+ani našeptávačem nepohne. První otázka je „koho pojmenováváte", druhá
+„kde v rozhodování jste" a obojí vede rovnou do nástroje.
 
 ## Komponenty (`components/names/`)
 
@@ -79,6 +86,15 @@ Mapa světa na úvodu **už není** — země jsou jen ve filtru a v patičce.
   Pozice se po 15 s překlápí na druhou stranu, lišta se střídá po 10 s.
 - **VyberPlochy.tsx** — náhled ploch na `/reklama`: zmenšený web, ve kterém si
   zákazník klepnutím vybere konkrétní místo a délku 1–3 měsíce.
+- **Hledac.tsx** — „nevím, kde začít": nabízí kontrastní dvojice jmen a z voleb
+  odvodí vkus. První návrhy ukáže **po třech kolech**, ne až na konci — nikdo
+  nemusí dojít do konce kvízu. U každého návrhu je rozklikávací „proč mi ho
+  doporučujete?" s jednotlivými pravidly.
+- **PorovnaniJmen.tsx** — 2 až 5 finalistů ve strukturované tabulce plus věta
+  „v čem se skutečně liší". Vítěze nevyhlašuje.
+- **TestJmena.tsx** — praktický test celého jména: oslovení, skloňování,
+  iniciály, hláskování, podoba bez diakritiky, zvuk v cizině. Stavy jsou
+  `dobre / zvazte / neutral` — nikdy „špatně".
 - **RodinaProfil.tsx**, **OblibeneSeznam.tsx**, **Paticka.tsx**.
 
 ## Knihovna (`lib/names/`)
@@ -98,6 +114,8 @@ Mapa světa na úvodu **už není** — země jsou jen ve filtru a v patičce.
 | `vyber.ts` | osobní výběr návštěvníka — uložená i vyřazená jména |
 | `reklamy.ts` | typ `Inzerat` + ukázkové kreativy pro vývoj |
 | `reklamniServer.ts` | jediné místo, kde web ví o reklamní službě |
+| `rozhodovani.ts` | rozhodovací jádro — odhad vkusu z voleb, doporučení s důvody, porovnání finalistů, test jména |
+| `cestina.ts` | oslovení (5. pád), genitiv, iniciály, hláskování, podoba bez diakritiky, zvuk v cizině |
 
 ### Jak se počítá „nejlepší shoda"
 
@@ -107,6 +125,26 @@ a oblíbenost. Vrací skóre 0–100 a české vysvětlení, proč zrovna tohle 
 
 `rodinnaHarmonie()` navíc vrací štítek — „ladí s oběma rodiči" nebo
 „ladí s celou rodinou" —, když jméno sedí k víc členům najednou.
+
+### Jak se počítá doporučení v hledači
+
+`naucSe()` položí každé vybrané i odmítnuté jméno na pět os (modernost,
+mezinárodnost, neobvyklost, délka, výraznost) a zprůměruje je; odmítnutí váží
+1,4×, protože „tohle rozhodně ne" je jistější informace než „tohle je hezké".
+
+`doporuc()` startuje na 60 bodech a každá osa přidá nebo ubere podle shody.
+Dvě pravidla, na kterých záleží víc, než je vidět:
+
+- **Osy jsou spojité tam, kde jsou v datech čísla** (oblíbenost, slabiky).
+  Se škatulkami „běžné / vzácné" stovky jmen skončily na stejném skóre a
+  o pořadí pak rozhodla první drobnost, která se připočetla.
+- **Příjmení jméno doladí, nepřebije vkus.** Připočítává se *odchylka* od
+  `NEUTRALNI_SOUZVUK` (70), ne absolutní souzvuk. Než se to opravilo, stačilo
+  vyplnit příjmení a žebříček se přeskládal podle rytmu slabik bez ohledu na
+  to, co si člověk naklikal. Hlídá to test v `testy/rozhodovani.test.ts`.
+
+Skóre **není pravděpodobnost** a nikde se tak nepodává. `slovemSkore()` ho
+převádí na slovní zařazení a u každého jména je rozepsané, z čeho vzniklo.
 
 ## SEO a AI SEO
 

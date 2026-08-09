@@ -30,6 +30,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [
     zaznam('/', 1, 'weekly'),
+    // Nástroje pro rozhodování — hlavní důvod, proč sem člověk chodí.
+    zaznam('/vybrat-jmeno-pro-dite', 0.95, 'weekly'),
+    zaznam('/porovnat-jmena', 0.95, 'weekly'),
+    zaznam('/jmeno-k-prijmeni', 0.9, 'weekly'),
+    zaznam('/jak-vybrat-jmeno-kdyz-se-nemuzeme-shodnout', 0.9, 'monthly'),
+    zaznam('/vybrat-jmeno-pro-zvire', 0.85, 'weekly'),
     zaznam('/deti', 0.9, 'weekly'),
     zaznam('/zvirata', 0.9, 'weekly'),
     ...KATEGORIE.map(k => zaznam(`/jmena/${KATEGORIE_INFO[k].slug}`, 0.85, 'weekly')),

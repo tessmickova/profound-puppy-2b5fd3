@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { Baby, Cat, Dog, Sparkles, Users } from 'lucide-react'
+import {
+  ArrowRight, Baby, Dog, Globe2, Heart, ListChecks, PawPrint, Scale, ShieldCheck, Users,
+} from 'lucide-react'
 import Shell from '@/components/names/Shell'
 import NameCard from '@/components/names/NameCard'
 import Rozvrzeni from '@/components/names/Rozvrzeni'
@@ -11,23 +13,70 @@ import { JMENA, ZEME } from '@/lib/names/data'
 import { jeOriginal, jeTrendy, serad } from '@/lib/names/logic'
 import { CASTE_DOTAZY, jsonLdDotazy, jsonLdSeznam, WEB } from '@/lib/names/seo'
 
+// Úvodní stránka není katalog, ale rozcestník podle toho, **kde v
+// rozhodování člověk zrovna je**. Vyhledávání ani mřížka jmen tu nejsou
+// první — kdo neví, kde začít, se seznamem nepohne.
+
 export const metadata: Metadata = {
-  title: 'Svět jmen — jména pro děti i zvířata podle zemí světa',
+  title: 'Svět jmen — pomůžeme vám vybrat jméno a rozhodnout se',
   description:
-    `Přes ${JMENA.length} jmen z ${ZEME.length} zemí: pro holčičky, kluky, psy, kočky i další `
-    + 'zvířata. Vyberte jméno, které ladí s příjmením, rodinou i plemenem.',
+    'Nemusíte procházet stovky jmen. Ukážeme dvojice a poznáme váš vkus, porovnáme '
+    + `finalisty a otestujeme jméno s příjmením. ${JMENA.length} jmen z ${ZEME.length} zemí, zdarma a bez registrace.`,
   alternates: { canonical: '/' },
   keywords: [
-    'jména pro děti', 'jména pro psy', 'jména pro kočky', 'jak pojmenovat psa',
-    'jméno k příjmení', 'jména sourozenců', 'jmeniny', 'význam jmen',
+    'jak vybrat jméno pro dítě', 'porovnat jména', 'jméno k příjmení',
+    'jména pro děti', 'jména pro psy', 'jména pro kočky', 'význam jmen',
   ],
 }
 
-const DLAZDICE = [
-  { href: '/deti?kategorie=holka', nazev: 'Pro holčičku', popis: 'Něžná i silná jména', Ikona: Baby, barva: '#f8dfe6' },
-  { href: '/deti?kategorie=kluk', nazev: 'Pro chlapečka', popis: 'Klasika i novinky', Ikona: Baby, barva: '#dfe9f8' },
-  { href: '/zvirata?kategorie=pes', nazev: 'Pro pejska', popis: 'Podle plemene i povahy', Ikona: Dog, barva: '#f6e6d3' },
-  { href: '/zvirata?kategorie=kocka', nazev: 'Pro kočičku', popis: 'Od Micky po Bastet', Ikona: Cat, barva: '#e4eede' },
+/** Kdo pojmenovává — první a nejjednodušší otázka. */
+const KOHO = [
+  {
+    href: '/vybrat-jmeno-pro-dite',
+    nazev: 'Miminko',
+    popis: 'Holčičku, chlapečka nebo ještě nevíme',
+    Ikona: Baby,
+    barva: '#f8dfe6',
+  },
+  {
+    href: '/vybrat-jmeno-pro-zvire',
+    nazev: 'Zvíře',
+    popis: 'Psa, kočku, králíka i papouška',
+    Ikona: PawPrint,
+    barva: '#f6e6d3',
+  },
+]
+
+/** Kde v rozhodování je — každá cesta vede do konkrétního nástroje. */
+const CESTY = [
+  {
+    href: '/vybrat-jmeno-pro-dite',
+    nadpis: 'Nevíme, kde začít',
+    popis: 'Vyberete si z pár dvojic a my z toho poznáme, co se vám líbí.',
+    cta: 'Ukažte mi dvojice',
+    Ikona: ListChecks,
+  },
+  {
+    href: '/porovnat-jmena',
+    nadpis: 'Máme favority',
+    popis: 'Dvě tři jména a každé má něco. Ukážeme, čím se doopravdy liší.',
+    cta: 'Porovnat finalisty',
+    Ikona: Scale,
+  },
+  {
+    href: '/jmeno-k-prijmeni',
+    nadpis: 'Ladí to k příjmení?',
+    popis: 'Oslovení, iniciály, hláskování i to, jak jméno zní v cizině.',
+    cta: 'Otestovat celé jméno',
+    Ikona: Users,
+  },
+  {
+    href: '/jak-vybrat-jmeno-kdyz-se-nemuzeme-shodnout',
+    nadpis: 'Neshodneme se',
+    popis: 'Každý chce jiné. Postup ve čtyřech krocích, který to obejde.',
+    cta: 'Jak z toho ven',
+    Ikona: Heart,
+  },
 ]
 
 export default function Domov() {
@@ -39,31 +88,46 @@ export default function Domov() {
   return (
     <Shell>
       <Rozvrzeni>
-        <section className="hero-zare mb-10 text-center">
-          <p className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-[#efe0cc] bg-white px-3 py-1 text-[12.5px] font-medium text-[#8a6d2f]">
-            <Sparkles size={13} aria-hidden /> {JMENA.length} jmen z {ZEME.length} zemí — zdarma a bez registrace
-          </p>
-          <h1 className="[font-family:var(--font-nadpis)] text-[32px] font-extrabold leading-[1.08] tracking-tight sm:text-5xl">
-            Najděte jméno, které <span className="text-[#d97757]">k vám patří</span>
+        <section className="hero-zare uvod-hero">
+          <h1>
+            Vybrat jméno není o tom najít <span>víc</span> jmen
           </h1>
-          <p className="mx-auto mt-3 max-w-xl text-[15px] leading-relaxed text-[#6b6156]">
-            Vybírat jméno má být radost, ne tabulka. Řekněte nám, koho čekáte —
-            a my vybereme jména, která sedí k vašemu příjmení, rodině i povaze.
+          <p className="uvod-podnadpis">
+            Je to o tom mít v tom jasno. Neukazujeme vám další nekonečný seznam —
+            pomůžeme vám zúžit výběr, porovnat finalisty a dojít k rozhodnutí,
+            u kterého zůstanete.
           </p>
         </section>
 
-        <section className="mb-14">
-          <div className="dlazdice nastup">
-            {DLAZDICE.map(({ href, nazev, popis, Ikona, barva }) => (
+        <section className="uvod-koho">
+          <h2 className="uvod-otazka">Koho pojmenováváte?</h2>
+          <div className="dlazdice uvod-dlazdice nastup">
+            {KOHO.map(({ href, nazev, popis, Ikona, barva }) => (
               <Link key={href} href={href} style={{ ['--dlazdice-barva' as string]: barva }}>
-                <span className="dlazdice-ikona"><Ikona size={19} aria-hidden /></span>
+                <span className="dlazdice-ikona"><Ikona size={20} aria-hidden /></span>
                 <span className="dlazdice-nazev">{nazev}</span>
                 <span className="dlazdice-popis">{popis}</span>
               </Link>
             ))}
           </div>
-          <p className="mt-4 text-center text-[13.5px] text-[#8a7f71]">
-            Máte doma víc jmen? <Link href="/rodina" className="font-semibold text-[#2b2723] underline decoration-[#e0c9b4] decoration-2 underline-offset-2 hover:decoration-[#d97757]">Založte rodinný profil</Link> a doporučíme další, která k nim ladí.
+        </section>
+
+        <section className="uvod-cesty">
+          <h2 className="uvod-otazka">Kde jste teď?</h2>
+          <div className="cesty-mrizka">
+            {CESTY.map(({ href, nadpis, popis, cta, Ikona }) => (
+              <Link key={href} href={href} className="cesta">
+                <span className="cesta-ikona"><Ikona size={18} aria-hidden /></span>
+                <span className="cesta-nadpis">{nadpis}</span>
+                <span className="cesta-popis">{popis}</span>
+                <span className="cesta-cta">{cta} <ArrowRight size={14} aria-hidden /></span>
+              </Link>
+            ))}
+          </div>
+          <p className="uvod-pozn">
+            Hledáte jméno k sourozenci? <Link href="/rodina">Založte rodinný profil</Link>{' '}
+            a doporučíme jména, která ladí ke všem doma. Všechno funguje bez
+            registrace a bez e-mailu — <Link href="/soukromi">jak to máme se soukromím</Link>.
           </p>
         </section>
 
@@ -102,6 +166,40 @@ export default function Domov() {
           jmena={originaly}
           odkaz={{ href: '/deti', text: 'objevit další' }}
         />
+
+        <section className="uvod-duvera">
+          <h2 className="uvod-otazka">Proč nám věřit</h2>
+          <div className="duvera-mrizka">
+            <div className="duvera-bod">
+              <span className="duvera-ikona"><ShieldCheck size={18} aria-hidden /></span>
+              <h3>Žádná vymyšlená čísla</h3>
+              <p>
+                Neuvádíme procenta shody ani pravděpodobnost, že budete
+                spokojení — nikdo je neumí spočítat. U každého doporučení
+                ukážeme pravidla, ze kterých vyšlo.{' '}
+                <Link href="/metodika">Metodika</Link>.
+              </p>
+            </div>
+            <div className="duvera-bod">
+              <span className="duvera-ikona"><Globe2 size={18} aria-hidden /></span>
+              <h3>Jména podle zemí, kde se používají</h3>
+              <p>
+                {JMENA.length} jmen z {ZEME.length} zemí. U každého píšeme, kde
+                se jméno běžně nosí — ne odkud pochází jeho etymologie.{' '}
+                <Link href="/zeme">Projít podle zemí</Link>.
+              </p>
+            </div>
+            <div className="duvera-bod">
+              <span className="duvera-ikona"><Dog size={18} aria-hidden /></span>
+              <h3>Nic po vás nechceme</h3>
+              <p>
+                Žádná registrace, žádný e-mail, žádné sledovací skripty.
+                Příjmení ani výběr se nikam neodesílají — počítá se to přímo
+                ve vašem prohlížeči.
+              </p>
+            </div>
+          </div>
+        </section>
 
         <section className="mt-14">
           <h2 className="mb-4 [font-family:var(--font-nadpis)] text-2xl font-bold">Časté otázky o výběru jména</h2>

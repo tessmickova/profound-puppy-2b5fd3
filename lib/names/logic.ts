@@ -236,36 +236,56 @@ function slabiky(text: string): number {
   return Math.max(1, n)
 }
 
-/** Souzvuk jména s příjmením (0–100) + slovní zdůvodnění. */
-export function souzvukSPrijmenim(jmeno: string, prijmeni: string): { body: number; duvody: string[] } {
+/**
+ * Souzvuk jména s příjmením (0–100) + slovní zdůvodnění.
+ *
+ * `NEUTRALNI_SOUZVUK` je výchozí hodnota, od které pravidla přidávají a
+ * ubírají. Kdo skóre používá jako **příspěvek** k jinému hodnocení, musí
+ * počítat s odchylkou od téhle hodnoty, ne s číslem samotným — jinak by
+ * pouhé vyplnění příjmení posunulo úplně všechno.
+ *
+ * `kladne[i]` říká, jestli `duvody[i]` mluví pro, nebo proti. Bez toho by
+ * se „jméno se rýmuje s příjmením" dalo omylem ukázat jako výhoda.
+ */
+export const NEUTRALNI_SOUZVUK = 70
+
+export function souzvukSPrijmenim(jmeno: string, prijmeni: string): {
+  body: number; duvody: string[]; kladne: boolean[]
+} {
   const j = bezDiakritiky(jmeno)
   const p = bezDiakritiky(prijmeni)
-  let body = 70
+  let body = NEUTRALNI_SOUZVUK
   const duvody: string[] = []
+  const kladne: boolean[] = []
+  const pridej = (zmena: number, text: string) => {
+    body += zmena
+    duvody.push(text)
+    kladne.push(zmena >= 0)
+  }
 
   const konecJmena = j[j.length - 1]
   const zacatekPrijmeni = p[0]
 
-  if (j[0] === p[0]) { body += 8; duvody.push('hezká aliterace — stejné počáteční písmeno') }
+  if (j[0] === p[0]) pridej(8, 'hezká aliterace — stejné počáteční písmeno')
 
   if (konecJmena === zacatekPrijmeni) {
-    body -= 12; duvody.push('jméno končí písmenem, kterým příjmení začíná — hůř se vyslovuje')
+    pridej(-12, 'jméno končí písmenem, kterým příjmení začíná — hůř se vyslovuje')
   } else if (jeSamohlaska(konecJmena) && jeSamohlaska(zacatekPrijmeni)) {
-    body -= 8; duvody.push('dvě samohlásky na hranici jmen se slévají')
+    pridej(-8, 'dvě samohlásky na hranici jmen se slévají')
   } else if (jeSamohlaska(konecJmena) !== jeSamohlaska(zacatekPrijmeni)) {
-    body += 8; duvody.push('plynulý přechod mezi jménem a příjmením')
+    pridej(8, 'plynulý přechod mezi jménem a příjmením')
   }
 
   if (j.length >= 2 && p.length >= 2 && j.slice(-2) === p.slice(-2)) {
-    body -= 15; duvody.push('jméno se s příjmením rýmuje — dvojice zní jako říkanka')
+    pridej(-15, 'jméno se s příjmením rýmuje — dvojice zní jako říkanka')
   }
 
   const sj = slabiky(j), sp = slabiky(p), celkem = sj + sp
-  if (celkem >= 4 && celkem <= 6) { body += 10; duvody.push('příjemný rytmus celého jména') }
-  else if (celkem >= 8) { body -= 8; duvody.push('celé jméno je hodně dlouhé') }
-  if (sj !== sp) { body += 4 } else { body -= 3; duvody.push('stejný počet slabik působí monotónně') }
+  if (celkem >= 4 && celkem <= 6) pridej(10, 'příjemný rytmus celého jména')
+  else if (celkem >= 8) pridej(-8, 'celé jméno je hodně dlouhé')
+  if (sj !== sp) { body += 4 } else { pridej(-3, 'stejný počet slabik působí monotónně') }
 
-  return { body: Math.max(0, Math.min(100, body)), duvody }
+  return { body: Math.max(0, Math.min(100, body)), duvody, kladne }
 }
 
 // ── sourozenecký ladič: jméno k bráškovi či sestřičce ────────────────────────
