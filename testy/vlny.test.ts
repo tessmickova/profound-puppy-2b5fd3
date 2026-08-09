@@ -9,7 +9,7 @@ import { strict as assert } from 'node:assert'
 import { test } from 'node:test'
 import { JMENA } from '../lib/names/data'
 import {
-  jeDoznivajici, jeStalice, jeVrchol, jeVyhled, jeVzacne,
+  jeDoznivajici, jeNavrat, jeStalice, jeVrchol, jeVyhled, jeVzacne, jeVzestup,
 } from '../lib/names/logic'
 import { ROK_REVIZE, VYHLED, vlnaJmena, ZARAZENA_JMENA } from '../lib/names/vlny'
 import { VLNA_INFO } from '../lib/names/types'
@@ -94,4 +94,32 @@ test('výhled je ukotvený v čase', () => {
   assert.equal(VYHLED[0], ROK_REVIZE)
   assert.equal(VYHLED[1], ROK_REVIZE + 1)
   assert.ok(ROK_REVIZE >= 2026, 'rok revize vypadá zastarale')
+})
+
+// ── modernější jména jsou hlavní proud ───────────────────────────────────
+//
+// Když se v katalogu vedla pod Českem jen tradiční jména, vypadala nabídka
+// „co se bude dávat" jako seznam pro prababičky: Amálie, Alžběta, Ludmila.
+// Ta se opravdu vracejí, ale mladé maminky chtějí především modernější
+// jména. Tenhle test hlídá, aby se poměr zase nepřevrátil.
+
+test('modernějších jmen na vzestupu je víc než návratů', () => {
+  const vzestup = JMENA.filter(jeVzestup)
+  const navrat = JMENA.filter(jeNavrat)
+  assert.ok(vzestup.length > navrat.length,
+    `vzestup ${vzestup.length} vs. návraty ${navrat.length} — nabídka bude vypadat jako seznam pro prababičky`)
+})
+
+test('modernější jména, která dnes maminky dávají, jsou v katalogu jako česká', () => {
+  for (const jmeno of ['Mia', 'Ella', 'Laura', 'Stela', 'Tobiáš', 'Samuel', 'Leo', 'Maxim']) {
+    const j = najdi(jmeno)
+    assert.equal(vlnaJmena(j), 'stoupa', `${jmeno} není vedené jako modernější jméno na vzestupu`)
+  }
+})
+
+test('vzestup a návrat se nepřekrývají, ale oba patří do výhledu', () => {
+  for (const j of JMENA) {
+    assert.ok(!(jeVzestup(j) && jeNavrat(j)), `${j.jmeno} je zároveň vzestup i návrat`)
+    if (jeVzestup(j) || jeNavrat(j)) assert.ok(jeVyhled(j))
+  }
 })

@@ -10,7 +10,7 @@ import PasyJmen from '@/components/names/PasyJmen'
 import NadpisSekce from '@/components/names/NadpisSekce'
 import type { Druh } from '@/components/names/NadpisSekce'
 import { JMENA, ZEME } from '@/lib/names/data'
-import { jeStalice, jeVrchol, jeVyhled, serad } from '@/lib/names/logic'
+import { jeNavrat, jeStalice, jeVrchol, jeVzestup, serad } from '@/lib/names/logic'
 import { VYHLED } from '@/lib/names/vlny'
 import { CASTE_DOTAZY, jsonLdDotazy, jsonLdSeznam, WEB } from '@/lib/names/seo'
 
@@ -86,7 +86,13 @@ export default function Domov() {
   // Na tohle se maminky ptají nejčastěji: co se bude dávat teď a příští
   // rok. Odpovídá dobové zařazení (`vlna`), ne styl „moderní" — ten
   // o době neříká nic.
-  const vyhled = serad(JMENA.filter(jeVyhled), 'popularita').slice(0, 6)
+  //
+  // Modernější jména a návraty babiččiných jmen jsou **dva různé proudy**
+  // a v jedné sekci se pletly: seřazeno podle líbivosti vyhrávaly Amálie
+  // a Alžběta a nabídka pak vypadala jako seznam pro prababičky. Mladé
+  // maminky chtějí především to první, takže má vlastní sekci a jde dřív.
+  const moderniVzestup = serad(JMENA.filter(jeVzestup), 'popularita').slice(0, 6)
+  const navraty = serad(JMENA.filter(jeNavrat), 'popularita').slice(0, 6)
   const nejcastejsi = serad(JMENA.filter(jeVrchol), 'popularita').slice(0, 6)
   const stalice = serad(JMENA.filter(jeStalice), 'popularita').slice(0, 6)
 
@@ -140,9 +146,17 @@ export default function Domov() {
 
         <Sekce
           druh="lide"
-          nadpis={`Jména, kterých bude přibývat — ${VYHLED[0]} a ${VYHLED[1]}`}
-          popis="Jména, která jdou nahoru, a prababiččina jména, co se vracejí. Redakční zařazení podle toho, jak se dnes v Česku jména dávají — ne statistika."
-          jmena={vyhled}
+          nadpis={`Modernější jména, kterých bude přibývat — ${VYHLED[0]} a ${VYHLED[1]}`}
+          popis="Kratší, měkčí a srozumitelná i za hranicemi. Tudy jde dnes hlavní proud. Redakční zařazení podle toho, jak se v Česku jména dávají — ne statistika."
+          jmena={moderniVzestup}
+          odkaz={{ href: '/deti', text: 'zobrazit všechna' }}
+        />
+
+        <Sekce
+          druh="lide"
+          nadpis="Babiččina jména, která se vracejí"
+          popis="Druhý proud, o dost menší než ten první — ale výrazný. Jména, která přeskočila generaci a dnes zní znovu svěže."
+          jmena={navraty}
           odkaz={{ href: '/deti', text: 'zobrazit všechna' }}
         />
 

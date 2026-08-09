@@ -22,9 +22,13 @@ nevykreslí reklamní plochy.
 Pomáhá vybrat jméno pro dítě nebo pro zvíře. Bez registrace, zdarma, bez
 sbírání údajů — všechno, co si uživatel uloží, zůstává v jeho prohlížeči.
 
-Datová základna: **1243 jmen z 25 zemí** na šesti kontinentech (Kluci 199,
-Holčičky 197, Psi 173, Fenky 155, Kocouři 117, Kočky 128, Koně 83, Králíci 66,
-Papoušci 63, Křečci 62) a **54 plemen** s ručně vybranými jmény.
+Datová základna: **1286 jmen z 25 zemí** na šesti kontinentech a **54 plemen**
+s ručně vybranými jmény. Aktuální rozpad vypisuje `npm run kontrola:data`.
+
+Českých dětských jmen je 95 — tolik jich má dobové zařazení (`vlna`). Sada
+záměrně obsahuje i modernější jména (Mia, Ella, Laura, Tobiáš, Leo, Maxim),
+protože bez nich vypadala nabídka „co se bude dávat" jako seznam pro
+prababičky.
 
 ## Stránky (`app/`)
 

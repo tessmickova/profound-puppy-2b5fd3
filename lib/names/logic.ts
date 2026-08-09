@@ -19,11 +19,14 @@ export const kolator = new Intl.Collator('cs')
 /** 🔥 Hit — dlouhodobě nejoblíbenější jména. */
 export const jeHit = (j: Jmeno) => j.popularita >= 88
 
-/** 📈 Jde nahoru nebo se vrací — na tohle se ptá „co se bude dávat". */
-export const jeVyhled = (j: Jmeno) => {
-  const v = vlnaJmena(j)
-  return v === 'stoupa' || v === 'retro'
-}
+/** 📈 Jde nahoru — modernější jména, kterých přibývá. Hlavní proud. */
+export const jeVzestup = (j: Jmeno) => vlnaJmena(j) === 'stoupa'
+
+/** 🕰️ Vrací se — babiččina jména zpátky v módě. Vedlejší, ale výrazný proud. */
+export const jeNavrat = (j: Jmeno) => vlnaJmena(j) === 'retro'
+
+/** Obojí dohromady — „co se bude dávat", když se rozdíl neřeší. */
+export const jeVyhled = (j: Jmeno) => jeVzestup(j) || jeNavrat(j)
 
 /** 💎 Vzácné bez ohledu na dobu. Skutečný originál, ne odkvetlá klasika. */
 export const jeVzacne = (j: Jmeno) => vlnaJmena(j) === 'vzacne'

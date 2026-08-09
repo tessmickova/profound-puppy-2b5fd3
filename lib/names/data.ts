@@ -123,6 +123,34 @@ pridej('cz', 'kluk', [
   ['Filip',   'milovník koní — energické a přímé', 85, ['tradiční', 'sportovní'], 'živá', [5]],
   ['Mikuláš', 'vítězství lidu — voní prosincem', 82, ['tradiční', 'královské'], 'klidná', [12]],
 ])
+
+// Modernější česká chlapecká jména — viz poznámka u holčičích.
+pridej('cz', 'kluk', [
+  ['Tobiáš',   'Bůh je dobrý — starozákonní jméno v moderním hávu', 86, ['moderní'], 'vyvážená', []],
+  ['Samuel',   'vyslyšel Bůh — klidné a vážené', 85, ['moderní', 'tradiční'], 'klidná', [8]],
+  ['Leo',      'lev — tři písmena a dost', 84, ['moderní'], 'živá', []],
+  ['Maxim',    'největší — krátce a rázně', 83, ['moderní', 'sportovní'], 'živá', []],
+  ['Alex',     'ochránce lidí — mezinárodní podoba Alexandra', 83, ['moderní', 'sportovní'], 'živá', []],
+  ['Elias',    'Hospodin je Bůh — měkké a světové', 82, ['moderní'], 'klidná', []],
+  ['Nikolas',  'vítězství lidu — světová podoba Mikuláše', 81, ['moderní'], 'vyvážená', []],
+  // Stálice.
+  ['David',    'milovaný — nikdy nevyjde z módy', 86, ['tradiční', 'moderní'], 'vyvážená', [12]],
+  ['Dominik',  'patřící Pánu — nedělní jméno', 82, ['tradiční'], 'vyvážená', [8]],
+  // Dědečkova jména, která se vracejí.
+  ['Josef',    'ať Bůh přidá — dědečkovo jméno zpátky v kurzu', 82, ['tradiční'], 'klidná', [3]],
+  ['František','svobodný — jméno svatého z Assisi', 81, ['tradiční'], 'klidná', [10]],
+  ['Karel',    'svobodný muž — jméno Otce vlasti', 80, ['tradiční', 'královské'], 'vyvážená', [11]],
+  // Jména generace dnešních tatínků.
+  ['Lukáš',    'světlý — jméno devadesátek', 80, ['tradiční'], 'vyvážená', [10]],
+  ['Martin',   'bojovný — jméno svatomartinského vína', 79, ['tradiční'], 'vyvážená', [11]],
+  ['Denis',    'zasvěcený Dionýsovi — jméno přelomu tisíciletí', 78, ['moderní'], 'živá', []],
+  ['Michal',   'kdo je jako Bůh — klasika osmdesátek', 77, ['tradiční'], 'vyvážená', [9]],
+  ['Petr',     'skála — pevný základ', 77, ['tradiční'], 'vyvážená', [6]],
+  ['Pavel',    'malý a skromný — nenápadná síla', 76, ['tradiční'], 'klidná', [6]],
+  ['Jiří',     'zemědělec — drakobijec z pověstí', 76, ['tradiční'], 'vyvážená', [4]],
+  ['Roman',    'Říman — jméno sedmdesátých let', 74, ['tradiční'], 'vyvážená', [8]],
+  ['Zdeněk',   'ten, kdo tvoří slávu — ryze české jméno', 73, ['tradiční'], 'klidná', [1]],
+])
 pridej('cz', 'holka', [
   ['Eliška',   'Bůh je má přísaha — královna českých jmen', 97, ['tradiční', 'královské'], 'vyvážená', [10]],
   ['Anna',     'milostiplná — jméno, které nikdy nezklame', 93, ['tradiční'], 'klidná', [7]],
@@ -1778,6 +1806,41 @@ pridej('cz', 'holka', [
   ['Denisa',   'zasvěcená radosti — devadesátková klasika', 78, ['moderní'], 'živá', [10]],
   ['Ludmila',  'lidu milá — jméno první české světice', 74, ['tradiční'], 'klidná', [9]],
   ['Blanka',   'bílá — čisté a jemné', 73, ['tradiční', 'elegantní'], 'klidná', [12]],
+])
+
+// Modernější česká jména, která se dnes dávají nejvíc.
+//
+// Bez nich vypadala nabídka „co se bude dávat" jako seznam prababiččiných
+// jmen — Amálie, Alžběta, Ludmila. Ta se opravdu vracejí, ale mladé maminky
+// chtějí především **modernější, kratší a mezinárodně srozumitelná** jména.
+// Ta byla dřív v katalogu jen pod cizími zeměmi, takže na české vlně
+// nefigurovala vůbec.
+pridej('cz', 'holka', [
+  ['Mia',       'moje — tři písmena, která dnes slyšíte všude', 88, ['moderní'], 'živá', []],
+  ['Ella',      'světlo — jemné, krátké a mezinárodní', 87, ['moderní', 'elegantní'], 'klidná', []],
+  ['Laura',     'vavřín — vítězné jméno bez tvrdých hlásek', 86, ['moderní', 'elegantní'], 'vyvážená', []],
+  ['Stela',     'hvězda — jasné a rychlé na vyslovení', 84, ['moderní'], 'živá', []],
+  ['Nina',      'něžná — souměrné a příjemné na jazyku', 83, ['moderní'], 'klidná', []],
+  ['Isabela',   'Bůh je má přísaha — vznešená sestřenice Elišky', 83, ['moderní', 'královské'], 'vyvážená', []],
+  ['Zoe',       'život — tři písmena a spousta energie', 82, ['moderní'], 'živá', []],
+  ['Elen',      'pochodeň, světlo — česká podoba Heleny', 81, ['moderní'], 'klidná', []],
+  ['Valentýna', 'silná a zdravá — jméno s jiskrou', 81, ['moderní', 'elegantní'], 'živá', [2]],
+  ['Melánie',   'tmavovlasá — sametové a lehce tajemné', 80, ['moderní', 'elegantní'], 'klidná', []],
+  // Babiččina jména, která se vracejí.
+  ['Anežka',    'čistá — jméno svaté Anežky České', 84, ['tradiční'], 'klidná', [3]],
+  ['Josefína',  'ať Bůh přidá — noblesa se starosvětským nádechem', 82, ['tradiční', 'elegantní'], 'klidná', [3]],
+  ['Matylda',   'silná v boji — něžné jméno s pevným jádrem', 84, ['tradiční', 'královské'], 'vyvážená', [3]],
+  // Stálice.
+  ['Kateřina',  'čistá — jméno, které nosí každá generace', 86, ['tradiční'], 'vyvážená', [11]],
+  ['Hana',      'milostiplná — krátké a vlídné', 83, ['tradiční'], 'klidná', [6]],
+  // Jména generace dnešních maminek.
+  ['Lucie',     'světlo — jméno nejdelší noci', 82, ['tradiční'], 'vyvážená', [12]],
+  ['Michaela',  'kdo je jako Bůh — jméno devadesátek', 79, ['tradiční'], 'vyvážená', [9]],
+  ['Nikola',    'vítězství lidu — hit přelomu tisíciletí', 78, ['moderní'], 'živá', [12]],
+  ['Aneta',     'milostiplná — hravá podoba Anny', 77, ['moderní', 'hravé'], 'živá', []],
+  ['Petra',     'skála — pevné a jasné', 76, ['tradiční'], 'vyvážená', [6]],
+  ['Lenka',     'světlo — ryze česká zdrobnělina', 75, ['tradiční'], 'klidná', []],
+  ['Jana',      'Bůh je milostivý — ženská podoba Jana', 75, ['tradiční'], 'klidná', [5]],
 ])
 pridej('cz', 'pes', [
   ['Fantom', 'stín, co běhá rychleji než vy', 76, ['sportovní'], 'živá', 'velké'],

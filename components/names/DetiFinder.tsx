@@ -5,10 +5,10 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { ArrowDownAZ, Baby, BookOpen, Calendar, CalendarOff, Circle, Dices, Flame, Gem, Globe, Heart, Palette, Ruler, Search, SlidersHorizontal, Sparkles, TrendingUp, Type, Users, X, Zap } from 'lucide-react'
+import { ArrowDownAZ, Baby, BookOpen, Calendar, CalendarOff, Circle, Dices, Flame, Gem, Globe, Heart, Palette, RotateCcw, Ruler, Search, SlidersHorizontal, Sparkles, TrendingUp, Type, Users, X, Zap } from 'lucide-react'
 import { JMENA, jeMezinarodni, ZEME } from '@/lib/names/data'
 import {
-  filtruj, jeDoznivajici, jeHit, jeVrchol, jeVyhled, jeVzacne, kolator, monogram, najdiKSourozenci,
+  filtruj, jeDoznivajici, jeHit, jeNavrat, jeVrchol, jeVzacne, jeVzestup, kolator, monogram, najdiKSourozenci,
   najdiNejlepsiShody, PRAZDNY_FILTR, RAZENI_MOZNOSTI, serad,
   ZNAMENI_MESICE,
 } from '@/lib/names/logic'
@@ -100,7 +100,8 @@ export default function DetiFinder() {
     let kandidati = filtruj(detska, f)
     if (rychle.includes('srdce')) kandidati = kandidati.filter(j => oblibena.includes(j.id))
     if (rychle.includes('hit')) kandidati = kandidati.filter(jeHit)
-    if (rychle.includes('vyhled')) kandidati = kandidati.filter(jeVyhled)
+    if (rychle.includes('vzestup')) kandidati = kandidati.filter(jeVzestup)
+    if (rychle.includes('navrat')) kandidati = kandidati.filter(jeNavrat)
     if (rychle.includes('vrchol')) kandidati = kandidati.filter(jeVrchol)
     if (rychle.includes('vzacne')) kandidati = kandidati.filter(jeVzacne)
     // „Bez jmen generace rodičů" je jediný filtr, který něco odebírá —
@@ -249,7 +250,8 @@ export default function DetiFinder() {
               <Chipy>
                 <Chip aktivni={rychle.includes('srdce')} onClick={() => setRychle(prepni(rychle, 'srdce'))}><Heart size={12} /> oblíbená</Chip>
                 <Chip aktivni={rychle.includes('hit')} onClick={() => setRychle(prepni(rychle, 'hit'))}><Flame size={12} /> hity</Chip>
-                <Chip aktivni={rychle.includes('vyhled')} onClick={() => setRychle(prepni(rychle, 'vyhled'))} title={`Jména, kterých přibývá — výhled na ${VYHLED[0]} a ${VYHLED[1]}`}><TrendingUp size={12} /> jde nahoru</Chip>
+                <Chip aktivni={rychle.includes('vzestup')} onClick={() => setRychle(prepni(rychle, 'vzestup'))} title={`Modernější jména, kterých přibývá — výhled na ${VYHLED[0]} a ${VYHLED[1]}`}><TrendingUp size={12} /> jde nahoru</Chip>
+                <Chip aktivni={rychle.includes('navrat')} onClick={() => setRychle(prepni(rychle, 'navrat'))} title="Babiččina jména zpátky v módě"><RotateCcw size={12} /> vrací se</Chip>
                 <Chip aktivni={rychle.includes('vrchol')} onClick={() => setRychle(prepni(rychle, 'vrchol'))} title="Nejčastější jména dnešních miminek"><Baby size={12} /> teď nejčastější</Chip>
                 <Chip aktivni={rychle.includes('vzacne')} onClick={() => setRychle(prepni(rychle, 'vzacne'))} title="Vzácná bez ohledu na dobu"><Gem size={12} /> vzácná</Chip>
                 <Chip aktivni={rychle.includes('bez-dozniva')} onClick={() => setRychle(prepni(rychle, 'bez-dozniva'))} title="Skryje jména generace dnešních rodičů"><CalendarOff size={12} /> bez jmen generace rodičů</Chip>

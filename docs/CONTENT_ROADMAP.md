@@ -23,6 +23,11 @@ je horší než chybějící stránka.
 | `/jmeno/[slug]` × 170 | detail jména |
 | `/zeme/[kod]` × 25 | jména podle země použití |
 
+Doplněno také **43 českých dětských jmen** (95 celkem), hlavně těch
+modernějších — Mia, Ella, Laura, Stela, Tobiáš, Leo, Maxim. Bez nich měla
+dobovou informaci jen tradiční jména a nabídka „co se bude dávat" vypadala
+jako seznam pro prababičky.
+
 ---
 
 ## P0 — chybí a nic je neblokuje
@@ -74,13 +79,6 @@ z prarodičů. Jestli vadí, že jméno nosí někdo ve třídě. Jak se pozná,
 jméno „přeroste". Každý článek musí končit v nástroji, ne v dalším seznamu.
 *Blokuje:* nic technicky; je to psaní, které musí být poctivé — bez
 vymyšlených statistik a bez rad, na které nemáme podklad.
-
-**8. Víc českých dětských jmen v katalogu**
-Dobové zařazení (`vlna`) má zatím 52 jmen — tolik jich je v katalogu vedeno
-pod Českem. Jména, která dnes české maminky běžně dávají, ale v katalogu jsou
-jen pod cizí zemí (Mia, Emma, Laura, Matylda, Stela, Ella, Jonáš, Oskar,
-Lukáš), tím pádem štítek nedostanou. Je to omezení dat, ne logiky.
-*Blokuje:* nic — je to práce na datech.
 
 ---
 

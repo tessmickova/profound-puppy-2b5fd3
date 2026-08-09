@@ -75,6 +75,33 @@ const VLNY: Record<string, Vlna> = {
   Marek: 'dozniva',
   Richard: 'dozniva',
 
+  // Modernější jména, která dnes mladé maminky chtějí nejvíc. Tohle je
+  // hlavní proud — retro je vedle něj menšinový, i když je vidět víc.
+  Tobiáš: 'stoupa',
+  Samuel: 'stoupa',
+  Leo: 'stoupa',
+  Maxim: 'stoupa',
+  Alex: 'stoupa',
+  Elias: 'stoupa',
+  Nikolas: 'stoupa',
+
+  David: 'stalice',
+  Dominik: 'stalice',
+
+  Josef: 'retro',
+  František: 'retro',
+  Karel: 'retro',
+
+  Lukáš: 'dozniva',
+  Martin: 'dozniva',
+  Denis: 'dozniva',
+  Michal: 'dozniva',
+  Petr: 'dozniva',
+  Pavel: 'dozniva',
+  Jiří: 'dozniva',
+  Roman: 'dozniva',
+  Zdeněk: 'dozniva',
+
   // Vzácná bez ohledu na dobu — skutečné originály.
   Kryšpín: 'vzacne',
 
@@ -108,6 +135,33 @@ const VLNY: Record<string, Vlna> = {
   Zuzana: 'dozniva',
   Denisa: 'dozniva',
   Blanka: 'dozniva',
+
+  // Modernější holčičí jména — hlavní proud dnešních maminek.
+  Mia: 'stoupa',
+  Ella: 'stoupa',
+  Laura: 'stoupa',
+  Stela: 'stoupa',
+  Nina: 'stoupa',
+  Isabela: 'stoupa',
+  Zoe: 'stoupa',
+  Elen: 'stoupa',
+  Valentýna: 'stoupa',
+  Melánie: 'stoupa',
+
+  Anežka: 'retro',
+  Josefína: 'retro',
+  Matylda: 'retro',
+
+  Kateřina: 'stalice',
+  Hana: 'stalice',
+
+  Lucie: 'dozniva',
+  Michaela: 'dozniva',
+  Nikola: 'dozniva',
+  Aneta: 'dozniva',
+  Petra: 'dozniva',
+  Lenka: 'dozniva',
+  Jana: 'dozniva',
 
   Vanda: 'vzacne',
 }
