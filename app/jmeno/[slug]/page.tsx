@@ -8,6 +8,7 @@ import UlozitJmeno from '@/components/names/UlozitJmeno'
 import { ENTITY_SE_STRANKOU, entitaPodleSlugu, podobna, zemeEntity } from '@/lib/names/entita'
 import { KATEGORIE_INFO, VLNA_INFO } from '@/lib/names/types'
 import { ROK_REVIZE, vlnaJmena } from '@/lib/names/vlny'
+import { variantyZapisu } from '@/lib/names/zapis'
 import { WEB } from '@/lib/names/seo'
 import { velke } from '@/lib/names/logic'
 
@@ -53,6 +54,7 @@ export default async function JmenoStranka({ params }: { params: Promise<{ slug:
   // Vlna patří jménu, ne jednotlivému záznamu — vezmeme první výskyt,
   // který ji má (české dětské jméno).
   const vlna = e.vyskyty.map(vlnaJmena).find(Boolean)
+  const jineZapisy = variantyZapisu(e.jmeno)
 
   // DefinedTerm sedí na to, co stránka opravdu je: heslo se slovníkovým
   // významem. Recenze ani hodnocení si nevymýšlíme.
@@ -110,6 +112,21 @@ export default async function JmenoStranka({ params }: { params: Promise<{ slug:
             <div>
               <dt>Jmeniny v českém kalendáři</dt>
               <dd>{e.svatek}</dd>
+            </div>
+          )}
+          {jineZapisy.length > 0 && (
+            <div>
+              {/* Část rodičů neřeší jiné jméno, ale jiný zápis: Teodor,
+                  nebo Theodor? Je to skutečné rozhodnutí a katalog na něj
+                  dosud neuměl odpovědět. */}
+              <dt>Píše se také</dt>
+              <dd>
+                {jineZapisy.join(', ')}
+                <span className="jmeno-poznamka">
+                  Stejné jméno, jiný zápis. Matrika zapíše obojí — vybíráte,
+                  jak bude vypadat na dokladech a jak ho přečtou v cizině.
+                </span>
+              </dd>
             </div>
           )}
           {e.domacky.length > 0 && (

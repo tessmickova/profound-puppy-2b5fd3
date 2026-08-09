@@ -12,6 +12,7 @@ import type { Druh } from '@/components/names/NadpisSekce'
 import { JMENA, ZEME } from '@/lib/names/data'
 import { jeNavrat, jeStalice, jeVrchol, jeVzestup, serad } from '@/lib/names/logic'
 import { VYHLED } from '@/lib/names/vlny'
+import { znejeSvetove } from '@/lib/names/zapis'
 import { CASTE_DOTAZY, jsonLdDotazy, jsonLdSeznam, WEB } from '@/lib/names/seo'
 
 // Úvodní stránka není katalog, ale rozcestník podle toho, **kde v
@@ -93,6 +94,10 @@ export default function Domov() {
   // maminky chtějí především to první, takže má vlastní sekci a jde dřív.
   const moderniVzestup = serad(JMENA.filter(jeVzestup), 'popularita').slice(0, 6)
   const navraty = serad(JMENA.filter(jeNavrat), 'popularita').slice(0, 6)
+  // Třetí proud vedle moderních a návratů: jména, která znějí světově.
+  // Část rodičů nehledá jiné jméno, ale jinou podobu téhož — Teodor,
+  // nebo Theodor. Odpověď je na detailu jména, sem patří rozcestník.
+  const svetova = serad(JMENA.filter(znejeSvetove), 'popularita').slice(0, 6)
   const nejcastejsi = serad(JMENA.filter(jeVrchol), 'popularita').slice(0, 6)
   const stalice = serad(JMENA.filter(jeStalice), 'popularita').slice(0, 6)
 
@@ -149,6 +154,14 @@ export default function Domov() {
           nadpis={`Modernější jména, kterých bude přibývat — ${VYHLED[0]} a ${VYHLED[1]}`}
           popis="Kratší, měkčí a srozumitelná i za hranicemi. Tudy jde dnes hlavní proud. Redakční zařazení podle toho, jak se v Česku jména dávají — ne statistika."
           jmena={moderniVzestup}
+          odkaz={{ href: '/deti', text: 'zobrazit všechna' }}
+        />
+
+        <Sekce
+          druh="lide"
+          nadpis="Jména, která znějí světově"
+          popis="Fungují doma i za hranicemi. U většiny navíc vybíráte i zápis — Teodor, nebo Theodor? Sofie, nebo Sofia? Obojí matrika zapíše."
+          jmena={svetova}
           odkaz={{ href: '/deti', text: 'zobrazit všechna' }}
         />
 

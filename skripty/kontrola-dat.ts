@@ -10,6 +10,7 @@ import { VSECHNY_ENTITY, ENTITY_SE_STRANKOU } from '../lib/names/entita'
 import { slugJmena } from '../lib/names/slug'
 import { KATEGORIE_INFO } from '../lib/names/types'
 import { poctyVln, ROK_REVIZE, ZARAZENA_JMENA } from '../lib/names/vlny'
+import { JMENA_S_VARIANTOU, SVETOVA_JMENA, variantyZapisu } from '../lib/names/zapis'
 
 const kriticke: string[] = []
 const drobnosti: string[] = []
@@ -101,11 +102,29 @@ if (bezVlny.length) {
   drobnosti.push(`bez dobového zařazení zůstává ${bezVlny.length} českých dětských jmen: ${bezVlny.join(', ')}`)
 }
 
+// ── zápis jmen: varianty a světový zvuk ──────────────────────────────────
+for (const jmeno of [...JMENA_S_VARIANTOU, ...SVETOVA_JMENA]) {
+  if (!ceskaDetska.has(jmeno)) {
+    kriticke.push(`zápis je evidovaný pro „${jmeno}", ale takové české dětské jméno v datech není`)
+  }
+}
+// Varianta nesmí být jiné české dětské jméno z katalogu — to už není jiný
+// zápis téhož, ale odkaz na cizí kartu.
+for (const jmeno of JMENA_S_VARIANTOU) {
+  for (const varianta of variantyZapisu(jmeno)) {
+    if (ceskaDetska.has(varianta)) {
+      kriticke.push(`„${varianta}" je vedená jako jiný zápis jména ${jmeno}, ale je to samostatné české dětské jméno`)
+    }
+  }
+}
+
 // ── výsledek ─────────────────────────────────────────────────────────────
 console.log(`Kontrola dat: ${JMENA.length} jmen, ${VSECHNY_ENTITY.length} entit, `
   + `${ENTITY_SE_STRANKOU.length} s vlastní stránkou, ${VSECHNA_PLEMENA.length} plemen.`)
 console.log(`Dobové zařazení (revize ${ROK_REVIZE}): `
   + Object.entries(poctyVln()).map(([v, p]) => `${v} ${p}`).join(', '))
+console.log(`Zápis: ${JMENA_S_VARIANTOU.length} jmen s další podobou zápisu, `
+  + `${SVETOVA_JMENA.length} označených jako světově znějící.`)
 
 if (drobnosti.length) {
   console.log(`\nDrobnosti k opravě (${drobnosti.length}):`)

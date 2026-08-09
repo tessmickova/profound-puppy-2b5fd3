@@ -25,10 +25,23 @@ sbírání údajů — všechno, co si uživatel uloží, zůstává v jeho proh
 Datová základna: **1286 jmen z 25 zemí** na šesti kontinentech a **54 plemen**
 s ručně vybranými jmény. Aktuální rozpad vypisuje `npm run kontrola:data`.
 
-Českých dětských jmen je 95 — tolik jich má dobové zařazení (`vlna`). Sada
+Českých dětských jmen je 101 — tolik jich má dobové zařazení (`vlna`). Sada
 záměrně obsahuje i modernější jména (Mia, Ella, Laura, Tobiáš, Leo, Maxim),
 protože bez nich vypadala nabídka „co se bude dávat" jako seznam pro
 prababičky.
+
+### Zápis jména (`zapis.ts`)
+
+Část rodičů nehledá jiné jméno, ale **jiný zápis**: Teodor, nebo Theodor?
+Sofie, nebo Sofia? `pridej()` v `data.ts` klíčuje jména bez diakritiky, takže
+druhý zápis by jako samostatný záznam **tiše zapadl** — varianta je proto
+vlastnost jména, ne další jméno.
+
+Varianty se propisují na tři místa: do detailu jména („Píše se také"), do
+rejstříku (kdo napíše „Theodor", najde Teodora) a do brány `maDostDat()` —
+doložená varianta je konkrétní obsah, ne vata, takže jméno kvůli ní může mít
+vlastní stránku. Do tabulky **nepatří překlady**: Jan a John jsou příbuzná
+jména, ne dva zápisy jednoho.
 
 ## Stránky (`app/`)
 
@@ -121,6 +134,7 @@ ani našeptávačem nepohne. První otázka je „koho pojmenováváte", druhá
 | `rozhodovani.ts` | rozhodovací jádro — odhad vkusu z voleb, doporučení s důvody, porovnání finalistů, test jména |
 | `cestina.ts` | oslovení (5. pád), genitiv, iniciály, hláskování, podoba bez diakritiky, zvuk v cizině |
 | `vlny.ts` | dobové zařazení jmen — kde jméno stojí na české vlně (redakční, s rokem revize) |
+| `zapis.ts` | český a světový zápis téhož jména (Teodor/Theodor) + štítek „zní světově" |
 | `adresy.ts` | jediný seznam veřejných adres; sdílí ho mapa webu, IndexNow i kontrola SEO |
 
 ### Jak se počítá „nejlepší shoda"

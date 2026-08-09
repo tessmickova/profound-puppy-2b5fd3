@@ -6,6 +6,7 @@
 
 import { VSECHNY_ENTITY } from './entita'
 import { bezDiakritiky } from './slug'
+import { hledaneVarianty } from './zapis'
 import type { Kategorie } from './types'
 
 export interface PolozkaRejstriku {
@@ -15,6 +16,14 @@ export interface PolozkaRejstriku {
   s: string
   /** hledaný tvar: malá písmena, bez diakritiky */
   h: string
+  /**
+   * Další zápisy téhož jména, taky bez diakritiky.
+   *
+   * Kdo chce Theodora, napíše „Theodor" — a v katalogu je Teodor. Bez
+   * tohohle pole by mu našeptávač neukázal nic a jméno by pro něj
+   * na webu prakticky neexistovalo.
+   */
+  v?: string[]
   /** kategorie, ve kterých se jméno objevuje */
   k: Kategorie[]
 }
@@ -24,6 +33,7 @@ export const REJSTRIK: PolozkaRejstriku[] = VSECHNY_ENTITY
     j: e.jmeno,
     s: e.vyskyty.length && e.vyznam.trim().length >= 12 ? e.slug : '',
     h: bezDiakritiky(e.jmeno),
+    v: hledaneVarianty(e.jmeno).length ? hledaneVarianty(e.jmeno) : undefined,
     k: e.kategorie,
   }))
   .sort((a, b) => a.j.localeCompare(b.j, 'cs'))
@@ -41,8 +51,9 @@ export function najdi(dotaz: string, kolik = 8): PolozkaRejstriku[] {
   const zacatek: PolozkaRejstriku[] = []
   const uvnitr: PolozkaRejstriku[] = []
   for (const p of REJSTRIK) {
-    if (p.h.startsWith(q)) zacatek.push(p)
-    else if (p.h.includes(q)) uvnitr.push(p)
+    const tvary = p.v ? [p.h, ...p.v] : [p.h]
+    if (tvary.some(t => t.startsWith(q))) zacatek.push(p)
+    else if (tvary.some(t => t.includes(q))) uvnitr.push(p)
     if (zacatek.length >= kolik) break
   }
   return [...zacatek, ...uvnitr].slice(0, kolik)

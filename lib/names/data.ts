@@ -151,6 +151,13 @@ pridej('cz', 'kluk', [
   ['Roman',    'Říman — jméno sedmdesátých let', 74, ['tradiční'], 'vyvážená', [8]],
   ['Zdeněk',   'ten, kdo tvoří slávu — ryze české jméno', 73, ['tradiční'], 'klidná', [1]],
 ])
+
+// Světově znějící chlapecká jména bez české obdoby v katalogu.
+pridej('cz', 'kluk', [
+  ['Adrian',  'z Hadrie — světské a měkké', 80, ['moderní', 'elegantní'], 'klidná', []],
+  ['Matteo',  'dar od Boha — italská podoba Matěje', 79, ['moderní'], 'živá', []],
+  ['Max',     'největší — jedna slabika, žádná diskuze', 81, ['moderní', 'sportovní'], 'živá', []],
+])
 pridej('cz', 'holka', [
   ['Eliška',   'Bůh je má přísaha — královna českých jmen', 97, ['tradiční', 'královské'], 'vyvážená', [10]],
   ['Anna',     'milostiplná — jméno, které nikdy nezklame', 93, ['tradiční'], 'klidná', [7]],
@@ -1841,6 +1848,15 @@ pridej('cz', 'holka', [
   ['Petra',     'skála — pevné a jasné', 76, ['tradiční'], 'vyvážená', [6]],
   ['Lenka',     'světlo — ryze česká zdrobnělina', 75, ['tradiční'], 'klidná', []],
   ['Jana',      'Bůh je milostivý — ženská podoba Jana', 75, ['tradiční'], 'klidná', [5]],
+])
+
+// Jména, která znějí světově a v Česku se dávají v téhle podobě.
+// Nemají českou obdobu v katalogu — na rozdíl od Sofie/Sofia nebo
+// Ema/Emma, kde jde o dva zápisy téhož jména (viz `zapis.ts`).
+pridej('cz', 'holka', [
+  ['Emily',   'pracovitá — anglická podoba Emílie', 82, ['moderní', 'elegantní'], 'vyvážená', []],
+  ['Vivien',  'živá — jméno, které se nedá přeslechnout', 79, ['moderní', 'elegantní'], 'živá', []],
+  ['Rebeka',  'ta, která poutá — měkké a starobylé zároveň', 78, ['moderní'], 'klidná', []],
 ])
 pridej('cz', 'pes', [
   ['Fantom', 'stín, co běhá rychleji než vy', 76, ['sportovní'], 'živá', 'velké'],

@@ -17,6 +17,7 @@ import { KATEGORIE_INFO, MESICE_NAZVY, VSECHNY_STYLY } from '@/lib/names/types'
 import type { Energie, Kategorie, Styl } from '@/lib/names/types'
 import { useVyber } from '@/lib/names/vyber'
 import { VYHLED } from '@/lib/names/vlny'
+import { znejeSvetove } from '@/lib/names/zapis'
 import NameCard from './NameCard'
 import Vyber from './Vyber'
 import ShodaKarta from './ShodaKarta'
@@ -104,6 +105,7 @@ export default function DetiFinder() {
     if (rychle.includes('navrat')) kandidati = kandidati.filter(jeNavrat)
     if (rychle.includes('vrchol')) kandidati = kandidati.filter(jeVrchol)
     if (rychle.includes('vzacne')) kandidati = kandidati.filter(jeVzacne)
+    if (rychle.includes('svetove')) kandidati = kandidati.filter(znejeSvetove)
     // „Bez jmen generace rodičů" je jediný filtr, který něco odebírá —
     // odpovídá na „nechci jméno, co měla půlka mojí třídy".
     if (rychle.includes('bez-dozniva')) kandidati = kandidati.filter(j => !jeDoznivajici(j))
@@ -253,6 +255,7 @@ export default function DetiFinder() {
                 <Chip aktivni={rychle.includes('vzestup')} onClick={() => setRychle(prepni(rychle, 'vzestup'))} title={`Modernější jména, kterých přibývá — výhled na ${VYHLED[0]} a ${VYHLED[1]}`}><TrendingUp size={12} /> jde nahoru</Chip>
                 <Chip aktivni={rychle.includes('navrat')} onClick={() => setRychle(prepni(rychle, 'navrat'))} title="Babiččina jména zpátky v módě"><RotateCcw size={12} /> vrací se</Chip>
                 <Chip aktivni={rychle.includes('vrchol')} onClick={() => setRychle(prepni(rychle, 'vrchol'))} title="Nejčastější jména dnešních miminek"><Baby size={12} /> teď nejčastější</Chip>
+                <Chip aktivni={rychle.includes('svetove')} onClick={() => setRychle(prepni(rychle, 'svetove'))} title="Jména, která znějí světově — často i s cizí podobou zápisu"><Globe size={12} /> zní světově</Chip>
                 <Chip aktivni={rychle.includes('vzacne')} onClick={() => setRychle(prepni(rychle, 'vzacne'))} title="Vzácná bez ohledu na dobu"><Gem size={12} /> vzácná</Chip>
                 <Chip aktivni={rychle.includes('bez-dozniva')} onClick={() => setRychle(prepni(rychle, 'bez-dozniva'))} title="Skryje jména generace dnešních rodičů"><CalendarOff size={12} /> bez jmen generace rodičů</Chip>
                 <Chip aktivni={rychle.includes('unisex')} onClick={() => setRychle(prepni(rychle, 'unisex'))}><Circle size={12} /> unisex</Chip>

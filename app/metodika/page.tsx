@@ -111,6 +111,27 @@ export default function MetodikaStranka() {
           nic netvrdíme a jméno zůstane bez štítku.
         </p>
 
+        <h2>Český a světový zápis téhož jména</h2>
+        <p>
+          Část rodičů nehledá jiné jméno, ale <strong>jiný zápis</strong>.
+          Teodor a Theodor je totéž jméno, jenže Theodor zní světověji a jinak
+          vypadá v pase. Stejně tak Sofie/Sofia, Ema/Emma, Melánie/Melanie
+          nebo Sebastián/Sebastian. Matrika zapíše obě podoby, takže je to
+          skutečné rozhodnutí — a u jmen, kde ho evidujeme, ho na detailu
+          uvidíte pod „Píše se také".
+        </p>
+        <p>
+          Hledání s tím počítá: když napíšete <em>Theodor</em>, najde vám
+          Teodora. Naopak <strong>překlady jmen do jiných jazyků sem
+          nepatří</strong> — Jan a John jsou příbuzná jména, ne dva zápisy
+          jednoho.
+        </p>
+        <p>
+          Štítek „zní světově" je <strong>redakční výběr</strong>, ne pravidlo
+          z pravopisu: rozhoduje, jak jméno působí na české ucho, ne kolik má
+          cizích písmen.
+        </p>
+
         <h2>Shoda podle pravidel Světa jmen</h2>
         <p>
           Když zadáte příjmení, jména rodičů nebo sourozence, spočítá web skóre

@@ -11,6 +11,7 @@
 
 import { JMENA, ZEME } from './data'
 import { slugJmena } from './slug'
+import { variantyZapisu } from './zapis'
 import type { Jmeno, Kategorie } from './types'
 
 export interface Entita {
@@ -77,7 +78,13 @@ const ENTITY = postav()
  *
  * Chceme stránku, která návštěvníkovi něco přinese — ne šablonu s doplněným
  * jménem. Proto vedle významu vyžadujeme aspoň jednu věc navíc: jmeniny,
- * domácké tvary, použití ve víc zemích nebo u víc druhů.
+ * domácké tvary, použití ve víc zemích, u víc druhů — nebo doloženou další
+ * podobu zápisu.
+ *
+ * Zápis se do brány přidal záměrně: „Teodor, nebo Theodor?" je otázka, na
+ * kterou stránka odpovídá něčím konkrétním, ne vatou. Bez toho propadlo
+ * devatenáct jmen s doloženou variantou a informace o zápisu nebyla nikde
+ * k dohledání.
  */
 export function maDostDat(e: Entita): boolean {
   if (e.vyznam.trim().length < 12) return false
@@ -85,6 +92,7 @@ export function maDostDat(e: Entita): boolean {
     + Number(e.domacky.length > 0)
     + Number(e.zeme.length > 1)
     + Number(e.kategorie.length > 1)
+    + Number(variantyZapisu(e.jmeno).length > 0)
   return navic >= 1
 }
 

@@ -84,6 +84,9 @@ const VLNY: Record<string, Vlna> = {
   Alex: 'stoupa',
   Elias: 'stoupa',
   Nikolas: 'stoupa',
+  Adrian: 'stoupa',
+  Matteo: 'stoupa',
+  Max: 'stoupa',
 
   David: 'stalice',
   Dominik: 'stalice',
@@ -147,6 +150,9 @@ const VLNY: Record<string, Vlna> = {
   Elen: 'stoupa',
   Valentýna: 'stoupa',
   Melánie: 'stoupa',
+  Emily: 'stoupa',
+  Vivien: 'stoupa',
+  Rebeka: 'stoupa',
 
   Anežka: 'retro',
   Josefína: 'retro',
