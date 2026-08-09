@@ -1,50 +1,39 @@
 import type { MetadataRoute } from 'next'
-import { ZEME } from '@/lib/names/data'
-import { ENTITY_SE_STRANKOU } from '@/lib/names/entita'
-import { KATEGORIE_INFO } from '@/lib/names/types'
-import type { Kategorie } from '@/lib/names/types'
+import { adresyVrstvy, VRSTVY } from '@/lib/names/adresy'
 import { WEB } from '@/lib/names/seo'
 import { JE_NAHLED } from '@/lib/config'
 
-// V mapě webu je jen to, co má být v indexu. Osobní nástroje (uložená jména,
-// rodinný profil) sem nepatří — jsou označené noindex a v mapě by si
-// odporovaly samy se sebou.
+// Mapa webu se rozděluje podle typu stránky, ne kvůli velikosti (218 adres
+// by se do jedné vešlo s přehledem), ale kvůli **měření**: Search Console
+// hlásí pokrytí za každou mapu zvlášť, takže je hned vidět, jestli
+// vypadávají detaily jmen, nebo stránky zemí. V jedné mapě by to byl jeden
+// průměr, ze kterého se nic nepozná.
+//
+// Seznam adres je v `lib/names/adresy.ts` — sdílí ho i IndexNow a kontrola
+// SEO, aby se tři seznamy nemohly rozejít.
+//
+// Rejstřík k dílčím mapám Next.js nevyrábí; dodává ho `app/sitemap.xml`.
 //
 // Na náhledu (workers.dev, localhost) mapu nevydáváme vůbec, aby nevznikla
 // druhá indexovatelná kopie webu vedle produkční domény.
 
-const KATEGORIE: Kategorie[] = [
-  'holka', 'kluk', 'pes', 'fenka', 'kocour', 'kocka', 'kun', 'kralik', 'papousek', 'krecek',
-]
+export { VRSTVY as CASTI }
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export async function generateSitemaps() {
   if (JE_NAHLED) return []
+  return VRSTVY.map((_, id) => ({ id }))
+}
+
+export default function sitemap({ id }: { id: number }): MetadataRoute.Sitemap {
+  if (JE_NAHLED) return []
+  const vrstva = VRSTVY[id]
+  if (!vrstva) return []
 
   const dnes = new Date()
-  const zaznam = (cesta: string, priorita: number, cetnost: 'weekly' | 'monthly' | 'yearly') => ({
-    url: `${WEB.url}${cesta}`,
+  return adresyVrstvy(vrstva).map(a => ({
+    url: `${WEB.url}${a.cesta === '/' ? '' : a.cesta}`,
     lastModified: dnes,
-    changeFrequency: cetnost,
-    priority: priorita,
-  })
-
-  return [
-    zaznam('/', 1, 'weekly'),
-    // Nástroje pro rozhodování — hlavní důvod, proč sem člověk chodí.
-    zaznam('/vybrat-jmeno-pro-dite', 0.95, 'weekly'),
-    zaznam('/porovnat-jmena', 0.95, 'weekly'),
-    zaznam('/jmeno-k-prijmeni', 0.9, 'weekly'),
-    zaznam('/jak-vybrat-jmeno-kdyz-se-nemuzeme-shodnout', 0.9, 'monthly'),
-    zaznam('/vybrat-jmeno-pro-zvire', 0.85, 'weekly'),
-    zaznam('/deti', 0.9, 'weekly'),
-    zaznam('/zvirata', 0.9, 'weekly'),
-    ...KATEGORIE.map(k => zaznam(`/jmena/${KATEGORIE_INFO[k].slug}`, 0.85, 'weekly')),
-    ...ENTITY_SE_STRANKOU.map(e => zaznam(`/jmeno/${e.slug}`, 0.7, 'monthly')),
-    ...ZEME.map(z => zaznam(`/zeme/${z.kod}`, 0.6, 'monthly')),
-    zaznam('/zeme', 0.6, 'monthly'),
-    zaznam('/metodika', 0.5, 'yearly'),
-    zaznam('/reklama', 0.3, 'yearly'),
-    zaznam('/podminky', 0.2, 'yearly'),
-    zaznam('/soukromi', 0.2, 'yearly'),
-  ]
+    changeFrequency: a.cetnost,
+    priority: a.priorita,
+  }))
 }

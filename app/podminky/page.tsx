@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   title: 'Podmínky používání',
   description:
     'Za jakých podmínek Svět jmen funguje — pro návštěvníky i pro firmy, které si tu inzerují.',
+  alternates: { canonical: '/podminky' },
 }
 
 export default function PodminkyStranka() {

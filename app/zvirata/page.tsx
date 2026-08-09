@@ -34,7 +34,7 @@ export default function ZvirataStranka() {
         }}
       />
 
-      <div className="mb-2"><NadpisSekce druh="zvirata">Jména pro zvířata</NadpisSekce></div>
+      <div className="mb-2"><NadpisSekce druh="zvirata" uroven={1}>Jména pro zvířata</NadpisSekce></div>
       <p className="mb-8 max-w-2xl text-[#6b6156]">
         Vyberte druh, plemeno nebo způsob života — a nechte filtr najít jméno, které vašemu
         zvířeti padne jako obojek na míru.

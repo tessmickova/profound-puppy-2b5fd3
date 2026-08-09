@@ -11,7 +11,7 @@ import {
 } from '@/lib/names/seo'
 
 export const metadata: Metadata = {
-  title: 'Jména pro děti — nejlepší shody podle příjmení a měsíce narození',
+  title: 'Jména pro děti — podle příjmení i měsíce narození',
   description:
     'Jména pro holčičky a kluky z celého světa. Chytré hledání nejlepší shody: souzvuk s příjmením, měsíc narození, styl i země inspirace.',
   alternates: { canonical: '/deti' },
@@ -38,7 +38,7 @@ export default function DetiStranka() {
         }}
       />
 
-      <div className="mb-2"><NadpisSekce druh="lide">Jména pro děti</NadpisSekce></div>
+      <div className="mb-2"><NadpisSekce druh="lide" uroven={1}>Jména pro děti</NadpisSekce></div>
       <p className="mb-8 max-w-2xl text-[#6b6156]">
         Procházejte jména podle zemí a stylů, nebo zadejte příjmení, jména rodičů
         a sourozence — a my vybereme jen ty nejlepší shody, které ladí s celou rodinou.

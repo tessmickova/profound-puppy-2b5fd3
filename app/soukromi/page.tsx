@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: 'Ochrana osobních údajů',
   description:
     'Co o vás Svět jmen ví — krátce a bez oklik. Jména, která si uložíte, zůstávají ve vašem prohlížeči.',
+  alternates: { canonical: '/soukromi' },
 }
 
 export default function SoukromiStranka() {

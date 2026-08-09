@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   title: 'Reklama na Světě jmen — nativní plochy pro firmy',
   description:
     'Dvacet ploch po stranách obsahu, 5 000 Kč za měsíc. Vyberete si v náhledu přesně to místo, které kupujete, a zaplatíte na jeden až tři měsíce.',
+  alternates: { canonical: '/reklama' },
 }
 
 const KROKY = [

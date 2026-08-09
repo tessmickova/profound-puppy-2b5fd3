@@ -8,7 +8,7 @@ import { WEB } from '@/lib/names/seo'
 // text až za ním, protože ten sem nikdo nepřišel číst.
 
 export const metadata: Metadata = {
-  title: 'Nevíte, kde začít s výběrem jména? Ukážeme vám dvojice',
+  title: 'Nevíte, kde začít s výběrem jména? Ukážeme dvojice',
   description:
     'Nemusíte procházet stovky jmen. Vyberete si z několika dvojic a my z toho '
     + 'poznáme, co se vám líbí. Po třech volbách uvidíte první návrhy.',

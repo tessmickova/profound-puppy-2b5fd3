@@ -11,13 +11,15 @@ export default function NadpisSekce({
 }: {
   druh: Druh
   children: ReactNode
-  uroven?: 2 | 3
+  /** 1 patří hlavnímu nadpisu stránky — na každé smí být jen jednou. */
+  uroven?: 1 | 2 | 3
 }) {
   const Ikona = druh === 'zvirata' ? PawPrint : Baby
-  const Tag = uroven === 3 ? 'h3' : 'h2'
+  const Tag = `h${uroven}` as const
+  const velikost = uroven === 3 ? 15 : uroven === 1 ? 20 : 17
   return (
-    <Tag className={`nadpis-sekce nadpis-${druh}`}>
-      <span className="nadpis-znak" aria-hidden><Ikona size={uroven === 3 ? 15 : 17} /></span>
+    <Tag className={`nadpis-sekce nadpis-${druh} ${uroven === 1 ? 'nadpis-hlavni' : ''}`}>
+      <span className="nadpis-znak" aria-hidden><Ikona size={velikost} /></span>
       {children}
     </Tag>
   )

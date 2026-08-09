@@ -2833,3 +2833,10 @@ body:has(.svetjmen-shell) { background-color: #faf6ef; }
   .cesta { transition: none; }
   .cesta:hover { transform: none; }
 }
+
+/* Hlavní nadpis stránky nese stejný vizuál jako sekce, jen o stupeň větší. */
+.nadpis-sekce.nadpis-hlavni {
+  font-size: 27px;
+  letter-spacing: -.01em;
+}
+@media (max-width: 559px) { .nadpis-sekce.nadpis-hlavni { font-size: 23px; } }
