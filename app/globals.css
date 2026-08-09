@@ -2840,3 +2840,24 @@ body:has(.svetjmen-shell) { background-color: #faf6ef; }
   letter-spacing: -.01em;
 }
 @media (max-width: 559px) { .nadpis-sekce.nadpis-hlavni { font-size: 23px; } }
+
+/* ── Detail jména jako pracovní stůl ───────────────────────────────────── */
+.jmeno-akce { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 14px 0 22px; }
+.jmeno-akce-tlacitko {
+  display: inline-flex; align-items: center; gap: 7px; min-height: 38px;
+  border: 1px solid #e6dcc9; border-radius: 999px; background: #fff;
+  padding: 7px 15px; font: inherit; font-size: 14px; font-weight: 600;
+  color: #2b2723; cursor: pointer; transition: border-color .15s, background .15s, color .15s;
+}
+.jmeno-akce-tlacitko:hover { border-color: #d97757; }
+.jmeno-akce-tlacitko.je-aktivni { border-color: #d97757; background: #fdf1ec; color: #b3403a; }
+.jmeno-akce-tlacitko.je-vyrazene { border-color: #d8cbb6; background: #f3ecdf; color: #6b6156; }
+.jmeno-akce-pozn { flex-basis: 100%; margin: 2px 0 0; font-size: 12.5px; color: #8a7f71; }
+
+.jmeno-nastroj { margin: 30px 0; }
+.jmeno-nastroj h2 { margin: 0 0 4px; font-size: 20px; }
+.jmeno-nastroj-popis { margin: 0 0 14px; max-width: 54ch; font-size: 14.5px; color: #6b6156; }
+
+@media (max-width: 559px) {
+  .jmeno-nastroj h2 { font-size: 18px; }
+}

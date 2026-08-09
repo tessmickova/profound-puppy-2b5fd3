@@ -2,6 +2,9 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import Shell from '@/components/names/Shell'
+import TestJmena from '@/components/names/TestJmena'
+import PorovnaniJmen from '@/components/names/PorovnaniJmen'
+import UlozitJmeno from '@/components/names/UlozitJmeno'
 import { ENTITY_SE_STRANKOU, entitaPodleSlugu, podobna, zemeEntity } from '@/lib/names/entita'
 import { KATEGORIE_INFO } from '@/lib/names/types'
 import { WEB } from '@/lib/names/seo'
@@ -78,6 +81,8 @@ export default async function JmenoStranka({ params }: { params: Promise<{ slug:
           <p className="jmeno-vyznam">{velke(e.vyznam)}</p>
         </header>
 
+        <UlozitJmeno jmeno={e.jmeno} idcka={e.vyskyty.map(v => v.id)} />
+
         <dl className="jmeno-udaje">
           <div>
             <dt>Používá se pro</dt>
@@ -121,6 +126,27 @@ export default async function JmenoStranka({ params }: { params: Promise<{ slug:
             </dd>
           </div>
         </dl>
+
+        {/* Detail není konec cesty, ale pracovní stůl. Kdo se sem doklikal,
+            už jméno zvažuje — a další seznam mu nepomůže. Potřebuje si ho
+            vyzkoušet se svým příjmením a postavit vedle konkurenta. */}
+        <section className="jmeno-nastroj">
+          <h2>Jak {e.jmeno} zní u vás doma</h2>
+          <p className="jmeno-nastroj-popis">
+            Doplňte příjmení a uvidíte oslovení, iniciály, hláskování i to,
+            jak jméno dopadne v cizině. Nikam se to neodesílá.
+          </p>
+          <TestJmena vychoziJmeno={e.jmeno} />
+        </section>
+
+        <section className="jmeno-nastroj">
+          <h2>Zvažujete ještě jiné jméno?</h2>
+          <p className="jmeno-nastroj-popis">
+            Napište ho a postavíme je vedle sebe. Vítěze nevyhlásíme — ukážeme,
+            čím se liší.
+          </p>
+          <PorovnaniJmen vychozi={[e.jmeno, '']} />
+        </section>
 
         {dalsi.length > 0 && (
           <section className="jmeno-dalsi">
