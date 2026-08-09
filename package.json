@@ -16,7 +16,8 @@
     "prebuild": "npm run kontrola:data",
     "kontrola": "npm run typecheck && npm run kontrola:data && npm test",
     "indexnow": "npx tsx skripty/indexnow.ts",
-    "kontrola:seo": "npx tsx skripty/kontrola-seo.ts"
+    "kontrola:seo": "npx tsx skripty/kontrola-seo.ts",
+    "klicova-slova": "npx tsx skripty/klicova-slova.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.9.0",
