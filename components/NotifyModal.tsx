@@ -61,7 +61,7 @@ export function NotifyModal({ open, onClose }: Props) {
       {open && (
         <>
           <motion.div
-            className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm"
+            className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={onClose}
           />
@@ -113,7 +113,7 @@ export function NotifyModal({ open, onClose }: Props) {
                             ? ch.id === 'telegram'
                               ? 'bg-blue-500/15 border-blue-400/40 text-blue-300'
                               : 'bg-green-500/15 border-green-400/40 text-green-300'
-                            : 'border-white/[0.08] text-slate-400 hover:border-white/[0.15]'
+                            : 'border-white/8 text-slate-400 hover:border-white/15'
                         )}
                       >
                         {ch.icon} {ch.label}
@@ -134,7 +134,7 @@ export function NotifyModal({ open, onClose }: Props) {
                             'py-2 rounded-xl text-sm font-display font-bold border transition-all',
                             kpTreshold === k
                               ? 'bg-aurora-teal/15 border-aurora-teal/50 text-aurora-teal shadow-[0_0_12px_rgba(0,212,255,0.15)]'
-                              : 'border-white/[0.08] text-slate-400 hover:border-white/20'
+                              : 'border-white/8 text-slate-400 hover:border-white/20'
                           )}
                         >
                           {k}
@@ -147,7 +147,7 @@ export function NotifyModal({ open, onClose }: Props) {
                   {channel === 'telegram' && (
                     <div>
                       <p className="text-xs text-slate-400 mb-4 leading-relaxed">
-                        Klikni níže → otevře se Telegram bot → napiš <code className="text-aurora-teal bg-aurora-teal/10 px-1 rounded">/start</code>
+                        Klikni níže → otevře se Telegram bot → napiš <code className="text-aurora-teal bg-aurora-teal/10 px-1 rounded-sm">/start</code>
                         → jsi registrovaný! KP práh nastavíš přímo v botu.
                       </p>
                       <button
@@ -171,7 +171,7 @@ export function NotifyModal({ open, onClose }: Props) {
                         value={phone}
                         onChange={e => setPhone(e.target.value)}
                         className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-600
-                                   focus:outline-none focus:border-aurora-teal/50 focus:ring-1 focus:ring-aurora-teal/30 mb-3 font-mono"
+                                   focus:outline-hidden focus:border-aurora-teal/50 focus:ring-1 focus:ring-aurora-teal/30 mb-3 font-mono"
                       />
                       {error && <p className="text-xs text-red-400 mb-3">{error}</p>}
                       <button

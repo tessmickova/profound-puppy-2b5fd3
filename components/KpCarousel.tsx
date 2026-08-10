@@ -209,34 +209,34 @@ export function KpCarousel({ forecast, currentKp, bz, swSpeed, swDensity, hpiCur
 
               {/* Live status on today's card */}
               {isToday && (
-                <div className="mb-2 pt-2 border-t border-white/[0.06]">
+                <div className="mb-2 pt-2 border-t border-white/6">
                   <div className="flex items-center gap-1.5 flex-wrap">
                     <span className="flex items-center gap-1 text-[10px] font-mono text-slate-400">
                       <span className="w-1 h-1 rounded-full bg-red-500 animate-pulse" />
                       LIVE
                     </span>
                     {liveExpert.bzSouthMinutes > 0 && !liveExpert.bzNorthward && (
-                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-green-500/8 text-green-400">
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-sm bg-green-500/8 text-green-400">
                         Bz jižní {liveExpert.bzSouthMinutes} min
                       </span>
                     )}
                     {liveExpert.bzNorthward && (
-                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-yellow-500/8 text-yellow-400">
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-sm bg-yellow-500/8 text-yellow-400">
                         🔒 Bz sever
                       </span>
                     )}
                     {liveExpert.penalties.daylight > 10 && (
-                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-orange-500/8 text-orange-400">
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-sm bg-orange-500/8 text-orange-400">
                         ☀️ −{Math.round(liveExpert.penalties.daylight)}%
                       </span>
                     )}
                     {liveExpert.penalties.moon > 5 && (
-                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-yellow-500/8 text-yellow-400">
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-sm bg-yellow-500/8 text-yellow-400">
                         🌙 −{Math.round(liveExpert.penalties.moon)}%
                       </span>
                     )}
                     {cme?.some(c => c.earthImpact) && (
-                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-orange-500/8 text-orange-400">
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-sm bg-orange-500/8 text-orange-400">
                         🌊 CME
                       </span>
                     )}
@@ -269,7 +269,7 @@ export function KpCarousel({ forecast, currentKp, bz, swSpeed, swDensity, hpiCur
               )}
 
               {/* ─── Night intervals ─── */}
-              <div className="pt-2 border-t border-white/[0.06]">
+              <div className="pt-2 border-t border-white/6">
                 {isAdvanced ? (
                   /* Advanced: compact intervals with visibility labels */
                   <>
@@ -283,11 +283,11 @@ export function KpCarousel({ forecast, currentKp, bz, swSpeed, swDensity, hpiCur
                           const pInfo = VISIBILITY_INFO[pVis]
                           return (
                             <div key={pi} className="flex items-center gap-1.5">
-                              <span className="text-[10px] font-mono w-[5.5rem] shrink-0 text-slate-400">
+                              <span className="text-[10px] font-mono w-22 shrink-0 text-slate-400">
                                 {formatPeriodTime(period.time)}
                               </span>
                               <span
-                                className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold whitespace-nowrap"
+                                className="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-mono font-semibold whitespace-nowrap"
                                 style={{ backgroundColor: `${pInfo.color}18`, color: pInfo.color }}
                               >
                                 {pInfo.label}
@@ -317,11 +317,11 @@ export function KpCarousel({ forecast, currentKp, bz, swSpeed, swDensity, hpiCur
                             const pInfo = VISIBILITY_INFO[pVis]
                             return (
                               <div key={pi} className="flex items-center gap-1.5">
-                                <span className="text-[11px] font-mono w-[5.5rem] shrink-0 text-slate-300 font-semibold">
+                                <span className="text-[11px] font-mono w-22 shrink-0 text-slate-300 font-semibold">
                                   {formatPeriodTime(period.time)}
                                 </span>
                                 <span
-                                  className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold whitespace-nowrap"
+                                  className="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-mono font-semibold whitespace-nowrap"
                                   style={{ backgroundColor: `${pInfo.color}18`, color: pInfo.color }}
                                 >
                                   {pInfo.label}
@@ -343,11 +343,11 @@ export function KpCarousel({ forecast, currentKp, bz, swSpeed, swDensity, hpiCur
                             const pInfo = VISIBILITY_INFO[pVis]
                             return (
                               <div key={pi} className="flex items-center gap-1.5">
-                                <span className="text-[11px] font-mono w-[5.5rem] shrink-0 text-slate-300 font-semibold">
+                                <span className="text-[11px] font-mono w-22 shrink-0 text-slate-300 font-semibold">
                                   {formatPeriodTime(period.time)}
                                 </span>
                                 <span
-                                  className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold whitespace-nowrap"
+                                  className="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-mono font-semibold whitespace-nowrap"
                                   style={{ backgroundColor: `${pInfo.color}18`, color: pInfo.color }}
                                 >
                                   {pInfo.label}
@@ -367,15 +367,15 @@ export function KpCarousel({ forecast, currentKp, bz, swSpeed, swDensity, hpiCur
 
               {/* L1 probe tip — shown when any aurora chance exists */}
               {nightMax >= 3 && (
-                <div className="mt-2 px-2.5 py-2 rounded-lg bg-[#00d4ff]/[0.06] border border-[#00d4ff]/10">
-                  <p className="text-[10px] text-[#00d4ff]/80 leading-snug">
+                <div className="mt-2 px-2.5 py-2 rounded-lg bg-aurora-teal/6 border border-aurora-teal/10">
+                  <p className="text-[10px] text-aurora-teal/80 leading-snug">
                     📡 Sleduj sondu L1, která ti dá náskok 15–60 min před tím, než se záře objeví na obloze.
                   </p>
                 </div>
               )}
 
               {/* Sighting report buttons — on each card */}
-              <div className="pt-2 mt-2 border-t border-white/[0.06] flex gap-1.5">
+              <div className="pt-2 mt-2 border-t border-white/6 flex gap-1.5">
                 <button
                   onClick={() => reportSighting(day.date, 'seen')}
                   disabled={rep.seen || sending}
@@ -383,7 +383,7 @@ export function KpCarousel({ forecast, currentKp, bz, swSpeed, swDensity, hpiCur
                     'flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg text-[10px] font-bold transition-all border',
                     rep.seen
                       ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 cursor-default'
-                      : 'bg-white/[0.04] border-white/[0.08] text-slate-400 hover:bg-emerald-500/10 hover:border-emerald-500/20 hover:text-emerald-400',
+                      : 'bg-white/4 border-white/8 text-slate-400 hover:bg-emerald-500/10 hover:border-emerald-500/20 hover:text-emerald-400',
                   )}
                 >
                   👁️ {rep.seen ? '✓' : 'Viděl/a'}
@@ -395,7 +395,7 @@ export function KpCarousel({ forecast, currentKp, bz, swSpeed, swDensity, hpiCur
                     'flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg text-[10px] font-bold transition-all border',
                     rep.photo
                       ? 'bg-violet-500/10 border-violet-500/30 text-violet-400 cursor-default'
-                      : 'bg-white/[0.04] border-white/[0.08] text-slate-400 hover:bg-violet-500/10 hover:border-violet-500/20 hover:text-violet-400',
+                      : 'bg-white/4 border-white/8 text-slate-400 hover:bg-violet-500/10 hover:border-violet-500/20 hover:text-violet-400',
                   )}
                 >
                   📸 {rep.photo ? '✓' : 'Fotil/a'}

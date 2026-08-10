@@ -101,7 +101,7 @@ export function CloudRadar({ position }: Props) {
   }, [centerTile])
 
   return (
-    <div className="bg-[#04101e]/90 border border-white/[0.08] rounded-2xl p-4">
+    <div className="bg-[#04101e]/90 border border-white/8 rounded-2xl p-4">
       <div className="flex items-center justify-between mb-3">
         <div className="text-xs font-mono tracking-[2px] text-slate-500 uppercase flex items-center gap-2">
           ☁️ Radar oblačnosti
@@ -114,7 +114,7 @@ export function CloudRadar({ position }: Props) {
             className={`px-2.5 py-1 rounded-md text-[10px] font-bold transition-all border ${
               showSatellite
                 ? 'bg-aurora-teal/15 text-aurora-teal border-aurora-teal/30'
-                : 'text-slate-400 border-white/[0.06] hover:bg-white/5'
+                : 'text-slate-400 border-white/6 hover:bg-white/5'
             }`}
           >
             🛰️ Oblačnost
@@ -124,7 +124,7 @@ export function CloudRadar({ position }: Props) {
             className={`px-2.5 py-1 rounded-md text-[10px] font-bold transition-all border ${
               !showSatellite
                 ? 'bg-aurora-teal/15 text-aurora-teal border-aurora-teal/30'
-                : 'text-slate-400 border-white/[0.06] hover:bg-white/5'
+                : 'text-slate-400 border-white/6 hover:bg-white/5'
             }`}
           >
             🌧️ Srážky
@@ -133,7 +133,7 @@ export function CloudRadar({ position }: Props) {
       </div>
 
       {/* Map container — 3x3 tile grid */}
-      <div className="relative w-full aspect-[3/2] rounded-xl overflow-hidden bg-[#0a1929] border border-white/[0.06]">
+      <div className="relative w-full aspect-3/2 rounded-xl overflow-hidden bg-[#0a1929] border border-white/6">
         {/* OSM base tiles */}
         <div className="absolute inset-0 grid grid-cols-3 grid-rows-3">
           {tiles.map(t => (
@@ -176,7 +176,7 @@ export function CloudRadar({ position }: Props) {
         )}
 
         {/* Time indicator */}
-        <div className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-sm rounded-lg px-2.5 py-1 z-10">
+        <div className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-xs rounded-lg px-2.5 py-1 z-10">
           <span className="text-[11px] font-mono text-slate-200">{frameTime}</span>
           <span className="text-[10px] font-mono text-slate-400 ml-1.5">
             {showSatellite ? 'IR satelit' : frameIdx >= (radarData?.radar.past.length ?? 0) ? 'předpověď' : 'radar'}

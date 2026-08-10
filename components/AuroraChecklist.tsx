@@ -391,18 +391,18 @@ export function AuroraChecklist({ kp, bz, swSpeed, swDensity, hpiCurrent, cme, s
   // ═══ RENDER ═══════════════════════════════════════════════════════════════
 
   return (
-    <div className="bg-[#04101e]/90 border border-white/[0.08] rounded-2xl overflow-hidden">
+    <div className="bg-[#04101e]/90 border border-white/8 rounded-2xl overflow-hidden">
       {/* ─── Header + Toggle ─── */}
       <div className="px-4 pt-4 pb-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div className="text-xs font-mono tracking-[2px] text-slate-500 uppercase flex items-center gap-2">
           🎯 Podmínky pro záři nad ČR
         </div>
-        <div className="flex rounded-lg overflow-hidden border border-white/[0.08] text-[10px] font-mono">
+        <div className="flex rounded-lg overflow-hidden border border-white/8 text-[10px] font-mono">
           <button
             onClick={() => setView('l1')}
             className={clsx(
               'px-3 py-1.5 transition-all flex items-center gap-1',
-              view === 'l1' ? 'bg-[#00d4ff]/15 text-[#00d4ff]' : 'text-slate-500 hover:text-slate-300',
+              view === 'l1' ? 'bg-aurora-teal/15 text-aurora-teal' : 'text-slate-500 hover:text-slate-300',
             )}
           >
             📡 L1 sonda
@@ -411,8 +411,8 @@ export function AuroraChecklist({ kp, bz, swSpeed, swDensity, hpiCurrent, cme, s
           <button
             onClick={() => setView('earth')}
             className={clsx(
-              'px-3 py-1.5 transition-all border-l border-white/[0.08] flex items-center gap-1',
-              view === 'earth' ? 'bg-[#00ffaa]/10 text-[#00ffaa]' : 'text-slate-500 hover:text-slate-300',
+              'px-3 py-1.5 transition-all border-l border-white/8 flex items-center gap-1',
+              view === 'earth' ? 'bg-aurora-green/10 text-aurora-green' : 'text-slate-500 hover:text-slate-300',
             )}
           >
             🌍 Na Zemi
@@ -463,7 +463,7 @@ export function AuroraChecklist({ kp, bz, swSpeed, swDensity, hpiCurrent, cme, s
             </div>
 
             {/* Effective KP bar */}
-            <div className="rounded-xl bg-white/[0.02] border border-white/[0.06] p-3">
+            <div className="rounded-xl bg-white/2 border border-white/6 p-3">
               <div className="flex items-center justify-between mb-1.5">
                 <span className="text-[9px] font-mono text-slate-500 uppercase tracking-wider">Efektivní KP</span>
                 <span className="text-sm font-display font-black" style={{ color: visInfo.color }}>
@@ -472,7 +472,7 @@ export function AuroraChecklist({ kp, bz, swSpeed, swDensity, hpiCurrent, cme, s
               </div>
 
               {/* Scale bar */}
-              <div className="relative h-2.5 bg-white/[0.04] rounded-full mb-2">
+              <div className="relative h-2.5 bg-white/4 rounded-full mb-2">
                 <div
                   className="absolute inset-y-0 left-0 rounded-full transition-all duration-700"
                   style={{
@@ -510,7 +510,7 @@ export function AuroraChecklist({ kp, bz, swSpeed, swDensity, hpiCurrent, cme, s
                   {activeEff.contributions.map((c, i) => (
                     <span
                       key={i}
-                      className="text-[9px] font-mono px-1.5 py-0.5 rounded"
+                      className="text-[9px] font-mono px-1.5 py-0.5 rounded-sm"
                       style={{
                         backgroundColor: c.value > 0 ? 'rgba(0,255,170,0.08)' : c.value < 0 ? 'rgba(255,61,154,0.08)' : 'rgba(255,255,255,0.04)',
                         color: c.value > 0 ? '#00ffaa' : c.value < 0 ? '#ff3d9a' : '#64748b',
@@ -562,7 +562,7 @@ export function AuroraChecklist({ kp, bz, swSpeed, swDensity, hpiCurrent, cme, s
 
               {/* L1 vs Earth comparison when different */}
               {l1Vis !== earthVis && (
-                <div className="mt-2.5 text-[9px] font-mono px-2.5 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] inline-block">
+                <div className="mt-2.5 text-[9px] font-mono px-2.5 py-1.5 rounded-lg bg-white/4 border border-white/6 inline-block">
                   {view === 'l1' ? (
                     <>
                       <span className="text-slate-500">Na Zemi: </span>
@@ -586,7 +586,7 @@ export function AuroraChecklist({ kp, bz, swSpeed, swDensity, hpiCurrent, cme, s
             </div>
 
             {/* Compact checklist */}
-            <div className="rounded-xl bg-white/[0.02] border border-white/[0.06] p-3">
+            <div className="rounded-xl bg-white/2 border border-white/6 p-3">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-[9px] font-mono text-slate-500 uppercase tracking-wider">Checklist</span>
                 <span
@@ -622,7 +622,7 @@ export function AuroraChecklist({ kp, bz, swSpeed, swDensity, hpiCurrent, cme, s
                       <div className="flex items-center gap-1.5">
                         <span className="text-[10px] font-semibold text-slate-300">{item.label}</span>
                         <span
-                          className="text-[9px] font-mono font-bold px-1 py-0.5 rounded"
+                          className="text-[9px] font-mono font-bold px-1 py-0.5 rounded-sm"
                           style={{
                             backgroundColor: item.met ? 'rgba(0,255,170,0.1)' : item.partial ? 'rgba(255,165,0,0.08)' : 'rgba(100,116,139,0.08)',
                             color: item.met ? '#00ffaa' : item.partial ? '#ffa500' : '#64748b',
@@ -648,9 +648,9 @@ export function AuroraChecklist({ kp, bz, swSpeed, swDensity, hpiCurrent, cme, s
             onClick={() => setShowCombos(!showCombos)}
             className="w-full text-[9px] font-mono text-slate-500 hover:text-slate-300 transition-colors flex items-center gap-2 py-1"
           >
-            <span className="flex-1 h-px bg-white/[0.04]" />
+            <span className="flex-1 h-px bg-white/4" />
             {showCombos ? '▾' : '▸'} Jaké kombinace stačí na záři?
-            <span className="flex-1 h-px bg-white/[0.04]" />
+            <span className="flex-1 h-px bg-white/4" />
           </button>
 
           {showCombos && (
@@ -691,7 +691,7 @@ export function AuroraChecklist({ kp, bz, swSpeed, swDensity, hpiCurrent, cme, s
         </div>
 
         {/* ─── Narrative ─── */}
-        <div className="mt-3 pt-3 border-t border-white/[0.06]">
+        <div className="mt-3 pt-3 border-t border-white/6">
           <div className="text-[9px] font-mono tracking-wider text-slate-500 uppercase mb-1.5">
             📡 {isAdvanced ? 'Expertní hodnocení' : 'Aktuální situace'}
           </div>

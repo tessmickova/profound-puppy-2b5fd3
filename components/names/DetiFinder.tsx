@@ -209,7 +209,7 @@ export default function DetiFinder() {
       {rezim === 'prochazet' && (
         <div className="grid items-start gap-6 lg:grid-cols-[280px_1fr]">
           {panelOtevren && <div className="filtr-zaves" onClick={() => setPanelOtevren(false)} aria-hidden />}
-          <aside className={`filtr-panel space-y-1 self-start rounded-3xl border border-[#e8dfd2] bg-white p-4 shadow-sm lg:sticky lg:top-20 ${panelOtevren ? 'je-otevreny' : ''}`}>
+          <aside className={`filtr-panel space-y-1 self-start rounded-3xl border border-[#e8dfd2] bg-white p-4 shadow-xs lg:sticky lg:top-20 ${panelOtevren ? 'je-otevreny' : ''}`}>
             <div className="flex items-center justify-between pb-1">
               <h2 className="flex items-center gap-1.5 [font-family:var(--font-nadpis)] text-base font-bold">
                 <SlidersHorizontal size={16} aria-hidden /> Filtr
@@ -232,7 +232,7 @@ export default function DetiFinder() {
                 value={filtr.hledat}
                 onChange={e => setFiltr({ ...filtr, hledat: e.target.value })}
                 placeholder="Hledat jméno, význam či zdrobněninu…"
-                className="w-full rounded-full border border-[#e8dfd2] bg-[#faf6ef] py-2 pl-9 pr-3 text-[13px] outline-none focus:border-[#2b2723]"
+                className="w-full rounded-full border border-[#e8dfd2] bg-[#faf6ef] py-2 pl-9 pr-3 text-[13px] outline-hidden focus:border-[#2b2723]"
               />
             </div>
 
@@ -391,7 +391,7 @@ export default function DetiFinder() {
         />
 
         <div className="grid items-start gap-6 lg:grid-cols-[280px_1fr]">
-          <aside className="space-y-4 self-start rounded-3xl border border-[#e8dfd2] bg-white p-4 shadow-sm lg:sticky lg:top-20">
+          <aside className="space-y-4 self-start rounded-3xl border border-[#e8dfd2] bg-white p-4 shadow-xs lg:sticky lg:top-20">
             <h2 className="flex items-center gap-1.5 [font-family:var(--font-nadpis)] text-base font-bold">
               <Sparkles size={16} aria-hidden /> Doplňující výběr
             </h2>

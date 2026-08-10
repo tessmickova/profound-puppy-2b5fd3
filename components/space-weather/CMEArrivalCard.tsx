@@ -25,7 +25,7 @@ export function CMEArrivalCard({ arrivals }: Props) {
 
       <div className="space-y-3">
         {arrivals.slice(0, 3).map(arr => (
-          <div key={arr.activityID} className="bg-white/[0.02] rounded-lg p-3">
+          <div key={arr.activityID} className="bg-white/2 rounded-lg p-3">
             <div className="flex items-center justify-between gap-2 mb-1">
               <span className="text-xs font-mono text-slate-300 font-semibold">
                 {formatUtcDateTime(arr.arrivalTime)}

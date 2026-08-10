@@ -14,7 +14,7 @@ export const MetricStrip = memo(function MetricStrip({ hero }: Props) {
   const auroraInfo = AURORA_LIKELIHOOD_LABELS[hero.auroraLikelihood]
 
   return (
-    <div className="flex flex-wrap items-center gap-0 divide-x divide-white/[0.08]">
+    <div className="flex flex-wrap items-center gap-0 divide-x divide-white/8">
       <MetricCard label="KP" value={hero.kp.toFixed(1)} emphasis={hero.kp >= 4} />
       {hero.gScale > 0 && <MetricCard label="G-skala" value={`G${hero.gScale}`} emphasis />}
       <MetricCard label="Bz" value={hero.bz != null ? hero.bz.toFixed(1) : '-'} unit="nT" emphasis={(hero.bz ?? 0) < -5} />

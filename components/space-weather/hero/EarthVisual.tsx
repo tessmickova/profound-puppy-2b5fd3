@@ -21,7 +21,7 @@ export const EarthVisual = memo(function EarthVisual({ intensity, auroraActive, 
     >
       {/* Magnetosphere shell */}
       <div
-        className="absolute -inset-[15%] rounded-full transition-opacity duration-[2000ms]"
+        className="absolute inset-[-15%] rounded-full transition-opacity duration-2000"
         style={{
           background: `radial-gradient(ellipse 60% 75% at 45% 50%, rgba(80,160,255,${magShellOpacity}) 0%, rgba(60,120,255,${magShellOpacity * 0.5}) 50%, transparent 100%)`,
         }}
@@ -30,7 +30,7 @@ export const EarthVisual = memo(function EarthVisual({ intensity, auroraActive, 
       {/* Magnetosphere boundary — visible edge that deforms on CME impact */}
       <svg
         viewBox="0 0 200 200"
-        className="absolute -inset-[18%] w-[136%] h-[136%] pointer-events-none"
+        className="absolute inset-[-18%] w-[136%] h-[136%] pointer-events-none"
         style={{ opacity: 0.12 + (magnetosphereActive ? intensity * 0.35 : 0) }}
       >
         <defs>
@@ -50,7 +50,7 @@ export const EarthVisual = memo(function EarthVisual({ intensity, auroraActive, 
           stroke={magnetosphereActive ? 'rgba(100,160,255,0.45)' : 'rgba(100,160,255,0.15)'}
           strokeWidth={magnetosphereActive ? '1.5' : '0.8'}
           strokeDasharray={magnetosphereActive ? '3 2' : '5 4'}
-          className="transition-all duration-[3000ms]"
+          className="transition-all duration-3000"
         />
         {/* Impact glow on sun-facing side */}
         {magnetosphereActive && (
@@ -65,7 +65,7 @@ export const EarthVisual = memo(function EarthVisual({ intensity, auroraActive, 
       {/* Auroral oval */}
       {auroraActive && (
         <div
-          className="absolute -inset-[5%] rounded-full"
+          className="absolute inset-[-5%] rounded-full"
           style={{
             background: `conic-gradient(from 180deg at 50% 22%, rgba(0,255,170,${auroraOpacity}) 0deg, rgba(0,255,120,${auroraOpacity * 0.8}) 30deg, rgba(100,0,200,${auroraOpacity * 0.6}) 60deg, rgba(168,85,247,${auroraOpacity * 0.4}) 90deg, transparent 130deg, transparent 230deg, rgba(0,200,120,${auroraOpacity * 0.5}) 270deg, rgba(0,255,170,${auroraOpacity * 0.7}) 320deg, rgba(0,255,170,${auroraOpacity}) 360deg)`,
             filter: 'blur(4px)',

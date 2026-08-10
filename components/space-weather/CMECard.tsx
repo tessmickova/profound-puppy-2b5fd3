@@ -16,7 +16,7 @@ export function CMECard({ cme, highlight = false }: Props) {
     <div className={`bg-[#04101e]/90 border rounded-xl p-4 ${
       highlight
         ? 'border-aurora-teal/30 shadow-[0_0_20px_rgba(0,212,255,0.06)]'
-        : 'border-white/[0.08]'
+        : 'border-white/8'
     }`}>
       <div className="flex items-start justify-between gap-2 mb-3">
         <div className="flex items-center gap-2">

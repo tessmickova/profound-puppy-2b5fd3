@@ -52,7 +52,7 @@ export default async function ZemeStranka({ params }: { params: Promise<{ kod: s
         <span className="text-[#2b2723]">{zeme.nazev}</span>
       </nav>
 
-      <header className="mb-10 rounded-3xl border border-[#e8dfd2] bg-white p-8 text-center shadow-sm">
+      <header className="mb-10 rounded-3xl border border-[#e8dfd2] bg-white p-8 text-center shadow-xs">
         <div className="text-6xl">{zeme.vlajka}</div>
         <h1 className="mt-3 [font-family:var(--font-nadpis)] text-4xl">{zeme.nazev}</h1>
         <p className="mx-auto mt-2 max-w-xl text-[#6b6156]">{zeme.poznamka}</p>

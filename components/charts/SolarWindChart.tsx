@@ -143,7 +143,7 @@ export function SolarWindChart({ data, type, label, unit, color, good, goodLabel
   const earthIdx = chartData.length > 6 ? chartData.length - 6 : (chartData.length > 3 ? chartData.length - 3 : null)
 
   return (
-    <div className="bg-[#04101e]/90 border border-white/[0.08] rounded-2xl p-4">
+    <div className="bg-[#04101e]/90 border border-white/8 rounded-2xl p-4">
       <div className="flex items-center justify-between mb-3">
         <div className="text-xs font-mono tracking-[2px] text-slate-400 uppercase">{label}</div>
         <div className="flex items-center gap-3">
@@ -153,7 +153,7 @@ export function SolarWindChart({ data, type, label, unit, color, good, goodLabel
                 {typeof latestValue === 'number' ? latestValue.toFixed(1) : latestValue} {unit}
               </span>
               {isGood && (
-                <span className="text-[9px] bg-green-500/10 text-green-400 px-1.5 py-0.5 rounded border border-green-500/20">
+                <span className="text-[9px] bg-green-500/10 text-green-400 px-1.5 py-0.5 rounded-sm border border-green-500/20">
                   {goodLabel}
                 </span>
               )}

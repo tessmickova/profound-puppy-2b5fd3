@@ -39,7 +39,7 @@ export default function AdminPage() {
           <div className="max-w-6xl mx-auto px-4 h-14 flex items-center">
             <a href="/aurora" className="flex items-center gap-2 no-underline">
               <HuskyLogo size={28} />
-              <span className="font-display text-base font-black tracking-widest bg-gradient-to-r from-aurora-green to-aurora-teal bg-clip-text text-transparent">
+              <span className="font-display text-base font-black tracking-widest bg-linear-to-r from-aurora-green to-aurora-teal bg-clip-text text-transparent">
                 AURORADOG
               </span>
             </a>
@@ -66,7 +66,7 @@ export default function AdminPage() {
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-4">
           <a href="/aurora" className="flex items-center gap-2 no-underline">
             <HuskyLogo size={28} />
-            <span className="font-display text-base font-black tracking-widest bg-gradient-to-r from-aurora-green to-aurora-teal bg-clip-text text-transparent">
+            <span className="font-display text-base font-black tracking-widest bg-linear-to-r from-aurora-green to-aurora-teal bg-clip-text text-transparent">
               AURORADOG
             </span>
           </a>
@@ -87,7 +87,7 @@ export default function AdminPage() {
       {/* ── CONTENT ── */}
       <div className="relative z-10 max-w-6xl mx-auto px-4 py-8">
         <header className="mb-8">
-          <h1 className="font-display text-2xl md:text-3xl font-black tracking-tight bg-gradient-to-r from-aurora-pink to-aurora-purple bg-clip-text text-transparent mb-2">
+          <h1 className="font-display text-2xl md:text-3xl font-black tracking-tight bg-linear-to-r from-aurora-pink to-aurora-purple bg-clip-text text-transparent mb-2">
             🔧 Admin Diagnostics
           </h1>
           <p className="text-sm text-slate-400">
@@ -171,7 +171,7 @@ export default function AdminPage() {
         <AdminSection title="👁 Stupnice viditelnosti — prahy" id="visibility">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-slate-400 border-b border-white/[0.06]">
+              <tr className="text-left text-slate-400 border-b border-white/6">
                 <th className="py-2">Úroveň</th>
                 <th>Label</th>
                 <th>Barva</th>
@@ -182,7 +182,7 @@ export default function AdminPage() {
               {(['none', 'photo_weak', 'photo_medium', 'photo_strong', 'eye_weak', 'eye_strong'] as const).map(level => {
                 const info = VISIBILITY_INFO[level]
                 return (
-                  <tr key={level} className={`border-b border-white/[0.04] ${level === vis ? 'bg-white/[0.03]' : ''}`}>
+                  <tr key={level} className={`border-b border-white/4 ${level === vis ? 'bg-white/3' : ''}`}>
                     <td className="py-1.5 font-mono">{info.icon} {level}</td>
                     <td>{info.label}</td>
                     <td><span className="inline-block w-3 h-3 rounded-full mr-1" style={{ backgroundColor: info.color }} /> {info.color}</td>
@@ -198,7 +198,7 @@ export default function AdminPage() {
         <AdminSection title="🇨🇿 Aurora Likelihood — prahy" id="aurora">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-slate-400 border-b border-white/[0.06]">
+              <tr className="text-left text-slate-400 border-b border-white/6">
                 <th className="py-2">Úroveň</th>
                 <th>Podmínka</th>
                 <th>Label</th>
@@ -216,7 +216,7 @@ export default function AdminPage() {
               ] as const).map(({ level, cond }) => {
                 const info = AURORA_LIKELIHOOD_LABELS[level]
                 return (
-                  <tr key={level} className={`border-b border-white/[0.04] ${level === hero.auroraLikelihood ? 'bg-white/[0.03]' : ''}`}>
+                  <tr key={level} className={`border-b border-white/4 ${level === hero.auroraLikelihood ? 'bg-white/3' : ''}`}>
                     <td className="py-1.5 font-mono">{level}</td>
                     <td className="font-mono text-xs">{cond}</td>
                     <td>{info.label}</td>
@@ -284,7 +284,7 @@ export default function AdminPage() {
         <AdminSection title="📷 Doporučení fotografie — prahy" id="photo">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-slate-400 border-b border-white/[0.06]">
+              <tr className="text-left text-slate-400 border-b border-white/6">
                 <th className="py-2">Podmínka</th>
                 <th>ISO</th>
                 <th>Expozice</th>
@@ -300,7 +300,7 @@ export default function AdminPage() {
                 { cond: 'KP < 2', iso: '—', exp: '—', met: kp < 2 },
                 { cond: 'Darkness < 0.3', iso: '—', exp: '—', met: sun.darkness < 0.3 },
               ].map((r, i) => (
-                <tr key={i} className={`border-b border-white/[0.04] ${r.met ? 'bg-white/[0.03]' : ''}`}>
+                <tr key={i} className={`border-b border-white/4 ${r.met ? 'bg-white/3' : ''}`}>
                   <td className="py-1.5 font-mono">{r.cond}</td>
                   <td>{r.iso}</td>
                   <td>{r.exp}</td>
@@ -315,7 +315,7 @@ export default function AdminPage() {
         <AdminSection title="🗺️ Aktivní fáze cesty (journey stages)" id="stages">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-slate-400 border-b border-white/[0.06]">
+              <tr className="text-left text-slate-400 border-b border-white/6">
                 <th className="py-2">Fáze</th>
                 <th>Podmínka</th>
                 <th>Aktivní?</th>
@@ -329,7 +329,7 @@ export default function AdminPage() {
                 { stage: 'magnetosphere', cond: 'KP ≥ 4 || state = MAGNETOSPHERE_ACTIVE/AURORA_*' },
                 { stage: 'earth', cond: 'state = AURORA_POSSIBLE_CZ || AURORA_LIKELY_CZ' },
               ].map(r => (
-                <tr key={r.stage} className={`border-b border-white/[0.04] ${hero.activeStages.includes(r.stage as any) ? 'bg-white/[0.03]' : ''}`}>
+                <tr key={r.stage} className={`border-b border-white/4 ${hero.activeStages.includes(r.stage as any) ? 'bg-white/3' : ''}`}>
                   <td className="py-1.5 font-mono">{r.stage}</td>
                   <td className="font-mono text-xs">{r.cond}</td>
                   <td>{hero.activeStages.includes(r.stage as any) ? '✅ ANO' : '—'}</td>
@@ -343,7 +343,7 @@ export default function AdminPage() {
         <AdminSection title="📍 CZ lokace v databázi" id="locations">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-slate-400 border-b border-white/[0.06]">
+              <tr className="text-left text-slate-400 border-b border-white/6">
                 <th className="py-2">Místo</th>
                 <th>Lat/Lon</th>
                 <th>Bortle</th>
@@ -354,7 +354,7 @@ export default function AdminPage() {
             </thead>
             <tbody>
               {CZ_LOCATIONS.map(loc => (
-                <tr key={loc.name} className="border-b border-white/[0.04]">
+                <tr key={loc.name} className="border-b border-white/4">
                   <td className="py-1">{loc.name}</td>
                   <td className="font-mono text-xs">{loc.lat.toFixed(2)}, {loc.lon.toFixed(2)}</td>
                   <td className="font-mono">{loc.bortle}</td>
@@ -367,7 +367,7 @@ export default function AdminPage() {
           </table>
         </AdminSection>
 
-        <div className="mt-12 pt-6 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="mt-12 pt-6 border-t border-white/6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-slate-500">
             Admin diagnostics — AuroraDog — data z NOAA SWPC + NASA DONKI
           </p>
@@ -385,8 +385,8 @@ export default function AdminPage() {
 
 function AdminSection({ title, id, children }: { title: string; id: string; children: React.ReactNode }) {
   return (
-    <section id={id} className="mb-6 bg-[#04101e]/60 border border-white/[0.08] rounded-2xl p-5">
-      <h2 className="text-xs font-mono uppercase tracking-[3px] text-aurora-purple/80 mb-4 pb-2 border-b border-white/[0.06] flex items-center gap-3">
+    <section id={id} className="mb-6 bg-[#04101e]/60 border border-white/8 rounded-2xl p-5">
+      <h2 className="text-xs font-mono uppercase tracking-[3px] text-aurora-purple/80 mb-4 pb-2 border-b border-white/6 flex items-center gap-3">
         {title} <span className="flex-1 h-px bg-white/8" />
       </h2>
       <div className="space-y-1.5">{children}</div>
@@ -409,7 +409,7 @@ function ThresholdTable({ rows }: { rows: { condition: string; result: string; m
   return (
     <table className="w-full text-sm">
       <thead>
-        <tr className="text-left text-slate-400 border-b border-white/[0.06]">
+        <tr className="text-left text-slate-400 border-b border-white/6">
           <th className="py-2">Podmínka</th>
           <th>Výsledek</th>
           <th>Splněno?</th>
@@ -417,7 +417,7 @@ function ThresholdTable({ rows }: { rows: { condition: string; result: string; m
       </thead>
       <tbody>
         {rows.map((r, i) => (
-          <tr key={i} className={`border-b border-white/[0.04] ${r.met ? 'bg-green-500/[0.05]' : ''}`}>
+          <tr key={i} className={`border-b border-white/4 ${r.met ? 'bg-green-500/5' : ''}`}>
             <td className="py-1.5 font-mono text-xs">{r.condition}</td>
             <td className="font-mono text-xs">{r.result}</td>
             <td>{r.met ? '✅' : '—'}</td>

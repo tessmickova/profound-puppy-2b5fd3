@@ -52,7 +52,7 @@ export default function RodinaProfil() {
 
   return (
     <Rozvrzeni>
-      <section className="mb-8 rounded-3xl border border-[#e8dfd2] bg-white p-6 shadow-sm">
+      <section className="mb-8 rounded-3xl border border-[#e8dfd2] bg-white p-6 shadow-xs">
         <h2 className="[font-family:var(--font-nadpis)] text-xl font-bold">Kdo už doma je</h2>
         <p className="mt-1 text-sm text-[#8a7f71]">
           Naklikejte svou rodinu včetně zvířat. Profil se ukládá jen ve vašem prohlížeči —
@@ -67,7 +67,7 @@ export default function RodinaProfil() {
             value={jmeno}
             onChange={e => setJmeno(e.target.value)}
             placeholder="jméno — např. Jana nebo Rex"
-            className="w-56 max-w-full rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-4 py-2 text-sm outline-none focus:border-[#2b2723]"
+            className="w-56 max-w-full rounded-full border border-[#e8dfd2] bg-[#faf6ef] px-4 py-2 text-sm outline-hidden focus:border-[#2b2723]"
           />
           <div className="w-44">
             <Vyber

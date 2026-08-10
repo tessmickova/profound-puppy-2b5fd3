@@ -38,7 +38,7 @@ export function SolarTab({ flares, cme, donki }: Props) {
         </div>
 
         {flares.length === 0 ? (
-          <div className="bg-[#04101e]/90 border border-white/[0.08] rounded-2xl p-6 text-center text-slate-500 text-sm">
+          <div className="bg-[#04101e]/90 border border-white/8 rounded-2xl p-6 text-center text-slate-500 text-sm">
             Žádné sluneční erupce za posledních 7 dní
           </div>
         ) : (
@@ -46,7 +46,7 @@ export function SolarTab({ flares, cme, donki }: Props) {
             {flares.slice(0, 12).map(flare => (
               <div
                 key={flare.flrID}
-                className="bg-[#04101e]/90 border border-white/[0.08] rounded-xl p-4"
+                className="bg-[#04101e]/90 border border-white/8 rounded-xl p-4"
               >
                 <div className="flex items-center justify-between mb-2">
                   <span className={clsx('px-2 py-0.5 rounded-lg text-xs font-display font-bold border', getFlareColor(flare.classType))}>
@@ -92,7 +92,7 @@ export function SolarTab({ flares, cme, donki }: Props) {
         </div>
 
         {cme.length === 0 ? (
-          <div className="bg-[#04101e]/90 border border-white/[0.08] rounded-2xl p-6 text-center text-slate-500 text-sm">
+          <div className="bg-[#04101e]/90 border border-white/8 rounded-2xl p-6 text-center text-slate-500 text-sm">
             Žádné CME události za posledních 7 dní
           </div>
         ) : (
@@ -100,7 +100,7 @@ export function SolarTab({ flares, cme, donki }: Props) {
             {cme.map(event => (
               <div
                 key={event.activityID}
-                className="bg-[#04101e]/90 border border-white/[0.08] rounded-xl p-4"
+                className="bg-[#04101e]/90 border border-white/8 rounded-xl p-4"
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">

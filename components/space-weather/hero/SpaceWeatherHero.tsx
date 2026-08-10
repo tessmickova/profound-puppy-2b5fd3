@@ -78,7 +78,7 @@ export function SpaceWeatherHero({ data, isLoading }: Props) {
 
       {/* Subtle bottom fade — thin, doesn't cover transit path */}
       <div className="absolute bottom-0 left-0 right-0 h-8 z-10
-                      bg-gradient-to-t from-[#030810] to-transparent pointer-events-none" />
+                      bg-linear-to-t from-[#030810] to-transparent pointer-events-none" />
     </section>
   )
 }

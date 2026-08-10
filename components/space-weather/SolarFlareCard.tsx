@@ -19,7 +19,7 @@ const FLARE_STYLES: Record<string, { badge: string; ring: string }> = {
 
 function getFlareStyle(classType: string) {
   const letter = classType.charAt(0).toUpperCase()
-  return FLARE_STYLES[letter] ?? { badge: 'default' as const, ring: 'border-white/[0.08]' }
+  return FLARE_STYLES[letter] ?? { badge: 'default' as const, ring: 'border-white/8' }
 }
 
 export function SolarFlareCard({ flares }: Props) {

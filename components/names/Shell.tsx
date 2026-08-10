@@ -30,7 +30,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
     <div className="svetjmen-shell min-h-screen bg-[#faf6ef] pb-16 text-[#2b2723] lg:pb-0">
       {/* Reklama: postranní sloupce na širokém okně, jinak lišta nahoře. */}
       <ReklamniRam />
-      <header className="hlavicka sticky top-0 z-40 border-b border-[#e8dfd2] bg-[#faf6ef]/92 backdrop-blur">
+      <header className="hlavicka sticky top-0 z-40 border-b border-[#e8dfd2] bg-[#faf6ef]/92 backdrop-blur-sm">
         <div className="mx-auto flex max-w-6xl items-center gap-2 px-3 py-2.5 sm:px-4">
           <Link href="/" className="flex shrink-0 items-center gap-1.5 [font-family:var(--font-nadpis)] text-base font-extrabold tracking-tight sm:text-lg">
             <PawPrint size={20} className="text-[#d97757]" aria-hidden />

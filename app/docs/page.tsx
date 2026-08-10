@@ -20,7 +20,7 @@ export default function DocsPage() {
         <div className="max-w-4xl mx-auto px-4 h-14 flex items-center gap-4">
           <a href="/aurora" className="flex items-center gap-2 no-underline">
             <HuskyLogo size={28} />
-            <span className="font-display text-base font-black tracking-widest bg-gradient-to-r from-aurora-green to-aurora-teal bg-clip-text text-transparent">
+            <span className="font-display text-base font-black tracking-widest bg-linear-to-r from-aurora-green to-aurora-teal bg-clip-text text-transparent">
               AURORADOG
             </span>
           </a>
@@ -41,7 +41,7 @@ export default function DocsPage() {
       {/* ── CONTENT ── */}
       <div className="relative z-10 max-w-4xl mx-auto px-4 py-12">
         <header className="mb-12">
-          <h1 className="font-display text-3xl md:text-4xl font-black tracking-tight bg-gradient-to-r from-aurora-green to-aurora-teal bg-clip-text text-transparent mb-3">
+          <h1 className="font-display text-3xl md:text-4xl font-black tracking-tight bg-linear-to-r from-aurora-green to-aurora-teal bg-clip-text text-transparent mb-3">
             Slovníček kosmického počasí
           </h1>
           <p className="text-slate-400 text-sm max-w-xl">
@@ -50,7 +50,7 @@ export default function DocsPage() {
         </header>
 
         {/* TOC */}
-        <div className="bg-[#04101e]/80 border border-white/[0.08] rounded-2xl p-5 mb-12">
+        <div className="bg-[#04101e]/80 border border-white/8 rounded-2xl p-5 mb-12">
           <h2 className="text-xs font-mono uppercase tracking-[3px] text-aurora-purple/80 mb-3 flex items-center gap-3">
             Obsah <span className="flex-1 h-px bg-white/8" />
           </h2>
@@ -255,7 +255,7 @@ export default function DocsPage() {
         </div>
 
         {/* Footer */}
-        <div className="mt-16 pt-8 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="mt-16 pt-8 border-t border-white/6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-slate-400">
             AuroraDog — Data z{' '}
             <Ext href="https://www.swpc.noaa.gov">NOAA SWPC</Ext> a{' '}
@@ -291,7 +291,7 @@ const TOC = [
 
 function Section({ id, icon, title, children }: { id: string; icon: string; title: string; children: React.ReactNode }) {
   return (
-    <section id={id} className="scroll-mt-20 bg-[#04101e]/60 border border-white/[0.08] rounded-2xl p-5 md:p-6">
+    <section id={id} className="scroll-mt-20 bg-[#04101e]/60 border border-white/8 rounded-2xl p-5 md:p-6">
       <h2 className="text-lg md:text-xl font-bold text-slate-100 mb-3 flex items-center gap-2">
         <span className="text-xl">{icon}</span> {title}
       </h2>
@@ -304,7 +304,7 @@ function Section({ id, icon, title, children }: { id: string; icon: string; titl
 
 function InfoBox({ children }: { children: React.ReactNode }) {
   return (
-    <ul className="bg-[#03080f]/60 border border-white/[0.06] rounded-xl p-4 space-y-1.5 text-sm text-slate-200 list-none">
+    <ul className="bg-[#03080f]/60 border border-white/6 rounded-xl p-4 space-y-1.5 text-sm text-slate-200 list-none">
       {children}
     </ul>
   )

@@ -212,7 +212,7 @@ export function ObservingConditions({ kp, bz: bzRaw = 0 }: Props) {
       </div>
 
       {/* Region selector — buttons */}
-      <div className="bg-[#04101e]/90 border border-white/[0.08] rounded-2xl p-4 mb-4">
+      <div className="bg-[#04101e]/90 border border-white/8 rounded-2xl p-4 mb-4">
         <div className="flex flex-wrap items-center gap-2 mb-3">
           <span className="font-display text-xs font-bold tracking-widest text-slate-400 uppercase">Kraj</span>
           <span className="flex items-center gap-2.5 ml-2 text-[9px] text-slate-600">
@@ -234,8 +234,8 @@ export function ObservingConditions({ kp, bz: bzRaw = 0 }: Props) {
             const isSelected = selectedRegion === r
             // Unselected colors: null = loading (neutral), good = green, ok = light, poor = dim
             const unselectedText = suit === 'good' ? 'text-green-400' : suit === 'ok' ? 'text-slate-300' : suit === 'poor' ? 'text-slate-600' : 'text-slate-400'
-            const unselectedBorder = suit === 'good' ? 'border-green-500/20' : suit === 'poor' ? 'border-white/[0.04]' : 'border-white/[0.06]'
-            const unselectedBg = suit === 'good' ? 'bg-green-500/[0.06]' : suit === 'poor' ? 'bg-white/[0.02]' : 'bg-white/[0.04]'
+            const unselectedBorder = suit === 'good' ? 'border-green-500/20' : suit === 'poor' ? 'border-white/4' : 'border-white/6'
+            const unselectedBg = suit === 'good' ? 'bg-green-500/6' : suit === 'poor' ? 'bg-white/2' : 'bg-white/4'
             const cloud = regionCloudMap[r]
             const tooltip = suit === 'good' ? `Příznivé — oblačnost ${cloud ?? '?'}%`
               : suit === 'ok' ? `Přijatelné — oblačnost ${cloud ?? '?'}%`
@@ -261,7 +261,7 @@ export function ObservingConditions({ kp, bz: bzRaw = 0 }: Props) {
       </div>
 
       {/* District selector — buttons */}
-      <div className="bg-[#04101e]/90 border border-white/[0.08] rounded-2xl p-4 mb-4">
+      <div className="bg-[#04101e]/90 border border-white/8 rounded-2xl p-4 mb-4">
         <div className="flex items-center gap-2 mb-3">
           <span className="font-display text-xs font-bold tracking-widest text-slate-400 uppercase">Okres</span>
         </div>
@@ -270,8 +270,8 @@ export function ObservingConditions({ kp, bz: bzRaw = 0 }: Props) {
             const suit = districtSuitability[d]
             const isSelected = selectedDistrict === d
             const unselectedText = suit === 'good' ? 'text-green-400' : suit === 'ok' ? 'text-slate-300' : suit === 'poor' ? 'text-slate-600' : 'text-slate-400'
-            const unselectedBorder = suit === 'good' ? 'border-green-500/20' : suit === 'poor' ? 'border-white/[0.04]' : 'border-white/[0.06]'
-            const unselectedBg = suit === 'good' ? 'bg-green-500/[0.06]' : suit === 'poor' ? 'bg-white/[0.02]' : 'bg-white/[0.04]'
+            const unselectedBorder = suit === 'good' ? 'border-green-500/20' : suit === 'poor' ? 'border-white/4' : 'border-white/6'
+            const unselectedBg = suit === 'good' ? 'bg-green-500/6' : suit === 'poor' ? 'bg-white/2' : 'bg-white/4'
             return (
               <button
                 key={d}
@@ -343,9 +343,9 @@ function CityCard({ location, kp, bz, now, cloudCover, isExpanded, onToggle, fmt
   const northFree = Math.round((1 - location.northHorizonBlock) * 100)
 
   return (
-    <div className="bg-[#04101e]/90 border border-white/[0.08] rounded-2xl overflow-hidden">
+    <div className="bg-[#04101e]/90 border border-white/8 rounded-2xl overflow-hidden">
       {/* Compact summary row — always visible */}
-      <button onClick={onToggle} className="w-full px-4 py-3 flex items-center gap-3 hover:bg-white/[0.02] transition-colors text-left">
+      <button onClick={onToggle} className="w-full px-4 py-3 flex items-center gap-3 hover:bg-white/2 transition-colors text-left">
         {/* Score ring (tiny) */}
         <div className="relative w-10 h-10 shrink-0">
           <svg viewBox="0 0 40 40" className="w-full h-full -rotate-90">
@@ -378,7 +378,7 @@ function CityCard({ location, kp, bz, now, cloudCover, isExpanded, onToggle, fmt
 
       {/* Expanded detail */}
       {isExpanded && (
-        <div className="px-4 pb-4 pt-1 border-t border-white/[0.06] space-y-4">
+        <div className="px-4 pb-4 pt-1 border-t border-white/6 space-y-4">
           {/* Probability + sky info row */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {/* Aurora probability */}
@@ -489,7 +489,7 @@ function CityCard({ location, kp, bz, now, cloudCover, isExpanded, onToggle, fmt
           </div>
 
           {/* Photo recommendation */}
-          <div className="pt-2 border-t border-white/[0.06]">
+          <div className="pt-2 border-t border-white/6">
             <div className="flex items-center gap-2 mb-2">
               <span className="text-sm">📸</span>
               <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider">Focení</span>
@@ -509,7 +509,7 @@ function CityCard({ location, kp, bz, now, cloudCover, isExpanded, onToggle, fmt
                   { l: 'f/', v: conditions.photoRec.aperture },
                   { l: 'mm', v: conditions.photoRec.focalLength },
                 ].map(s => (
-                  <span key={s.l} className="text-[10px] bg-white/[0.04] rounded px-2 py-1 border border-white/[0.06]">
+                  <span key={s.l} className="text-[10px] bg-white/4 rounded-sm px-2 py-1 border border-white/6">
                     <span className="text-slate-500">{s.l}</span> <span className="font-mono text-slate-200">{s.v}</span>
                   </span>
                 ))}
@@ -527,7 +527,7 @@ function CityCard({ location, kp, bz, now, cloudCover, isExpanded, onToggle, fmt
 
           {/* Observation spots */}
           {OBSERVATION_SPOTS[location.name] && (
-            <div className="pt-2 border-t border-white/[0.06]">
+            <div className="pt-2 border-t border-white/6">
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-sm">📍</span>
                 <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider">Top 5 míst k pozorování</span>
@@ -538,7 +538,7 @@ function CityCard({ location, kp, bz, now, cloudCover, isExpanded, onToggle, fmt
                     <span className={clsx(
                       'shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold mt-0.5',
                       i === 0 ? 'bg-aurora-green/20 text-aurora-green border border-aurora-green/30'
-                        : 'bg-white/[0.06] text-slate-400 border border-white/[0.08]'
+                        : 'bg-white/6 text-slate-400 border border-white/8'
                     )}>
                       {i + 1}
                     </span>

@@ -111,7 +111,7 @@ export function LiveStatusPanel({ data }: Props) {
 
 
   return (
-    <div className="bg-[#04101e] border-b border-white/[0.06]">
+    <div className="bg-[#04101e] border-b border-white/6">
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-5">
         {/* Top row: Badge + LIVE time */}
         <div className="flex flex-wrap items-center justify-between gap-2 mb-5">
@@ -199,7 +199,7 @@ export function LiveStatusPanel({ data }: Props) {
           )}
 
           {/* Vertical divider */}
-          <div className="hidden md:block w-px self-stretch bg-white/[0.08] my-1" />
+          <div className="hidden md:block w-px self-stretch bg-white/8 my-1" />
 
           {/* Metrics — two groups filling remaining width */}
           <div className="flex-1 min-w-0 space-y-4">

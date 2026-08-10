@@ -22,7 +22,7 @@ const STATE_CONFIG: Record<SpaceWeatherState, { label: string; color: string; bg
 export const StageBadge = memo(function StageBadge({ state }: Props) {
   const cfg = STATE_CONFIG[state]
   return (
-    <span className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-mono font-semibold tracking-wide border backdrop-blur-sm ${cfg.color} ${cfg.bg} ${cfg.border}`}>
+    <span className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-mono font-semibold tracking-wide border backdrop-blur-xs ${cfg.color} ${cfg.bg} ${cfg.border}`}>
       {(state === 'AURORA_LIKELY_CZ' || state === 'AURORA_POSSIBLE_CZ') && (
         <span className="w-1.5 h-1.5 rounded-full bg-aurora-green shadow-[0_0_6px_#00ffaa] animate-pulse" />
       )}

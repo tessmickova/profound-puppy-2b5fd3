@@ -143,7 +143,7 @@ export function CommunitySightings({ kp, bz }: Props) {
   }, [nights, tonight])
 
   return (
-    <div className="bg-[#04101e]/90 border border-white/[0.08] rounded-2xl p-4">
+    <div className="bg-[#04101e]/90 border border-white/8 rounded-2xl p-4">
       <div className="text-xs font-mono tracking-[2px] text-slate-500 uppercase mb-4 flex items-center gap-2">
         👁️ Hlášení komunity <span className="flex-1 h-px bg-white/5" />
       </div>
@@ -162,8 +162,8 @@ export function CommunitySightings({ kp, bz }: Props) {
               className={clsx(
                 'rounded-xl p-3 transition-colors',
                 day.isTonight
-                  ? 'border-2 border-aurora-teal/30 bg-aurora-teal/[0.04]'
-                  : 'border border-white/[0.06] bg-white/[0.02]',
+                  ? 'border-2 border-aurora-teal/30 bg-aurora-teal/4'
+                  : 'border border-white/6 bg-white/2',
               )}
             >
               {/* Date label */}
@@ -195,7 +195,7 @@ export function CommunitySightings({ kp, bz }: Props) {
                     'flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg text-[10px] font-bold transition-all border',
                     rep.seen
                       ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 cursor-default'
-                      : 'bg-white/[0.04] border-white/[0.08] text-slate-400 hover:bg-emerald-500/10 hover:border-emerald-500/20 hover:text-emerald-400',
+                      : 'bg-white/4 border-white/8 text-slate-400 hover:bg-emerald-500/10 hover:border-emerald-500/20 hover:text-emerald-400',
                   )}
                 >
                   👁️ {rep.seen ? 'Hlášeno ✓' : 'Viděl/a jsem'}
@@ -207,7 +207,7 @@ export function CommunitySightings({ kp, bz }: Props) {
                     'flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg text-[10px] font-bold transition-all border',
                     rep.photo
                       ? 'bg-violet-500/10 border-violet-500/30 text-violet-400 cursor-default'
-                      : 'bg-white/[0.04] border-white/[0.08] text-slate-400 hover:bg-violet-500/10 hover:border-violet-500/20 hover:text-violet-400',
+                      : 'bg-white/4 border-white/8 text-slate-400 hover:bg-violet-500/10 hover:border-violet-500/20 hover:text-violet-400',
                   )}
                 >
                   📸 {rep.photo ? 'Hlášeno ✓' : 'Vyfotil/a jsem'}

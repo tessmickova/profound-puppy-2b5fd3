@@ -12,7 +12,7 @@ export function ViewModeSwitch({ mode, onToggle }: Props) {
   return (
     <button
       onClick={onToggle}
-      className="flex items-center gap-0 rounded-lg border border-white/[0.08] bg-white/[0.03] p-0.5 transition-colors hover:border-white/[0.15]"
+      className="flex items-center gap-0 rounded-lg border border-white/8 bg-white/3 p-0.5 transition-colors hover:border-white/15"
       title={mode === 'basic' ? 'Přepnout na pokročilý režim' : 'Přepnout na základní režim'}
     >
       <span

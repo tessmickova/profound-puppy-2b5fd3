@@ -135,7 +135,7 @@ export default function DetailPanel() {
             <h3>Líbivost</h3>
             <div className="flex items-center gap-3">
               <div className="h-2 flex-1 overflow-hidden rounded-full bg-[#f3ecdf]">
-                <div className="h-full rounded-full bg-gradient-to-r from-[#e7a15c] to-[#d97757]" style={{ width: `${jmeno.popularita}%` }} />
+                <div className="h-full rounded-full bg-linear-to-r from-[#e7a15c] to-[#d97757]" style={{ width: `${jmeno.popularita}%` }} />
               </div>
               <span className="[font-family:var(--font-nadpis)] text-lg font-extrabold text-[#d97757]">
                 {jmeno.popularita}

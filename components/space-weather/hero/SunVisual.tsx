@@ -18,7 +18,7 @@ export const SunVisual = memo(function SunVisual({ intensity, hasRecentEvent }: 
 
   return (
     <div
-      className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[55%] pointer-events-none select-none w-[55vh] h-[55vh] min-w-[260px] min-h-[260px] max-w-[600px] max-h-[600px] md:w-[70vh] md:h-[70vh] md:min-w-[400px] md:min-h-[400px] md:max-w-[800px] md:max-h-[800px]"
+      className="absolute left-0 top-1/2 -translate-y-1/2 translate-x-[-55%] pointer-events-none select-none w-[55vh] h-[55vh] min-w-[260px] min-h-[260px] max-w-[600px] max-h-[600px] md:w-[70vh] md:h-[70vh] md:min-w-[400px] md:min-h-[400px] md:max-w-[800px] md:max-h-[800px]"
       role="img"
       aria-label="Slunce"
     >

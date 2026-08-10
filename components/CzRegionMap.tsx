@@ -118,9 +118,9 @@ export function CzRegionMap({ selectedRegion, onSelectRegion, selectedLocation, 
           />
         </svg>
         <div className="flex items-center justify-center gap-2 mt-1 text-[9px] font-mono text-slate-500">
-          <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-sm bg-[#00ffaa]" />tmavá</span>
-          <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-sm bg-[#eab308]" />střed</span>
-          <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-sm bg-[#f97316]" />světlá</span>
+          <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-xs bg-aurora-green" />tmavá</span>
+          <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-xs bg-[#eab308]" />střed</span>
+          <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-xs bg-[#f97316]" />světlá</span>
         </div>
       </div>
 
@@ -147,7 +147,7 @@ export function CzRegionMap({ selectedRegion, onSelectRegion, selectedLocation, 
                         'px-2 py-0.5 rounded-md text-[10px] font-medium transition-all border',
                         selectedLocation.name === loc.name
                           ? 'bg-aurora-teal/10 border-aurora-teal/30 text-aurora-teal'
-                          : 'border-white/[0.06] text-slate-300 hover:bg-white/5'
+                          : 'border-white/6 text-slate-300 hover:bg-white/5'
                       )}
                     >
                       {loc.name}
@@ -170,7 +170,7 @@ export function CzRegionMap({ selectedRegion, onSelectRegion, selectedLocation, 
                         'px-2 py-0.5 rounded-md text-[10px] font-medium transition-all border',
                         selectedLocation.name === loc.name
                           ? 'bg-green-500/10 border-green-500/30 text-green-400'
-                          : 'border-white/[0.06] text-slate-300 hover:bg-white/5'
+                          : 'border-white/6 text-slate-300 hover:bg-white/5'
                       )}
                     >
                       {loc.name}
@@ -182,7 +182,7 @@ export function CzRegionMap({ selectedRegion, onSelectRegion, selectedLocation, 
             )}
 
             {selectedLocation.region === selectedRegion && (
-              <div className="mt-2 pt-2 border-t border-white/[0.06]">
+              <div className="mt-2 pt-2 border-t border-white/6">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-xs">{selectedLocation.isCity ? '🏙️' : '🌲'}</span>
                   <span className="text-xs font-bold text-slate-100">{selectedLocation.name}</span>

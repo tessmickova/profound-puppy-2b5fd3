@@ -93,7 +93,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center gap-4">
           <a href="/aurora" className="flex items-center gap-2 no-underline">
             <HuskyLogo size={28} />
-            <span className="font-display text-base font-black tracking-widest bg-gradient-to-r from-aurora-green to-aurora-teal bg-clip-text text-transparent">
+            <span className="font-display text-base font-black tracking-widest bg-linear-to-r from-aurora-green to-aurora-teal bg-clip-text text-transparent">
               AURORADOG
             </span>
           </a>
@@ -134,7 +134,7 @@ export default function Home() {
                 'p-1.5 rounded-lg border transition-all',
                 isLarge
                   ? 'border-aurora-teal/30 bg-aurora-teal/10 text-aurora-teal'
-                  : 'border-white/[0.08] text-slate-400 hover:text-slate-200 hover:bg-white/5'
+                  : 'border-white/8 text-slate-400 hover:text-slate-200 hover:bg-white/5'
               )}
               title={isLarge ? 'Normální velikost písma' : 'Větší písmo'}
             >
@@ -148,7 +148,7 @@ export default function Home() {
                 'p-1.5 rounded-lg border transition-all',
                 isLight
                   ? 'border-amber-400/30 bg-amber-400/10 text-amber-400'
-                  : 'border-white/[0.08] text-slate-400 hover:text-slate-200 hover:bg-white/5'
+                  : 'border-white/8 text-slate-400 hover:text-slate-200 hover:bg-white/5'
               )}
               title={isLight ? 'Tmavý režim' : 'Světlý režim'}
             >
@@ -306,7 +306,7 @@ export default function Home() {
       <NotifyModal open={notifyOpen} onClose={() => setNotifyOpen(false)} />
 
       {/* FOOTER */}
-      <footer className="relative z-10 border-t border-white/[0.06] bg-[#03080f]/95 backdrop-blur-sm">
+      <footer className="relative z-10 border-t border-white/6 bg-[#03080f]/95 backdrop-blur-xs">
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <HuskyLogo size={22} />

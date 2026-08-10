@@ -434,7 +434,7 @@ export function DualAnalysis({ kp, bz, swSpeed, swDensity, hpiCurrent, dstCurren
         if (magnetosphereOpen)
           now += ` IMF Bz ${b.toFixed(0)} nT jižní orientace ${bzMin} min — reconnexe na magnetopauze probíhá.`
         if (h >= 50) now += ` HP(N) ${Math.round(h)} GW — ovál se rozšiřuje.`
-        if (dst <= -30) now += ` Dst ${dst} nT indikuje probíhající ring current injection.`
+        if (dst <= -30) now += ` Dst ${dst} nT indikuje probíhající ring-3 current injection.`
         if (b < -5 && bzMin >= 30)
           next = 'Stabilní jižní Bz udržuje energy loading. Při nárůstu KP nad 5 se zvyšuje pravděpodobnost záře z ČR.'
         else if (b < -5)
@@ -513,17 +513,17 @@ export function DualAnalysis({ kp, bz, swSpeed, swDensity, hpiCurrent, dstCurren
       }}
     >
       {/* ─── Header ─── */}
-      <div className="flex items-center justify-between px-5 py-2 border-b border-emerald-500/10 bg-emerald-500/[0.04]">
+      <div className="flex items-center justify-between px-5 py-2 border-b border-emerald-500/10 bg-emerald-500/4">
         <div className="flex items-center gap-2">
           <span className="inline-block w-2 h-2 rounded-full bg-green-400 shadow-[0_0_8px_#4ade80] animate-pulse" />
           <span className="text-[10px] font-mono font-bold tracking-widest text-green-400 uppercase">Podmínky pro záři</span>
         </div>
-        <div className="flex rounded-lg overflow-hidden border border-white/[0.08] text-[9px] font-mono">
+        <div className="flex rounded-lg overflow-hidden border border-white/8 text-[9px] font-mono">
           <button
             onClick={() => setView('l1')}
             className={clsx(
               'px-2.5 py-1 transition-all flex items-center gap-1',
-              view === 'l1' ? 'bg-[#00d4ff]/15 text-[#00d4ff]' : 'text-slate-500 hover:text-slate-300',
+              view === 'l1' ? 'bg-aurora-teal/15 text-aurora-teal' : 'text-slate-500 hover:text-slate-300',
             )}
           >
             📡 L1
@@ -532,8 +532,8 @@ export function DualAnalysis({ kp, bz, swSpeed, swDensity, hpiCurrent, dstCurren
           <button
             onClick={() => setView('earth')}
             className={clsx(
-              'px-2.5 py-1 transition-all border-l border-white/[0.08] flex items-center gap-1',
-              view === 'earth' ? 'bg-[#00ffaa]/10 text-[#00ffaa]' : 'text-slate-500 hover:text-slate-300',
+              'px-2.5 py-1 transition-all border-l border-white/8 flex items-center gap-1',
+              view === 'earth' ? 'bg-aurora-green/10 text-aurora-green' : 'text-slate-500 hover:text-slate-300',
             )}
           >
             🌍 Země
@@ -583,12 +583,12 @@ export function DualAnalysis({ kp, bz, swSpeed, swDensity, hpiCurrent, dstCurren
                     {visInfo.label}
                   </span>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded" style={{ color: visInfo.color, background: `${visInfo.color}12` }}>
+                    <span className="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded-sm" style={{ color: visInfo.color, background: `${visInfo.color}12` }}>
                       KP {kp.toFixed(1)}
                     </span>
                     {expert.trend !== 'stable' && (
                       <span className={clsx(
-                        'text-[10px] font-mono px-1.5 py-0.5 rounded',
+                        'text-[10px] font-mono px-1.5 py-0.5 rounded-sm',
                         expert.trend === 'falling' ? 'text-green-400 bg-green-500/8' : 'text-orange-400 bg-orange-500/8'
                       )}>
                         {expert.trend === 'falling' ? '↓ Bz zlepšení' : '↑ Bz zhoršení'}
@@ -654,7 +654,7 @@ export function DualAnalysis({ kp, bz, swSpeed, swDensity, hpiCurrent, dstCurren
           {/* L1 vs Earth comparison */}
           {l1Vis !== earthVis && (
             <div className="mt-3">
-              <div className="text-[9px] font-mono px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.05] inline-flex items-center gap-1.5">
+              <div className="text-[9px] font-mono px-3 py-2 rounded-lg bg-white/3 border border-white/5 inline-flex items-center gap-1.5">
                 <span className="text-slate-500">🌍 Země:</span>
                 <span className="font-bold" style={{ color: VISIBILITY_INFO[earthVis].color }}>{VISIBILITY_INFO[earthVis].label}</span>
                 <span className="text-slate-600 mx-0.5">→</span>
@@ -665,14 +665,14 @@ export function DualAnalysis({ kp, bz, swSpeed, swDensity, hpiCurrent, dstCurren
           )}
 
           {/* Effective KP bar */}
-          <div className="mt-3 rounded-xl bg-white/[0.02] border border-white/[0.05] p-3">
+          <div className="mt-3 rounded-xl bg-white/2 border border-white/5 p-3">
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[9px] font-mono text-slate-500 uppercase tracking-wider">Efektivní KP</span>
               <span className="text-sm font-display font-black" style={{ color: visInfo.color }}>
                 {activeEff.effectiveKp.toFixed(1)}
               </span>
             </div>
-            <div className="relative h-2.5 bg-white/[0.04] rounded-full mb-2">
+            <div className="relative h-2.5 bg-white/4 rounded-full mb-2">
               <div
                 className="absolute inset-y-0 left-0 rounded-full transition-all duration-700"
                 style={{
@@ -688,7 +688,7 @@ export function DualAnalysis({ kp, bz, swSpeed, swDensity, hpiCurrent, dstCurren
             {activeEff.contributions.length > 1 && (
               <div className="flex flex-wrap gap-1">
                 {activeEff.contributions.map((c, i) => (
-                  <span key={i} className="text-[9px] font-mono px-1.5 py-0.5 rounded" style={{
+                  <span key={i} className="text-[9px] font-mono px-1.5 py-0.5 rounded-sm" style={{
                     backgroundColor: c.value > 0 ? 'rgba(0,255,170,0.08)' : c.value < 0 ? 'rgba(255,61,154,0.08)' : 'rgba(255,255,255,0.04)',
                     color: c.value > 0 ? '#00ffaa' : c.value < 0 ? '#ff3d9a' : '#64748b',
                   }}>
@@ -710,10 +710,10 @@ export function DualAnalysis({ kp, bz, swSpeed, swDensity, hpiCurrent, dstCurren
         </div>
 
         {/* DIVIDER */}
-        <div className="hidden md:block w-px bg-gradient-to-b from-transparent via-white/[0.08] to-transparent my-4" />
+        <div className="hidden md:block w-px bg-linear-to-b from-transparent via-white/8 to-transparent my-4" />
 
         {/* RIGHT: Checklist + expert explanation */}
-        <div className="p-5 pb-4 border-t md:border-t-0 border-white/[0.05]">
+        <div className="p-5 pb-4 border-t md:border-t-0 border-white/5">
           <div className="flex items-center justify-between mb-3">
             <span className="text-[9px] font-mono text-slate-500 uppercase tracking-[2px]">🎯 Checklist podmínek</span>
             <span
@@ -747,7 +747,7 @@ export function DualAnalysis({ kp, bz, swSpeed, swDensity, hpiCurrent, dstCurren
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="text-[11px] font-semibold text-slate-300">{item.label}</span>
-                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded" style={{
+                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-sm" style={{
                       backgroundColor: item.met ? 'rgba(0,255,170,0.1)' : item.partial ? 'rgba(255,165,0,0.08)' : 'rgba(100,116,139,0.08)',
                       color: sColor(item.status),
                     }}>
@@ -767,14 +767,14 @@ export function DualAnalysis({ kp, bz, swSpeed, swDensity, hpiCurrent, dstCurren
       </div>
 
       {/* ─── Combination guide (full width, expandable) ─── */}
-      <div className="px-5 border-t border-white/[0.04]">
+      <div className="px-5 border-t border-white/4">
         <button
           onClick={() => setShowCombos(!showCombos)}
           className="w-full text-[9px] font-mono text-slate-500 hover:text-slate-300 transition-colors flex items-center gap-2 py-2.5"
         >
-          <span className="flex-1 h-px bg-white/[0.04]" />
+          <span className="flex-1 h-px bg-white/4" />
           {showCombos ? '▾' : '▸'} Jaké kombinace stačí na záři?
-          <span className="flex-1 h-px bg-white/[0.04]" />
+          <span className="flex-1 h-px bg-white/4" />
         </button>
         {showCombos && (
           <div className="pb-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
@@ -809,21 +809,21 @@ export function DualAnalysis({ kp, bz, swSpeed, swDensity, hpiCurrent, dstCurren
 
       {/* ─── Live log (48h) ─── */}
       {statusLog.length > 0 && (
-        <div className="border-t border-white/[0.05]">
+        <div className="border-t border-white/5">
           <div className="px-5 pt-2.5 pb-1.5 flex items-center justify-between">
             <span className="text-[9px] font-mono tracking-[2px] text-slate-500 uppercase">📋 Vývoj situace (48h)</span>
-            <div className="flex rounded-lg overflow-hidden border border-white/[0.08] text-[9px] font-mono">
+            <div className="flex rounded-lg overflow-hidden border border-white/8 text-[9px] font-mono">
               <button
                 onClick={() => setLogView('both')}
                 className={clsx('px-2 py-0.5', logView === 'both' ? 'bg-white/10 text-slate-200' : 'text-slate-500')}
               >Oba</button>
               <button
                 onClick={() => setLogView('l1')}
-                className={clsx('px-2 py-0.5 border-l border-white/[0.08]', logView === 'l1' ? 'bg-[#00d4ff]/15 text-[#00d4ff]' : 'text-slate-500')}
+                className={clsx('px-2 py-0.5 border-l border-white/8', logView === 'l1' ? 'bg-aurora-teal/15 text-aurora-teal' : 'text-slate-500')}
               >📡 L1</button>
               <button
                 onClick={() => setLogView('earth')}
-                className={clsx('px-2 py-0.5 border-l border-white/[0.08]', logView === 'earth' ? 'bg-[#00ffaa]/10 text-[#00ffaa]' : 'text-slate-500')}
+                className={clsx('px-2 py-0.5 border-l border-white/8', logView === 'earth' ? 'bg-aurora-green/10 text-aurora-green' : 'text-slate-500')}
               >🌍 Země</button>
             </div>
           </div>
@@ -845,8 +845,8 @@ export function DualAnalysis({ kp, bz, swSpeed, swDensity, hpiCurrent, dstCurren
                   className={clsx(
                     'flex gap-3 py-1 border-b last:border-0',
                     isCurrent
-                      ? 'border-aurora-teal/20 bg-aurora-teal/[0.04] rounded -mx-2 px-2 py-1.5'
-                      : 'border-white/[0.03]'
+                      ? 'border-aurora-teal/20 bg-aurora-teal/4 rounded-sm -mx-2 px-2 py-1.5'
+                      : 'border-white/3'
                   )}
                 >
                   <span className={clsx('text-[9px] font-mono shrink-0 w-[82px]', isCurrent ? 'text-aurora-teal' : 'text-slate-500')}>
@@ -855,7 +855,7 @@ export function DualAnalysis({ kp, bz, swSpeed, swDensity, hpiCurrent, dstCurren
                   <div className="min-w-0 flex-1 flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-4">
                     {showL1 && (
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[9px] text-[#00d4ff]/60 font-mono">📡</span>
+                        <span className="text-[9px] text-aurora-teal/60 font-mono">📡</span>
                         <span className={clsx('text-[10px] font-mono font-bold w-5 text-right', isCurrent && 'text-[11px]')} style={{ color: entry.score >= 40 ? '#ffa500' : entry.score >= 25 ? '#48c7ff' : '#4a6080' }}>
                           {entry.score}
                         </span>
@@ -869,7 +869,7 @@ export function DualAnalysis({ kp, bz, swSpeed, swDensity, hpiCurrent, dstCurren
                     )}
                     {showEarth && (
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[9px] text-[#00ffaa]/60 font-mono">🌍</span>
+                        <span className="text-[9px] text-aurora-green/60 font-mono">🌍</span>
                         <span className={clsx('text-[10px] font-mono font-bold w-5 text-right', isCurrent && 'text-[11px]')} style={{ color: (entry.earthScore ?? 0) >= 40 ? '#ffa500' : (entry.earthScore ?? 0) >= 25 ? '#48c7ff' : '#4a6080' }}>
                           {entry.earthScore}
                         </span>

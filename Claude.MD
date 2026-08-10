@@ -315,6 +315,28 @@ ne `auto-fill`. Šest karet se do každé varianty vejde beze zbytku, takže
 nikdy nevznikne řádek s jednou osamělou kartou a prázdnem vedle ní.
 V katalogu, kde je počet jmen libovolný, `auto-fill` zůstává.
 
+## Verze a upgrade
+
+Web běží na **Next.js 16, React 19, Tailwind 4 a TypeScript 7**, sestavuje se
+Turbopackem a nasazuje přes `@opennextjs/cloudflare`. `npm outdated` má být
+prázdné; když není, upgrade patří do samostatného commitu.
+
+Tři věci, které se při přechodu z předchozích major verzí rozbily tiše —
+build ani testy je nenahlásily:
+
+- **Tailwind 4 dává utility do vrstvy `utilities`, a nezavrstvené CSS
+  přebíjí kterékoli zavrstvené.** Vlastní styly v `globals.css` proto musí
+  zůstat v `@layer components`. Bez toho přestane platit `sm:hidden`
+  a spodní mobilní lišta se ukáže i na širokém displeji.
+- **Next.js 16 předává `id` v `sitemap.ts` jako Promise.** Bez `await`
+  vyjdou všechny dílčí mapy prázdné a build mlčí.
+- **Next.js 16 si zabírá adresu `/sitemap.xml`** pro konvenci metadat, takže
+  vlastní handler na ní build odmítne. Rejstřík dílčích map je proto na
+  `/sitemap-index.xml` a `robots.txt` ukazuje tam.
+
+Kontrola SEO (`npm run kontrola:seo`) chytí první dva body zpětně — proto se
+po každém upgradu spouští.
+
 ## Konvence
 
 - Kód, komentáře i identifikátory jsou **česky**. Komentář vysvětluje *proč*,

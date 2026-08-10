@@ -220,13 +220,13 @@ export function ImageSequencePlayer({ source }: { source: SourceConfig }) {
         )}
 
         {timestamp && (
-          <div className="absolute top-2 left-2 text-[10px] font-mono text-white/70 bg-black/50 px-2 py-0.5 rounded">
+          <div className="absolute top-2 left-2 text-[10px] font-mono text-white/70 bg-black/50 px-2 py-0.5 rounded-sm">
             {timestamp}
           </div>
         )}
 
         {total > 0 && (
-          <div className="absolute top-2 right-2 text-[10px] font-mono text-white/50 bg-black/50 px-2 py-0.5 rounded">
+          <div className="absolute top-2 right-2 text-[10px] font-mono text-white/50 bg-black/50 px-2 py-0.5 rounded-sm">
             {frameIdx + 1}/{total}
           </div>
         )}

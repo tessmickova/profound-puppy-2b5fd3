@@ -135,8 +135,8 @@ export function CmeImpactTable({ data }: Props) {
 
   return (
     <div className="absolute top-3 right-3 md:right-5 z-30 w-[220px] md:w-[240px]">
-      <div className="bg-[#04101e]/80 backdrop-blur-md border border-white/[0.08] rounded-lg overflow-hidden shadow-[0_2px_16px_rgba(0,0,0,0.4)]">
-        <div className="px-2.5 py-1.5 border-b border-white/[0.05] flex items-center gap-1.5">
+      <div className="bg-[#04101e]/80 backdrop-blur-md border border-white/8 rounded-lg overflow-hidden shadow-[0_2px_16px_rgba(0,0,0,0.4)]">
+        <div className="px-2.5 py-1.5 border-b border-white/5 flex items-center gap-1.5">
           <span className="text-[9px] font-mono tracking-[1.5px] uppercase text-aurora-teal/70">
             🎯 Předpověď dopadů
           </span>
@@ -147,7 +147,7 @@ export function CmeImpactTable({ data }: Props) {
           {rows.map(row => {
             const sm = STRENGTH_META[row.strength]
             return (
-              <div key={row.id} className="px-2.5 py-1.5 flex items-center gap-2 border-b border-white/[0.03] last:border-0">
+              <div key={row.id} className="px-2.5 py-1.5 flex items-center gap-2 border-b border-white/3 last:border-0">
                 <span
                   className="w-2 h-2 rounded-full shrink-0"
                   style={{ backgroundColor: sm.dot, boxShadow: `0 0 4px ${sm.dot}50` }}

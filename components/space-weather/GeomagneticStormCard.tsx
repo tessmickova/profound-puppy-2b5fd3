@@ -32,7 +32,7 @@ export function GeomagneticStormCard({ storms }: Props) {
             'bg-[#04101e]/90 border rounded-xl p-4',
             storm.maxKp != null && storm.maxKp >= 7 ? 'border-aurora-pink/30' :
             storm.maxKp != null && storm.maxKp >= 5 ? 'border-aurora-purple/25' :
-            'border-white/[0.08]'
+            'border-white/8'
           )}
         >
           <div className="flex items-center justify-between gap-2 mb-2">

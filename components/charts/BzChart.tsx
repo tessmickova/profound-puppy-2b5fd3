@@ -170,7 +170,7 @@ export function BzChart({ data }: Props) {
   else expertText = 'Bz v plusu — magnetosféra uzavřena'
 
   return (
-    <div className="bg-[#04101e]/90 border border-white/[0.08] rounded-2xl p-4">
+    <div className="bg-[#04101e]/90 border border-white/8 rounded-2xl p-4">
       <div className="flex items-center justify-between mb-3">
         <div className="text-xs font-mono tracking-[2px] text-slate-400 uppercase">Bz složka (IMF)</div>
         <div className="flex items-center gap-2">
@@ -178,7 +178,7 @@ export function BzChart({ data }: Props) {
             {latestBz.toFixed(1)} nT
           </span>
           {latestBz < -5 && (
-            <span className="text-[9px] bg-aurora-green/10 text-aurora-green px-1.5 py-0.5 rounded border border-aurora-green/20">
+            <span className="text-[9px] bg-aurora-green/10 text-aurora-green px-1.5 py-0.5 rounded-sm border border-aurora-green/20">
               záporná = záře
             </span>
           )}

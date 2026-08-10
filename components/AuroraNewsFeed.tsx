@@ -132,7 +132,7 @@ export function AuroraNewsFeed() {
           onClick={() => setAiOpen(!aiOpen)}
           className={clsx(
             'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-mono transition-all border',
-            'bg-gradient-to-r from-purple-500/10 to-aurora-teal/10',
+            'bg-linear-to-r from-purple-500/10 to-aurora-teal/10',
             'border-purple-400/30 text-purple-300 hover:border-purple-400/60 hover:text-purple-200',
           )}
         >
@@ -165,7 +165,7 @@ export function AuroraNewsFeed() {
               ))}
             </div>
             {aiAnalysis.expertQuotes.length > 0 && (
-              <div className="mt-3 pt-2 border-t border-white/[0.04] space-y-1.5">
+              <div className="mt-3 pt-2 border-t border-white/4 space-y-1.5">
                 <p className="text-[10px] font-mono text-aurora-teal/70 uppercase tracking-wider">
                   Co říkají experti dnes:
                 </p>
@@ -176,7 +176,7 @@ export function AuroraNewsFeed() {
                 ))}
               </div>
             )}
-            <p className="text-[9px] text-slate-500 pt-2 border-t border-white/[0.04] leading-relaxed">
+            <p className="text-[9px] text-slate-500 pt-2 border-t border-white/4 leading-relaxed">
               ⚠️ Tato analýza je automaticky generována algoritmem na základě reálných dat z NOAA, NASA a dalších zdrojů.
               Vždy ověřte aktuální podmínky u expertních zdrojů výše. Není to lidská předpověď.
             </p>
@@ -218,7 +218,7 @@ export function AuroraNewsFeed() {
       </div>
 
       {/* Obsah */}
-      <div className="rounded-xl border border-white/[0.06] bg-[#04101e]/80 overflow-hidden">
+      <div className="rounded-xl border border-white/6 bg-[#04101e]/80 overflow-hidden">
         {isLoading && news.length === 0 ? (
           <div className="p-8 text-center">
             <RefreshCw size={18} className="animate-spin mx-auto text-slate-500 mb-2" />
@@ -233,7 +233,7 @@ export function AuroraNewsFeed() {
             </p>
           </div>
         ) : (
-          <div className="divide-y divide-white/[0.04]">
+          <div className="divide-y divide-white/4">
             {filtered.map((item) => {
               const meta = CATEGORY_META[item.category] ?? CATEGORY_META.media_int
               const Icon = meta.icon
@@ -249,24 +249,24 @@ export function AuroraNewsFeed() {
               return (
                 <div
                   key={item.id}
-                  className="group hover:bg-white/[0.02] transition-colors"
+                  className="group hover:bg-white/2 transition-colors"
                 >
                   {/* Hlavní řádek */}
                   <div
                     className="px-4 py-3 cursor-pointer flex items-start gap-3"
                     onClick={() => toggleExpand(item.id)}
                   >
-                    <div className={clsx('mt-0.5 p-1.5 rounded-md border bg-white/[0.02]', meta.color)}>
+                    <div className={clsx('mt-0.5 p-1.5 rounded-md border bg-white/2', meta.color)}>
                       <Icon size={12} />
                     </div>
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                        <span className={clsx('text-[9px] font-mono px-1.5 py-0.5 rounded border', meta.color)}>
+                        <span className={clsx('text-[9px] font-mono px-1.5 py-0.5 rounded-sm border', meta.color)}>
                           {item.source}
                         </span>
                         {item.translated && (
-                          <span className="text-[9px] font-mono px-1.5 py-0.5 rounded border border-amber-400/30 text-amber-400">
+                          <span className="text-[9px] font-mono px-1.5 py-0.5 rounded-sm border border-amber-400/30 text-amber-400">
                             🌐 Doslova přeloženo z {item.originalLang === 'en' ? 'angličtiny' : item.originalLang}
                           </span>
                         )}
@@ -321,7 +321,7 @@ export function AuroraNewsFeed() {
                   {/* Rozbalený detail */}
                   {isOpen && (
                     <div className="px-4 pb-3 pl-12">
-                      <div className="rounded-lg bg-[#03080f]/80 border border-white/[0.04] p-3">
+                      <div className="rounded-lg bg-[#03080f]/80 border border-white/4 p-3">
                         <p className="text-[10px] font-mono text-slate-500 uppercase tracking-wider mb-2">
                           Doslovná citace ze zdroje:
                         </p>
@@ -333,7 +333,7 @@ export function AuroraNewsFeed() {
                             ⚠️ Tento text byl doslova přeložen z {item.originalLang === 'en' ? 'angličtiny' : item.originalLang}. Originál viz odkaz na zdroj.
                           </p>
                         )}
-                        <div className="flex items-center gap-3 mt-3 pt-2 border-t border-white/[0.04] flex-wrap">
+                        <div className="flex items-center gap-3 mt-3 pt-2 border-t border-white/4 flex-wrap">
                           <a
                             href={item.sourceUrl}
                             target="_blank"
@@ -362,7 +362,7 @@ export function AuroraNewsFeed() {
         )}
 
         {/* Patička */}
-        <div className="px-4 py-2 border-t border-white/[0.04] flex items-center justify-between flex-wrap gap-2">
+        <div className="px-4 py-2 border-t border-white/4 flex items-center justify-between flex-wrap gap-2">
           <span className="text-[9px] font-mono text-slate-600">
             Dnes: {date ?? '–'} • Kontrola co 15 min
           </span>

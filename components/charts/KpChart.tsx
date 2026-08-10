@@ -91,17 +91,17 @@ export function KpChart({ data }: Props) {
   const l1Idx = chartData.length > 3 ? chartData.length - 3 : null
 
   return (
-    <div className="bg-[#04101e]/90 border border-white/[0.08] rounded-2xl p-4">
+    <div className="bg-[#04101e]/90 border border-white/8 rounded-2xl p-4">
       <div className="flex items-center justify-between mb-3">
         <div className="text-xs font-mono tracking-[2px] text-aurora-teal/80 uppercase">
           KP Index (24h)
         </div>
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1 text-[10px] font-mono text-aurora-teal/80">
-            <span className="inline-block w-2.5 h-2.5 rounded-full bg-[#00d4ff]" /> L1 stanice
+            <span className="inline-block w-2.5 h-2.5 rounded-full bg-aurora-teal" /> L1 stanice
           </span>
           <span className="flex items-center gap-1 text-[10px] font-mono text-aurora-green/80">
-            <span className="inline-block w-2.5 h-2.5 rounded-full bg-[#00ffaa]" /> Země (Kp)
+            <span className="inline-block w-2.5 h-2.5 rounded-full bg-aurora-green" /> Země (Kp)
           </span>
         </div>
       </div>

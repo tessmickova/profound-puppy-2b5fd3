@@ -129,7 +129,7 @@ export function AuroralOvalMap({ auroralOval, position, kp, bz }: Props) {
   const userPos = position ? geoToSvg(position.lat, position.lon) : null
 
   return (
-    <div className="bg-[#04101e]/90 border border-white/[0.08] rounded-2xl p-4">
+    <div className="bg-[#04101e]/90 border border-white/8 rounded-2xl p-4">
       <div className="flex items-center justify-between mb-3">
         <div className="text-xs font-mono tracking-[2px] text-slate-500 uppercase flex items-center gap-2">
           🗺️ Mapa ČR — Aurorální ovál a hlášení
@@ -139,7 +139,7 @@ export function AuroralOvalMap({ auroralOval, position, kp, bz }: Props) {
 
       {/* SVG Map */}
       <div className="relative">
-        <svg viewBox="15 10 470 255" className="w-full h-auto bg-[#0a1929] rounded-xl border border-white/[0.06]" style={{ maxHeight: 400 }}>
+        <svg viewBox="15 10 470 255" className="w-full h-auto bg-[#0a1929] rounded-xl border border-white/6" style={{ maxHeight: 400 }}>
           <defs>
             <filter id="ovalGlow" x="-40%" y="-40%" width="180%" height="180%">
               <feGaussianBlur stdDeviation="6" result="b" />
@@ -211,7 +211,7 @@ export function AuroralOvalMap({ auroralOval, position, kp, bz }: Props) {
           const pos = geoToSvg(hoveredPin.lat, hoveredPin.lon)
           return (
             <div
-              className="absolute bg-black/80 backdrop-blur-sm border border-white/10 rounded-lg px-3 py-2 z-20 pointer-events-none"
+              className="absolute bg-black/80 backdrop-blur-xs border border-white/10 rounded-lg px-3 py-2 z-20 pointer-events-none"
               style={{
                 left: `${(pos.x / 470) * 100}%`,
                 top: `${(pos.y / 255) * 100 - 12}%`,

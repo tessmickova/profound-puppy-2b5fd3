@@ -68,7 +68,7 @@ export function MagnetospherePanel({ bz, bt, speed, density, temperature, histor
   const densityColor = density == null ? undefined : density > 20 ? 'text-aurora-green' : density > 10 ? 'text-aurora-teal' : undefined
 
   return (
-    <div className="bg-[#04101e]/90 border border-white/[0.08] rounded-2xl p-4 mt-4">
+    <div className="bg-[#04101e]/90 border border-white/8 rounded-2xl p-4 mt-4">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-xs font-mono tracking-[2px] text-slate-400 uppercase flex items-center gap-2">
           🛡️ Magnetosféra

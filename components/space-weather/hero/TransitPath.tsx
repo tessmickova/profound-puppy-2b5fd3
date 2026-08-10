@@ -58,7 +58,7 @@ export const TransitPath = memo(function TransitPath({ activeStages, state, inte
       {/* Desktop */}
       <div className="hidden md:block relative h-44 mx-[10%]">
         {/* Background line */}
-        <div className="absolute top-10 left-0 right-0 h-[3px] bg-white/[0.10] rounded-full" />
+        <div className="absolute top-10 left-0 right-0 h-[3px] bg-white/10 rounded-full" />
 
         {/* Segmented active progress — each segment gets its waypoint color */}
         {WAYPOINTS.map((w, i) => {
@@ -70,7 +70,7 @@ export const TransitPath = memo(function TransitPath({ activeStages, state, inte
           return (
             <div
               key={`seg-${w.id}`}
-              className="absolute top-10 h-[3px] rounded-full transition-all duration-[2000ms] ease-out"
+              className="absolute top-10 h-[3px] rounded-full transition-all duration-2000 ease-out"
               style={{
                 left: `${prev.pct}%`,
                 width: `${segEnd - prev.pct}%`,
@@ -85,7 +85,7 @@ export const TransitPath = memo(function TransitPath({ activeStages, state, inte
         {/* CME marker */}
         {showCme && (
           <div
-            className="absolute -translate-x-1/2 flex flex-col items-center transition-all duration-[2000ms] ease-out"
+            className="absolute -translate-x-1/2 flex flex-col items-center transition-all duration-2000 ease-out"
             style={{ left: `${cmePct}%`, top: '0px' }}
           >
             <div className="relative">
@@ -146,7 +146,7 @@ export const TransitPath = memo(function TransitPath({ activeStages, state, inte
         })}
 
         {/* CZ Visibility badge — top right */}
-        <div className="absolute right-0 -top-3 flex items-center gap-2 bg-[#030810]/70 backdrop-blur-sm rounded-full px-3 py-1 border border-white/[0.08]">
+        <div className="absolute right-0 -top-3 flex items-center gap-2 bg-[#030810]/70 backdrop-blur-xs rounded-full px-3 py-1 border border-white/8">
           <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: likeInfo.color, boxShadow: `0 0 10px ${likeInfo.color}70` }} />
           <span className="text-[10px] font-mono font-bold whitespace-nowrap" style={{ color: likeInfo.color }}>
             🇨🇿 {likeInfo.label}
@@ -162,7 +162,7 @@ export const TransitPath = memo(function TransitPath({ activeStages, state, inte
         </div>
         <div className="relative">
           <div className="absolute top-[7px] left-0 right-0 h-[2px] bg-white/10 rounded-full" />
-          <div className="absolute top-[7px] left-0 h-[2px] rounded-full transition-all duration-[2000ms]" style={{ width: `${progressPct}%`, background: 'linear-gradient(90deg, rgba(255,200,50,0.7), rgba(0,212,255,0.7))', boxShadow: '0 0 6px rgba(0,212,255,0.2)' }} />
+          <div className="absolute top-[7px] left-0 h-[2px] rounded-full transition-all duration-2000" style={{ width: `${progressPct}%`, background: 'linear-gradient(90deg, rgba(255,200,50,0.7), rgba(0,212,255,0.7))', boxShadow: '0 0 6px rgba(0,212,255,0.2)' }} />
           {showCme && (
             <div className="absolute -translate-x-1/2 top-[2px]" style={{ left: `${cmePct}%` }}>
               <div className="w-3 h-3 rounded-full bg-amber-400" style={{ boxShadow: '0 0 8px rgba(255,180,50,0.5)' }} />

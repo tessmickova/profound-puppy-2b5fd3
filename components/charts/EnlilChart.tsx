@@ -14,7 +14,7 @@ export function EnlilChart() {
   const [view, setView] = useState<View>('density')
 
   return (
-    <div className="bg-[#04101e]/90 border border-white/[0.08] rounded-2xl p-4">
+    <div className="bg-[#04101e]/90 border border-white/8 rounded-2xl p-4">
       <div className="flex items-center justify-between mb-3">
         <div className="text-xs font-mono tracking-[2px] text-aurora-purple/80 uppercase flex items-center gap-2">
           🌀 WSA-ENLIL animace

@@ -128,7 +128,7 @@ export default function ZvirataFinder() {
   ]
 
   const panel = (
-    <aside className={`filtr-panel space-y-1 self-start rounded-3xl border border-[#e8dfd2] bg-white p-4 shadow-sm lg:sticky lg:top-20 ${panelOtevren ? 'je-otevreny' : ''}`}>
+    <aside className={`filtr-panel space-y-1 self-start rounded-3xl border border-[#e8dfd2] bg-white p-4 shadow-xs lg:sticky lg:top-20 ${panelOtevren ? 'je-otevreny' : ''}`}>
       <div className="flex items-center justify-between pb-1">
         <h2 className="flex items-center gap-1.5 [font-family:var(--font-nadpis)] text-base font-bold">
           <SlidersHorizontal size={16} aria-hidden /> Filtr
@@ -155,7 +155,7 @@ export default function ZvirataFinder() {
           value={filtr.hledat}
           onChange={e => setFiltr({ ...filtr, hledat: e.target.value })}
           placeholder="Hledat jméno či význam…"
-          className="w-full rounded-full border border-[#e8dfd2] bg-[#faf6ef] py-2 pl-9 pr-3 text-[13px] outline-none focus:border-[#2b2723]"
+          className="w-full rounded-full border border-[#e8dfd2] bg-[#faf6ef] py-2 pl-9 pr-3 text-[13px] outline-hidden focus:border-[#2b2723]"
         />
       </div>
 

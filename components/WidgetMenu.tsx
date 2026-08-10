@@ -29,7 +29,7 @@ export function WidgetMenu({ activeWidgets, onToggle, onToggleWidth, getWidth }:
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[10px] font-bold border border-white/[0.08] text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-all"
+        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[10px] font-bold border border-white/8 text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-all"
         title="Upravit widgety na dashboardu"
       >
         ⚙️ Widgety
@@ -38,7 +38,7 @@ export function WidgetMenu({ activeWidgets, onToggle, onToggleWidth, getWidth }:
 
       {open && (
         <div className="absolute right-0 top-full mt-1 w-72 bg-[#0a1929] border border-white/10 rounded-xl shadow-2xl z-50 py-2 max-h-[400px] overflow-y-auto">
-          <div className="px-3 py-1.5 text-[10px] font-mono text-slate-500 uppercase tracking-wider border-b border-white/[0.06]">
+          <div className="px-3 py-1.5 text-[10px] font-mono text-slate-500 uppercase tracking-wider border-b border-white/6">
             Zobrazené prvky
           </div>
           {ALL_WIDGETS.map(w => {
@@ -51,7 +51,7 @@ export function WidgetMenu({ activeWidgets, onToggle, onToggleWidth, getWidth }:
                   'flex items-center gap-2 px-3 py-2 transition-colors',
                   w.alwaysVisible
                     ? 'opacity-40'
-                    : 'hover:bg-white/[0.04]',
+                    : 'hover:bg-white/4',
                 )}
               >
                 {/* Checkbox na zobrazení */}
@@ -62,7 +62,7 @@ export function WidgetMenu({ activeWidgets, onToggle, onToggleWidth, getWidth }:
                 >
                   <div
                     className={clsx(
-                      'w-4 h-4 rounded border-2 flex items-center justify-center transition-all',
+                      'w-4 h-4 rounded-sm border-2 flex items-center justify-center transition-all',
                       active
                         ? 'border-aurora-teal bg-aurora-teal/20'
                         : 'border-slate-600 bg-transparent'
@@ -80,7 +80,7 @@ export function WidgetMenu({ activeWidgets, onToggle, onToggleWidth, getWidth }:
                   <button
                     onClick={() => onToggleWidth(w.id)}
                     className={clsx(
-                      'px-1.5 py-0.5 rounded text-[9px] font-mono border transition-all',
+                      'px-1.5 py-0.5 rounded-sm text-[9px] font-mono border transition-all',
                       width === 'full'
                         ? 'border-aurora-teal/30 text-aurora-teal bg-aurora-teal/10'
                         : 'border-purple-400/30 text-purple-400 bg-purple-400/10'
@@ -91,7 +91,7 @@ export function WidgetMenu({ activeWidgets, onToggle, onToggleWidth, getWidth }:
                   </button>
                 )}
                 {active && w.alwaysFull && (
-                  <span className="px-1.5 py-0.5 rounded text-[9px] font-mono border border-white/[0.06] text-slate-600">
+                  <span className="px-1.5 py-0.5 rounded-sm text-[9px] font-mono border border-white/6 text-slate-600">
                     100%
                   </span>
                 )}

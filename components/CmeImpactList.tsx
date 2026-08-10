@@ -276,11 +276,11 @@ interface VerdictInfo {
 }
 
 const VERDICT_STYLES: Record<Verdict, { color: string; glow: string; border: string; bg: string }> = {
-  storm:    { color: '#00ffaa', glow: '0 0 40px rgba(0,255,170,0.15)', border: 'border-[#00ffaa]/30', bg: 'from-[#00ffaa]/[0.06]' },
-  good:     { color: '#5bcc5b', glow: '0 0 30px rgba(91,204,91,0.10)', border: 'border-[#5bcc5b]/25', bg: 'from-[#5bcc5b]/[0.04]' },
-  moderate: { color: '#ffa500', glow: '0 0 25px rgba(255,165,0,0.08)', border: 'border-[#ffa500]/20', bg: 'from-[#ffa500]/[0.03]' },
-  low:      { color: '#48c7ff', glow: '0 0 20px rgba(72,199,255,0.06)', border: 'border-[#48c7ff]/15', bg: 'from-[#48c7ff]/[0.02]' },
-  quiet:    { color: '#4a6080', glow: 'none', border: 'border-slate-700/20', bg: 'from-slate-800/[0.02]' },
+  storm:    { color: '#00ffaa', glow: '0 0 40px rgba(0,255,170,0.15)', border: 'border-aurora-green/30', bg: 'from-aurora-green/6' },
+  good:     { color: '#5bcc5b', glow: '0 0 30px rgba(91,204,91,0.10)', border: 'border-[#5bcc5b]/25', bg: 'from-[#5bcc5b]/4' },
+  moderate: { color: '#ffa500', glow: '0 0 25px rgba(255,165,0,0.08)', border: 'border-[#ffa500]/20', bg: 'from-[#ffa500]/3' },
+  low:      { color: '#48c7ff', glow: '0 0 20px rgba(72,199,255,0.06)', border: 'border-[#48c7ff]/15', bg: 'from-[#48c7ff]/2' },
+  quiet:    { color: '#4a6080', glow: 'none', border: 'border-slate-700/20', bg: 'from-slate-800/2' },
 }
 
 function srcFriendly(s: SolarWindSourceType): string {
@@ -575,7 +575,7 @@ export function CmeImpactList({ data }: Props) {
           </div>
 
           {/* Decisive explanation */}
-          <div className="mt-4 bg-white/[0.03] rounded-xl px-4 py-3 border border-white/[0.05]">
+          <div className="mt-4 bg-white/3 rounded-xl px-4 py-3 border border-white/5">
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">{verdict.decisive}</p>
           </div>
 
@@ -594,7 +594,7 @@ export function CmeImpactList({ data }: Props) {
            ROZHODUJÍCÍ FAKTORY — Co určuje, jestli záři uvidíte
           ═══════════════════════════════════════════════════════════ */}
       {factors.length > 0 && source !== 'AMBIENT' && (
-        <div className="rounded-2xl border border-white/[0.08] overflow-hidden"
+        <div className="rounded-2xl border border-white/8 overflow-hidden"
              style={{ background: 'linear-gradient(180deg, rgba(4,16,30,0.95) 0%, rgba(4,16,30,0.90) 100%)' }}>
           <div className="px-5 pt-4 pb-1.5">
             <h3 className="text-[11px] tracking-[1.5px] text-slate-500 uppercase">Co rozhoduje</h3>
@@ -611,7 +611,7 @@ export function CmeImpactList({ data }: Props) {
            CME NA CESTĚ — Zjednodušené karty příchozích výronů
           ═══════════════════════════════════════════════════════════ */}
       {rows.length > 0 && (
-        <div className="rounded-2xl border border-white/[0.08] overflow-hidden"
+        <div className="rounded-2xl border border-white/8 overflow-hidden"
              style={{ background: 'linear-gradient(180deg, rgba(4,16,30,0.95) 0%, rgba(4,16,30,0.90) 100%)' }}>
           <div className="px-5 pt-4 pb-2">
             <h3 className="text-[11px] tracking-[1.5px] text-slate-500 uppercase">
@@ -629,11 +629,11 @@ export function CmeImpactList({ data }: Props) {
       {/* ═══════════════════════════════════════════════════════════
            PRŮVODCE — Jak poznat, zda bude noc aktivní
           ═══════════════════════════════════════════════════════════ */}
-      <div className="rounded-2xl border border-white/[0.08] overflow-hidden"
+      <div className="rounded-2xl border border-white/8 overflow-hidden"
            style={{ background: 'linear-gradient(180deg, rgba(4,16,30,0.95) 0%, rgba(4,16,30,0.90) 100%)' }}>
         <button
           onClick={() => setShowGuide(v => !v)}
-          className="w-full px-5 py-3 flex items-center justify-between text-left hover:bg-white/[0.02] transition-colors"
+          className="w-full px-5 py-3 flex items-center justify-between text-left hover:bg-white/2 transition-colors"
         >
           <span className="text-[11px] tracking-[1.5px] text-slate-500 uppercase">
             Podle čeho poznáte, zda noc bude aktivní?
@@ -642,7 +642,7 @@ export function CmeImpactList({ data }: Props) {
         </button>
 
         {showGuide && (
-          <div className="px-5 pb-5 space-y-4 border-t border-white/[0.04] pt-4">
+          <div className="px-5 pb-5 space-y-4 border-t border-white/4 pt-4">
             <GuideItem
               number="①"
               title="Magnetické pole musí být jižní (Bz záporné)"
@@ -667,7 +667,7 @@ export function CmeImpactList({ data }: Props) {
               text="CME (koronální výron) = nejlepší scénář — magnetický oblak může držet jižní pole hodiny. Koronální díra = rychlý vítr s kolísavým Bz, záře se objeví jen v krátkých oknech. Sheath (čelo oblaku) = intenzivní ale krátký průlet (30–120 min)."
               color="#48c7ff"
             />
-            <div className="bg-white/[0.03] rounded-lg px-4 py-2.5 border border-white/[0.05]">
+            <div className="bg-white/3 rounded-lg px-4 py-2.5 border border-white/5">
               <p className="text-[11px] text-slate-400 leading-relaxed">
                 <span className="font-bold text-slate-300">Shrnutí: </span>
                 Bz pod -5 nT + Kp ≥ 4 = šance na fotku. Bz pod -10 nT + Kp ≥ 6 = šance vidět okem. Jasná obloha a astronomická tma jsou samozřejmostí.
@@ -681,11 +681,11 @@ export function CmeImpactList({ data }: Props) {
            TECHNICKÁ DATA — rozbalovací pro pokročilé
           ═══════════════════════════════════════════════════════════ */}
       {sourceClass && sourceClass.source !== 'AMBIENT' && (
-        <div className="rounded-2xl border border-white/[0.08] overflow-hidden"
+        <div className="rounded-2xl border border-white/8 overflow-hidden"
              style={{ background: 'linear-gradient(180deg, rgba(4,16,30,0.95) 0%, rgba(4,16,30,0.90) 100%)' }}>
           <button
             onClick={() => setShowTech(v => !v)}
-            className="w-full px-5 py-3 flex items-center justify-between text-left hover:bg-white/[0.02] transition-colors"
+            className="w-full px-5 py-3 flex items-center justify-between text-left hover:bg-white/2 transition-colors"
           >
             <span className="text-[11px] tracking-[1.5px] text-slate-500 uppercase">
               Technická data (L1 parametry, klasifikace)
@@ -694,7 +694,7 @@ export function CmeImpactList({ data }: Props) {
           </button>
 
           {showTech && (
-            <div className="px-5 pb-4 border-t border-white/[0.04] pt-3 font-mono text-[11px] space-y-4">
+            <div className="px-5 pb-4 border-t border-white/4 pt-3 font-mono text-[11px] space-y-4">
               {/* L1 Parameters */}
               <div>
                 <p className="text-[9px] tracking-[1.5px] uppercase text-slate-500 mb-2">DSCOVR/ACE L1 — Real-time</p>
@@ -769,14 +769,14 @@ export function CmeImpactList({ data }: Props) {
            LOG — Historie hlášení
           ═══════════════════════════════════════════════════════════ */}
       {log.length > 0 && (
-        <div className="rounded-2xl border border-white/[0.08] overflow-hidden"
+        <div className="rounded-2xl border border-white/8 overflow-hidden"
              style={{ background: 'linear-gradient(180deg, rgba(4,16,30,0.95) 0%, rgba(4,16,30,0.90) 100%)' }}>
           <div className="px-5 pt-3 pb-1">
             <span className="text-[9px] tracking-[1.5px] text-slate-600 uppercase">Historie (48h)</span>
           </div>
           <div className="max-h-[100px] overflow-y-auto px-5 pb-2.5 scrollbar-thin">
             {log.slice(-30).map((entry, i) => (
-              <div key={`${entry.ts}-${i}`} className="flex gap-2 py-[2px] border-b border-white/[0.02] last:border-0">
+              <div key={`${entry.ts}-${i}`} className="flex gap-2 py-[2px] border-b border-white/2 last:border-0">
                 <span className="text-[9px] text-slate-600 shrink-0 w-[78px] tabular-nums font-mono">{fmtLogTime(entry.ts)}</span>
                 <span className="text-[10px] text-slate-400 flex-1 truncate">{entry.now}</span>
               </div>
@@ -795,7 +795,7 @@ export function CmeImpactList({ data }: Props) {
 function QuickProb({ label, value }: { label: string; value: number }) {
   const color = value >= 50 ? '#00ffaa' : value >= 20 ? '#5bcc5b' : value >= 5 ? '#ffa500' : '#4a6080'
   return (
-    <div className="bg-white/[0.03] rounded-lg px-3 py-2 border border-white/[0.04] text-center">
+    <div className="bg-white/3 rounded-lg px-3 py-2 border border-white/4 text-center">
       <p className="text-[9px] text-slate-500 mb-0.5">{label}</p>
       <p className="text-lg font-bold tabular-nums" style={{ color }}>{value}%</p>
     </div>
@@ -806,7 +806,7 @@ function QuickProb({ label, value }: { label: string; value: number }) {
 function FactorRow({ factor }: { factor: Factor }) {
   const dotColor = factor.status === 'good' ? '#00ffaa' : factor.status === 'neutral' ? '#ffa500' : '#ff4444'
   return (
-    <div className="flex items-start gap-3 px-2 py-2.5 rounded-lg hover:bg-white/[0.02] transition-colors">
+    <div className="flex items-start gap-3 px-2 py-2.5 rounded-lg hover:bg-white/2 transition-colors">
       <div
         className="w-2.5 h-2.5 rounded-full shrink-0 mt-1"
         style={{ backgroundColor: dotColor, boxShadow: `0 0 8px ${dotColor}40` }}
@@ -871,8 +871,8 @@ function CmeCard({ row }: { row: CmeRow }) {
   return (
     <div className={`rounded-xl border transition-all ${
       row.isNext
-        ? 'border-white/[0.12] bg-white/[0.03]'
-        : 'border-white/[0.06] bg-white/[0.015]'
+        ? 'border-white/12 bg-white/3'
+        : 'border-white/6 bg-white/1.5'
     }`}>
       {/* Top row: G-scale + flare badge + eruption info + probabilities */}
       <div className="px-3.5 pt-3 pb-2 flex items-start gap-3">
@@ -886,7 +886,7 @@ function CmeCard({ row }: { row: CmeRow }) {
           </div>
           {row.flareClass && (
             <div
-              className="px-1.5 py-0.5 rounded border text-[10px] font-bold font-mono leading-none"
+              className="px-1.5 py-0.5 rounded-sm border text-[10px] font-bold font-mono leading-none"
               style={{ color: fcc, borderColor: `${fcc}40`, backgroundColor: `${fcc}12` }}
               title={`Třída erupce: ${row.flareClass}`}
             >
@@ -899,23 +899,23 @@ function CmeCard({ row }: { row: CmeRow }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
             {row.isNext && (
-              <span className="text-[9px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded" style={{ color: gc, backgroundColor: `${gc}15` }}>
+              <span className="text-[9px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded-sm" style={{ color: gc, backgroundColor: `${gc}15` }}>
                 ▶ DALŠÍ
               </span>
             )}
             {isArrived ? (
-              <span className="text-[9px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded bg-[#00ffaa]/10 text-[#00ffaa]">
+              <span className="text-[9px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded-sm bg-aurora-green/10 text-aurora-green">
                 DORAZILO
               </span>
             ) : row.hoursRemaining != null && row.hoursRemaining < 6 ? (
-              <span className="text-[9px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded bg-[#ffa500]/10 text-[#ffa500]">
+              <span className="text-[9px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded-sm bg-[#ffa500]/10 text-[#ffa500]">
                 BLÍŽÍ SE
               </span>
             ) : null}
             {/* Magnetic classification badge */}
             {row.magClass && (
               <span
-                className="text-[9px] font-bold px-1.5 py-0.5 rounded border"
+                className="text-[9px] font-bold px-1.5 py-0.5 rounded-sm border"
                 style={{ color: mcc, borderColor: `${mcc}35`, backgroundColor: `${mcc}10` }}
                 title={`Magnetická klasifikace: ${row.magClass} (${fmtMagClass(row.magClass)})`}
               >
@@ -967,7 +967,7 @@ function CmeCard({ row }: { row: CmeRow }) {
       <div className="px-3.5 pb-2.5">
         <div className="flex items-center gap-1.5">
           <span className="text-[10px]" title="Slunce">☀️</span>
-          <div className="flex-1 h-2.5 rounded-full bg-white/[0.04] border border-white/[0.06] relative overflow-hidden">
+          <div className="flex-1 h-2.5 rounded-full bg-white/4 border border-white/6 relative overflow-hidden">
             {/* Progress fill */}
             <div
               className="absolute inset-y-0 left-0 rounded-full transition-all duration-1000"
@@ -1010,7 +1010,7 @@ function CmeCard({ row }: { row: CmeRow }) {
               {!row.arrivalTs && <span className="text-slate-600 ml-0.5" title="Odhad pouze z rychlosti, NASA analýza nedostupná">⚠️</span>}
             </span>
           ) : isArrived ? (
-            <span className="text-[9px] font-mono font-bold text-[#00ffaa]">
+            <span className="text-[9px] font-mono font-bold text-aurora-green">
               ✓ Dorazilo k Zemi
             </span>
           ) : (

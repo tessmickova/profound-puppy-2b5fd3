@@ -70,7 +70,7 @@ export const UNISEX_ZVIRE = new Set([
   'krumel', 'nibbles', 'plutten', 'chibi', 'simsim', 'tamr', 'peanut', 'timtam',
   'poutine', 'nugget', 'laddu', 'kumara',
   // psi, fenky, kocouři a kočky, kde jméno funguje pro obě pohlaví
-  'shadow', 'skye', 'maru', 'kuro', 'shiro', 'yuki', 'sora', 'momo', 'tama', 'fuku',
+  'shadow-sm', 'skye', 'maru', 'kuro', 'shiro', 'yuki', 'sora', 'momo', 'tama', 'fuku',
   'koru', 'chase', 'bluey', 'ziggy', 'smokey', 'misty', 'pepper', 'oreo', 'rio',
   'winter', 'frost', 'aspen', 'nala', 'loki', 'mel', 'kea',
 ])

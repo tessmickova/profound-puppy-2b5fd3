@@ -78,7 +78,7 @@ export function VisibilityScale({ currentKp, forecast, hpi, bz, swSpeed, hasCmeI
   const windows = useMemo(() => buildNightWindows(now), [now])
 
   return (
-    <div className="bg-[#04101e]/90 border border-white/[0.08] rounded-2xl p-4 transition-all duration-700">
+    <div className="bg-[#04101e]/90 border border-white/8 rounded-2xl p-4 transition-all duration-700">
       {/* Current status */}
       <div className="flex items-center gap-3 mb-3">
         <span className="text-2xl shrink-0">{info.icon}</span>
@@ -140,7 +140,7 @@ export function VisibilityScale({ currentKp, forecast, hpi, bz, swSpeed, hasCmeI
                 <div key={w.label} className="flex items-center gap-1.5">
                   <span className="text-[10px] font-mono text-slate-500 w-[80px] shrink-0">{w.label}</span>
                   <span
-                    className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold whitespace-nowrap"
+                    className="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-mono font-semibold whitespace-nowrap"
                     style={{ backgroundColor: `${si.color}18`, color: si.color }}
                   >
                     {si.label}

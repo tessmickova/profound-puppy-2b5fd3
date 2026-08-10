@@ -6,14 +6,14 @@ const ENLIL_TIMELINE_URL = 'https://services.swpc.noaa.gov/images/animations/enl
 
 export function HuxtChart() {
   return (
-    <div className="bg-[#04101e]/90 border border-white/[0.08] rounded-2xl p-4">
+    <div className="bg-[#04101e]/90 border border-white/8 rounded-2xl p-4">
       <div className="flex items-center justify-between mb-3">
         <div className="text-xs font-mono tracking-[2px] text-aurora-teal/80 uppercase flex items-center gap-2">
           📈 ENLIL graf — dopad na Zemi
         </div>
       </div>
 
-      <div className="relative w-full aspect-[2/1] max-h-[240px] bg-[#030810] rounded-xl overflow-hidden">
+      <div className="relative w-full aspect-2/1 max-h-[240px] bg-[#030810] rounded-xl overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={ENLIL_TIMELINE_URL}

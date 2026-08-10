@@ -19,7 +19,7 @@ export function NasaDonkiSection({ donki }: Props) {
     return (
       <div className="mt-8">
         <SectionHeader icon="🛰️" title="NASA DONKI — Space Weather" />
-        <div className="bg-[#04101e]/90 border border-white/[0.08] rounded-xl p-6 text-center text-slate-500 text-sm">
+        <div className="bg-[#04101e]/90 border border-white/8 rounded-xl p-6 text-center text-slate-500 text-sm">
           NASA DONKI data dočasně nedostupná.
         </div>
       </div>
