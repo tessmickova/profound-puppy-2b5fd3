@@ -172,6 +172,10 @@ export interface Database {
         }
         Relationships: []
       }
+      // `lat`/`lon` se do tabulky zapisují od chvíle, kdy hlášení nese
+      // i místo pozorování — v tomhle popisu ale chyběly. Starší
+      // supabase-js to prošlo mlčky, novější z toho udělá typ `never`
+      // a build spadne. Doplněno, ať popis odpovídá tomu, co se ukládá.
       sightings: {
         Row: {
           id: string
@@ -181,6 +185,8 @@ export interface Database {
           kp_at_time: number | null
           bz_at_time: number | null
           fingerprint: string
+          lat: number | null
+          lon: number | null
         }
         Insert: {
           id?: string
@@ -190,6 +196,8 @@ export interface Database {
           kp_at_time?: number | null
           bz_at_time?: number | null
           fingerprint: string
+          lat?: number | null
+          lon?: number | null
         }
         Update: {
           id?: string
@@ -199,6 +207,8 @@ export interface Database {
           kp_at_time?: number | null
           bz_at_time?: number | null
           fingerprint?: string
+          lat?: number | null
+          lon?: number | null
         }
         Relationships: []
       }

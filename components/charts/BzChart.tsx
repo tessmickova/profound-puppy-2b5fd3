@@ -212,9 +212,12 @@ export function BzChart({ data }: Props) {
           <Tooltip
             contentStyle={{ background: '#04101e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, fontSize: 12 }}
             labelStyle={{ color: '#64748b' }}
-            formatter={(v: number, name: string) => {
+            // Recharts 3 predava hodnotu jako `ValueType | undefined`,
+            // takze si ji musime overit sami — driv byla typovana jako
+            // `number` a `toFixed` se volalo naslepo.
+            formatter={(v, name) => {
               if (name === 'bzFillPos' || name === 'bzFillNeg') return null
-              return [`${v.toFixed(1)} nT`, 'Bz']
+              return typeof v === 'number' ? [`${v.toFixed(1)} nT`, 'Bz'] : null
             }}
           />
           {/* Zero reference line */}

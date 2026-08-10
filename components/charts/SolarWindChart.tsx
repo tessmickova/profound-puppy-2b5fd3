@@ -186,7 +186,7 @@ export function SolarWindChart({ data, type, label, unit, color, good, goodLabel
             contentStyle={{ background: '#04101e', border: `1px solid ${color}33`, borderRadius: 12, fontSize: 12 }}
             labelStyle={{ color: '#64748b' }}
             itemStyle={{ color }}
-            formatter={(v: number) => [`${v.toFixed(1)} ${unit}`, label]}
+            formatter={v => (typeof v === 'number' ? [`${v.toFixed(1)} ${unit}`, label] : null)}
           />
           <Area
             type="monotone"

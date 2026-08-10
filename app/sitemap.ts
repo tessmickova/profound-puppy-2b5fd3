@@ -24,9 +24,16 @@ export async function generateSitemaps() {
   return VRSTVY.map((_, id) => ({ id }))
 }
 
-export default function sitemap({ id }: { id: number }): MetadataRoute.Sitemap {
+// Next.js 16 předává `id` **jako Promise** (stejně jako `params` u stránek).
+// V 15 to bylo prosté číslo — kdo to jen tak přepne, dostane čtyři prázdné
+// mapy a build na to neupozorní. Proto se `id` awaituje a pro jistotu se
+// převádí na číslo.
+export default async function sitemap(
+  { id }: { id: number | Promise<number> },
+): Promise<MetadataRoute.Sitemap> {
   if (JE_NAHLED) return []
-  const vrstva = VRSTVY[id]
+  const cislo = Number(await id)
+  const vrstva = VRSTVY[cislo]
   if (!vrstva) return []
 
   const dnes = new Date()

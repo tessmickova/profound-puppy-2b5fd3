@@ -35,7 +35,7 @@ export default function robots(): MetadataRoute.Robots {
       { userAgent: '*', allow: '/', disallow: ZAKAZANE },
       { userAgent: AI_ROBOTI, allow: '/', disallow: ZAKAZANE },
     ],
-    sitemap: `${WEB.url}/sitemap.xml`,
+    sitemap: `${WEB.url}/sitemap-index.xml`,
     host: WEB.url,
   }
 }
