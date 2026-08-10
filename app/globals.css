@@ -1813,7 +1813,16 @@ h1, h2, .vyhledavac-hlava h2 { text-wrap: balance; }
    k oknu, roluje jen obsah. Každá pozice má dvě strany a po 15 s se otočí
    na tu druhou. Když se sloupce nevejdou, nastoupí lišta nahoře. */
 
-:root { --reklamni-sloupec: 0px; --reklamni-lista: 0px; }
+:root {
+  --reklamni-sloupec: 0px;
+  --reklamni-lista: 0px;
+  /* Vzdálenost sloupce od kraje okna. Reklama nalepená na hranu displeje
+     působí jako chyba vykreslení, ne jako inzerát. */
+  --reklamni-okraj: 0px;
+  /* Vzduch mezi reklamou a obsahem. Bez něj čte oko sloupec jako součást
+     stránky a inzerát se ztratí. */
+  --reklamni-mezera: 0px;
+}
 
 .reklamni-sloupec {
   position: fixed;
@@ -1823,12 +1832,12 @@ h1, h2, .vyhledavac-hlava h2 { text-wrap: balance; }
   display: none;
   width: var(--reklamni-sloupec);
   /* Dole zbývá místo na tlačítko pauzy, ať nesedí na páté kartě. */
-  padding: 14px 12px 42px;
+  padding: 18px 0 44px;
   gap: 10px;
   flex-direction: column;
 }
-.reklamni-sloupec.je-vlevo { left: 0; }
-.reklamni-sloupec.je-vpravo { right: 0; }
+.reklamni-sloupec.je-vlevo { left: var(--reklamni-okraj); }
+.reklamni-sloupec.je-vpravo { right: var(--reklamni-okraj); }
 /* Sloupce překrývají odsazení stránky — musí mít stejný papír jako zbytek
    webu, jinak by po stranách prosvítalo tmavé pozadí dokumentu (to patří
    AuroraDogu, který sdílí stejné <body>). Ze stejného důvodu přebarvíme
@@ -1940,9 +1949,18 @@ body:has(.svetjmen-shell) { background-color: #faf6ef; }
 /* Sloupce naskočí, až když na ně i na obsah zbude místo. Šířku sloupce si
    bere z okna, takže se s displejem plynule zmenšují a nikdy nepřetečou. */
 @media (min-width: 1240px) {
-  :root { --reklamni-sloupec: clamp(158px, 13.5vw, 214px); }
+  :root {
+    --reklamni-sloupec: clamp(158px, 13vw, 208px);
+    --reklamni-okraj: clamp(14px, 1.6vw, 32px);
+    --reklamni-mezera: clamp(26px, 3vw, 56px);
+  }
   .reklamni-sloupec { display: flex; }
-  body { padding-left: var(--reklamni-sloupec); padding-right: var(--reklamni-sloupec); }
+  /* Obsah se odsune o celý blok: okraj + sloupec + mezera. Díky tomu má
+     každý inzerát prázdno vlevo i vpravo a čte se jako samostatný prvek. */
+  body {
+    padding-left: calc(var(--reklamni-okraj) + var(--reklamni-sloupec) + var(--reklamni-mezera));
+    padding-right: calc(var(--reklamni-okraj) + var(--reklamni-sloupec) + var(--reklamni-mezera));
+  }
 }
 
 /* ── Lišta nahoře ─────────────────────────────────────────────────────── */
@@ -2865,3 +2883,200 @@ body:has(.svetjmen-shell) { background-color: #faf6ef; }
 /* Poznámka o původu údaje — patří k tvrzení, ne pod čáru na konci stránky. */
 .jmeno-poznamka { display: block; margin-top: 4px; font-size: 12.5px; color: #8a7f71; }
 .jmeno-poznamka a { color: #d97757; }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   ILUSTRACE — kreslené, ne ikonky
+   ══════════════════════════════════════════════════════════════════════════════ */
+.ilustrace {
+  display: block;
+  /* Měkký stín dělá objem, ne obrysová čára. */
+  filter: drop-shadow(0 6px 12px rgba(43, 39, 35, .14));
+  transition: transform .35s cubic-bezier(.22, .68, .36, 1);
+  transform-style: preserve-3d;
+}
+/* Lehké naklonění při najetí — obrázek se „postaví", ne poskočí. */
+a:hover .ilustrace,
+.dlazdice-obrazkova:hover .ilustrace {
+  transform: translateY(-4px) rotate(-2deg) scale(1.04);
+}
+
+/* ── Rozcestník s ilustracemi ─────────────────────────────────────────── */
+.uvod-dlazdice { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
+.dlazdice-obrazkova {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 4px;
+  padding: 22px 16px 20px;
+  border: 1px solid #efe7da;
+  border-radius: 22px;
+  background: #fff;
+  overflow: hidden;
+  text-align: center;
+  text-decoration: none;
+  color: #2b2723;
+  transition: border-color .22s ease, box-shadow .22s ease, transform .22s ease;
+}
+.dlazdice-obrazkova::after {
+  content: '';
+  position: absolute;
+  inset: auto -20% -68% -20%;
+  height: 150px;
+  border-radius: 50%;
+  background: var(--dlazdice-barva, #f3ecdf);
+  opacity: .55;
+}
+.dlazdice-obrazkova:hover {
+  border-color: #d9cfbe;
+  transform: translateY(-3px);
+  box-shadow: 0 14px 32px rgba(43, 39, 35, .12);
+}
+.dlazdice-obrazek { position: relative; z-index: 1; margin-bottom: 6px; }
+.dlazdice-obrazkova .dlazdice-nazev {
+  position: relative; z-index: 1;
+  font-family: var(--font-nadpis), system-ui, sans-serif;
+  font-size: 19px; font-weight: 700;
+}
+.dlazdice-obrazkova .dlazdice-popis {
+  position: relative; z-index: 1;
+  font-size: 13px; color: #6b6156; max-width: 22ch;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   RODINA JAKO HLAVNÍ PRVEK ÚVODU
+   ══════════════════════════════════════════════════════════════════════════════ */
+.rodina-hero {
+  border: 1px solid #e8dfd2;
+  border-radius: 26px;
+  background:
+    radial-gradient(120% 100% at 12% 0%, #fff 0%, #fdf9f2 55%, #faf4ea 100%);
+  padding: 26px 26px 24px;
+  margin-bottom: 34px;
+  box-shadow: 0 10px 30px rgba(43, 39, 35, .06);
+}
+
+.rodina-hero-uvod {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+}
+.rodina-hero-text h1 {
+  margin: 0;
+  font-family: var(--font-nadpis), system-ui, sans-serif;
+  font-size: 30px; font-weight: 800; line-height: 1.1; letter-spacing: -.01em;
+}
+.rodina-hero-text h1 span { color: #d97757; }
+.rodina-hero-podnadpis {
+  margin: 10px 0 0; max-width: 46ch;
+  font-size: 15.5px; line-height: 1.6; color: #6b6156;
+}
+.rodina-hero-obrazek { flex: none; }
+
+.rodina-hero-formular { margin-top: 20px; }
+.rodina-hero-pohlavi { display: inline-flex; margin-bottom: 14px; }
+.rodina-hero-pole {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.rodina-hero-pole label { display: grid; gap: 5px; min-width: 0; }
+.rodina-hero-pole span {
+  font-size: 11.5px; font-weight: 700; letter-spacing: .04em;
+  text-transform: uppercase; color: #a2988a;
+}
+.rodina-hero-pole input {
+  min-height: 42px;
+  width: 100%;
+  border: 1px solid #e6dcc9;
+  border-radius: 12px;
+  background: #fff;
+  padding: 8px 12px;
+  font: inherit; font-size: 15px; color: #2b2723;
+  outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.rodina-hero-pole input:focus {
+  border-color: #d97757;
+  box-shadow: 0 0 0 3px rgba(217, 119, 87, .16);
+}
+.rodina-hero-pozn { margin: 10px 0 0; font-size: 12.5px; color: #8a7f71; }
+
+.rodina-hero-vysledky { margin-top: 22px; border-top: 1px solid #efe7da; padding-top: 18px; }
+.rodina-hero-vysledky h2 {
+  display: flex; align-items: center; gap: 7px; margin: 0 0 14px;
+  font-family: var(--font-nadpis), system-ui, sans-serif;
+  font-size: 18px; font-weight: 700; color: #2b2723;
+}
+.rodina-hero-vysledky h2 svg { color: #d97757; }
+
+/* Šest návrhů ve dvou nebo třech sloupcích — vždy beze zbytku. */
+.rodina-hero-mrizka {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; gap: 10px; grid-template-columns: 1fr;
+}
+.rodina-navrh {
+  border: 1px solid #efe7da; border-radius: 16px; background: #fff;
+  padding: 12px 14px; min-width: 0;
+}
+.rodina-navrh-hlava { display: flex; align-items: center; gap: 8px; }
+.rodina-navrh-hlava a {
+  font-family: var(--font-nadpis), system-ui, sans-serif;
+  font-size: 19px; font-weight: 700; color: #2b2723; text-decoration: none;
+  border-bottom: 2px solid #efe0cc;
+}
+.rodina-navrh-hlava a:hover { border-color: #d97757; }
+.rodina-navrh-hlava .srdicko { margin-left: auto; }
+.rodina-navrh-stitek {
+  display: inline-block; margin-top: 6px;
+  border-radius: 999px; background: #f4ece0; padding: 2px 9px;
+  font-size: 11px; font-weight: 700; color: #8a6320;
+}
+.rodina-navrh-duvody {
+  list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 3px;
+}
+.rodina-navrh-duvody li { font-size: 13px; line-height: 1.45; color: #6b6156; }
+.rodina-navrh-duvody li::before { content: '· '; color: #c4b8a7; }
+
+.rodina-hero-dal { margin: 16px 0 0; }
+.rodina-hero-dal a {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 28px;
+  font-size: 14px; font-weight: 600; color: #d97757; text-decoration: none;
+}
+.rodina-hero-dal a:hover { text-decoration: underline; }
+
+/* Mřížka sekcí na úvodu: 1 / 2 / 3 sloupce.
+   Šest karet se do každé varianty vejde beze zbytku, takže nikdy nevznikne
+   řádek s jednou osamělou kartou a prázdnem vedle ní. */
+.mrizka-sekce { grid-template-columns: 1fr; }
+@media (min-width: 340px) { .mrizka-sekce { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 760px) {
+  .mrizka-sekce { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .rodina-hero-mrizka { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (min-width: 420px) and (max-width: 759px) {
+  .rodina-hero-mrizka { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 719px) {
+  .rodina-hero { padding: 20px 18px; border-radius: 22px; }
+  .rodina-hero-uvod { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+  .rodina-hero-text h1 { font-size: 25px; }
+  .rodina-hero-podnadpis { font-size: 14.5px; }
+  .rodina-hero-obrazek { order: -1; }
+  .rodina-hero-pole { grid-template-columns: 1fr 1fr; }
+  .dlazdice-obrazkova { padding: 18px 12px 16px; }
+}
+
+@media (max-width: 339px) {
+  .rodina-hero-pole { grid-template-columns: 1fr; }
+  .uvod-dlazdice { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ilustrace { transition: none; }
+  a:hover .ilustrace, .dlazdice-obrazkova:hover .ilustrace { transform: none; }
+  .dlazdice-obrazkova { transition: none; }
+  .dlazdice-obrazkova:hover { transform: none; }
+}

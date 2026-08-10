@@ -1,13 +1,15 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import {
-  ArrowRight, Baby, Dog, Globe2, Heart, ListChecks, PawPrint, Scale, ShieldCheck, Users,
+  ArrowRight, Globe2, Heart, ListChecks, Lock, Scale, ShieldCheck, Users,
 } from 'lucide-react'
 import Shell from '@/components/names/Shell'
 import NameCard from '@/components/names/NameCard'
 import Rozvrzeni from '@/components/names/Rozvrzeni'
 import PasyJmen from '@/components/names/PasyJmen'
 import NadpisSekce from '@/components/names/NadpisSekce'
+import RodinaHero from '@/components/names/RodinaHero'
+import { Miminko, Stene } from '@/components/names/Ilustrace'
 import type { Druh } from '@/components/names/NadpisSekce'
 import { JMENA, ZEME } from '@/lib/names/data'
 import { jeNavrat, jeStalice, jeVrchol, jeVzestup, serad } from '@/lib/names/logic'
@@ -31,20 +33,25 @@ export const metadata: Metadata = {
   ],
 }
 
-/** Kdo pojmenovává — první a nejjednodušší otázka. */
+/**
+ * Kdo pojmenovává — první a nejjednodušší otázka.
+ *
+ * Místo ikon jsou tu kreslené ilustrace: mezi „miminko" a „zvíře" se má
+ * člověk rozhodnout na první pohled a dvě čárové ikonky vypadají stejně.
+ */
 const KOHO = [
   {
     href: '/vybrat-jmeno-pro-dite',
     nazev: 'Miminko',
     popis: 'Holčičku, chlapečka nebo ještě nevíme',
-    Ikona: Baby,
+    Obrazek: Miminko,
     barva: '#f8dfe6',
   },
   {
     href: '/vybrat-jmeno-pro-zvire',
     nazev: 'Zvíře',
     popis: 'Psa, kočku, králíka i papouška',
-    Ikona: PawPrint,
+    Obrazek: Stene,
     barva: '#f6e6d3',
   },
 ]
@@ -104,23 +111,16 @@ export default function Domov() {
   return (
     <Shell>
       <Rozvrzeni>
-        <section className="hero-zare uvod-hero">
-          <h1>
-            Vybrat jméno není o tom najít <span>víc</span> jmen
-          </h1>
-          <p className="uvod-podnadpis">
-            Je to o tom mít v tom jasno. Neukazujeme vám další nekonečný seznam —
-            pomůžeme vám zúžit výběr, porovnat finalisty a dojít k rozhodnutí,
-            u kterého zůstanete.
-          </p>
-        </section>
+        {/* Hlavní prvek stránky: jméno, které ladí k rodině. Tím se web
+            liší od katalogů — a proto to nesmí být schované v podstránce. */}
+        <RodinaHero />
 
         <section className="uvod-koho">
-          <h2 className="uvod-otazka">Koho pojmenováváte?</h2>
-          <div className="dlazdice uvod-dlazdice nastup">
-            {KOHO.map(({ href, nazev, popis, Ikona, barva }) => (
-              <Link key={href} href={href} style={{ ['--dlazdice-barva' as string]: barva }}>
-                <span className="dlazdice-ikona"><Ikona size={20} aria-hidden /></span>
+          <h2 className="uvod-otazka">Nebo začněte od začátku — koho pojmenováváte?</h2>
+          <div className="uvod-dlazdice nastup">
+            {KOHO.map(({ href, nazev, popis, Obrazek, barva }) => (
+              <Link key={href} href={href} className="dlazdice-obrazkova" style={{ ['--dlazdice-barva' as string]: barva }}>
+                <span className="dlazdice-obrazek"><Obrazek velikost={84} /></span>
                 <span className="dlazdice-nazev">{nazev}</span>
                 <span className="dlazdice-popis">{popis}</span>
               </Link>
@@ -222,7 +222,7 @@ export default function Domov() {
               </p>
             </div>
             <div className="duvera-bod">
-              <span className="duvera-ikona"><Dog size={18} aria-hidden /></span>
+              <span className="duvera-ikona"><Lock size={18} aria-hidden /></span>
               <h3>Nic po vás nechceme</h3>
               <p>
                 Žádná registrace, žádný e-mail, žádné sledovací skripty.
@@ -284,7 +284,7 @@ function Sekce({
         </Link>
       </div>
       <p className="mb-4 max-w-2xl text-[13.5px] text-[#8a7f71]">{popis}</p>
-      <div className="nastup mrizka-jmen">
+      <div className="nastup mrizka-jmen mrizka-sekce">
         {jmena.map((j, i) => <NameCard key={j.id} jmeno={j} poradi={i + 1} />)}
       </div>
     </section>
