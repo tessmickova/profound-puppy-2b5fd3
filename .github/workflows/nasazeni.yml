@@ -11,9 +11,13 @@
 # Nastavení (jednou):
 #   1. V Cloudflare vytvořte API token s oprávněním
 #      „Workers Scripts: Edit" pro účet, kde web běží.
-#   2. V GitHubu: Settings → Secrets and variables → Actions → New secret
+#   2. V GitHubu: Settings → Secrets and variables → ACTIONS → New secret
 #      CLOUDFLARE_API_TOKEN  = ten token
 #      CLOUDFLARE_ACCOUNT_ID = ID účtu z Cloudflare dashboardu
+#
+#      Pozor na záložku: „Codespaces“ je jiné úložiště. Tajemství
+#      uložená tam se dostanou jen do Codespace, do běhu Actions nikdy.
+#      V logu je to vidět jako `Secret source: Actions` a prázdné hodnoty.
 #
 # Token nikdy nepatří do repozitáře ani do zprávy — jen do tajemství.
 
@@ -48,7 +52,8 @@ jobs:
           [ -z "$UCET" ] && chybi="$chybi CLOUDFLARE_ACCOUNT_ID"
           if [ -n "$chybi" ]; then
             echo "::error::Nasazení se nespustilo, chybí tajemství:$chybi"
-            echo "Doplňte je v Settings → Secrets and variables → Actions."
+            echo "Doplňte je v Settings → Secrets and variables → ZÁLOŽKA ACTIONS."
+            echo "Záložka Codespaces je jiné úložiště — do běhu Actions se odtud nic nedostane."
             exit 1
           fi
           echo "Tajemství jsou nastavená."

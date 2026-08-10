@@ -198,10 +198,15 @@ co chybí. Nastavit je stačí jednou:
 
 1. Cloudflare → **My Profile → API Tokens → Create Token**, oprávnění
    **Workers Scripts: Edit** pro účet, kde web běží.
-2. GitHub → **Settings → Secrets and variables → Actions → New repository
-   secret**:
+2. GitHub → **Settings → Secrets and variables → záložka Actions → New
+   repository secret**:
    - `CLOUDFLARE_API_TOKEN` — vytvořený token
    - `CLOUDFLARE_ACCOUNT_ID` — ID účtu z Cloudflare dashboardu
+
+> **Pozor na záložku.** Na stejné stránce je i **Codespaces** — to je jiné
+> úložiště. Tajemství uložená tam se dostanou pouze do Codespace, do běhu
+> GitHub Actions nikdy. V logu běhu je to poznat: stojí tam
+> `Secret source: Actions` a hodnoty jsou prázdné.
 
 Workflow před nasazením spustí `npm run kontrola` (typy, data, testy)
 a po nasazení `npm run kontrola:seo` proti **skutečně vydanému** webu.
