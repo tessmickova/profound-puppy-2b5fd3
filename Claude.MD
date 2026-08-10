@@ -47,7 +47,7 @@ jména, ne dva zápisy jednoho.
 
 | Cesta | Soubor | Obsah |
 |---|---|---|
-| `/` | `app/page.tsx` | rozcestník podle stavu rozhodování: „koho pojmenováváte" → „kde jste teď" → objevování |
+| `/` | `app/page.tsx` | hlavní prvek je rodinný nástroj (jméno ladící k rodině), pak rozcestník a objevování |
 | `/vybrat-jmeno-pro-dite` | `app/vybrat-jmeno-pro-dite/page.tsx` | „nevím, kde začít" — hledač dvojic pro děti |
 | `/vybrat-jmeno-pro-zvire` | `app/vybrat-jmeno-pro-zvire/page.tsx` | totéž pro osm druhů zvířat |
 | `/porovnat-jmena` | `app/porovnat-jmena/page.tsx` | porovnání 2–5 finalistů vedle sebe |
@@ -103,6 +103,15 @@ ani našeptávačem nepohne. První otázka je „koho pojmenováváte", druhá
   Pozice se po 15 s překlápí na druhou stranu, lišta se střídá po 10 s.
 - **VyberPlochy.tsx** — náhled ploch na `/reklama`: zmenšený web, ve kterém si
   zákazník klepnutím vybere konkrétní místo a délku 1–3 měsíce.
+- **RodinaHero.tsx** — hlavní prvek úvodní stránky. Příjmení, maminka,
+  tatínek, sourozenec => jména, která k rodině ladí, u každého s důvody.
+  Tím se web liší od katalogů, takže to nesmí být schované v podstránce.
+- **Ilustrace.tsx** — vlastní kreslené SVG (štěně, koťátko, miminko,
+  rodina + drobné značky do nadpisů). Ne ikony z knihovny: na rozcestníku
+  „miminko x zvíře" nesou čárové ikonky nulovou emoci. Průhledné pozadí,
+  žádný externí požadavek (CSP by cizí obrázek stejně zablokovala), ostré
+  na každém displeji a vlastní práce, takže žádné licence. Objem dělají
+  vrstvené přechody a měkký stín, ne obrys.
 - **Hledac.tsx** — „nevím, kde začít": nabízí kontrastní dvojice jmen a z voleb
   odvodí vkus. První návrhy ukáže **po třech kolech**, ne až na konci — nikdo
   nemusí dojít do konce kvízu. U každého návrhu je rozklikávací „proč mi ho
@@ -292,6 +301,19 @@ Aby web ve vývoji bral reklamy ze služby:
 Nasazení, proměnné prostředí a postup krok za krokem: **`docs/NASAZENI.md`**.
 Kontrola před spuštěním (zařízení, GDPR, AI, co ještě vyplnit):
 **`docs/PRED-SPUSTENIM.md`**. Doporučené domény: **`docs/DOMENY.md`**.
+
+## Rozvržení a vzduch kolem reklamy
+
+Reklamní sloupce jsou přišpendlené k oknu, ale **nelepí na jeho hranu**:
+`--reklamni-okraj` je odsune od kraje displeje a `--reklamni-mezera` je
+oddělí od obsahu. Obsah se pak posune o celý blok
+`okraj + sloupec + mezera`. Bez toho oko čte sloupec jako součást stránky
+a inzerát se ztratí; nalepený na hranu navíc působí jako chyba vykreslení.
+
+Mřížka sekcí na úvodu (`.mrizka-sekce`) má **pevný počet sloupců 1 / 2 / 3**,
+ne `auto-fill`. Šest karet se do každé varianty vejde beze zbytku, takže
+nikdy nevznikne řádek s jednou osamělou kartou a prázdnem vedle ní.
+V katalogu, kde je počet jmen libovolný, `auto-fill` zůstává.
 
 ## Konvence
 
