@@ -178,3 +178,45 @@ prozrazený.
 
 V repozitáři zůstávají `vercel.json` a `netlify.toml` z dřívějška. Pro
 Cloudflare se nepoužívají; smažte je, až bude přechod hotový.
+
+## Proč se změny neobjeví na webu samy
+
+Commit v repozitáři **není** totéž co web. Web běží na Cloudflare a mění se
+až po `wrangler deploy`. Dokud se nenasadí, může být na adrese klidně měsíc
+starý build a nic to nenapoví — přesně to se stalo: v repozitáři byly
+rozhodovací nástroje, dobové zařazení jmen i nový úvod, ale na
+`svetjmen.tereza-holtzerova.workers.dev` pořád stála verze bez nich a
+`/porovnat-jmena` vracelo 404.
+
+### Nasazení přes GitHub Actions (doporučené)
+
+`.github/workflows/nasazeni.yml` nasadí web po pushi do `main` nebo do
+vývojové větve, případně ručně tlačítkem v záložce **Actions**.
+
+Bez tajemství je workflow nečinné — zastaví se v prvním kroku a napíše,
+co chybí. Nastavit je stačí jednou:
+
+1. Cloudflare → **My Profile → API Tokens → Create Token**, oprávnění
+   **Workers Scripts: Edit** pro účet, kde web běží.
+2. GitHub → **Settings → Secrets and variables → Actions → New repository
+   secret**:
+   - `CLOUDFLARE_API_TOKEN` — vytvořený token
+   - `CLOUDFLARE_ACCOUNT_ID` — ID účtu z Cloudflare dashboardu
+
+Workflow před nasazením spustí `npm run kontrola` (typy, data, testy)
+a po nasazení `npm run kontrola:seo` proti **skutečně vydanému** webu.
+Rozbitý web se tak nenasadí a napůl proběhlé nasazení se pozná.
+
+### Nasazení z počítače
+
+```bash
+npx wrangler login          # jednou
+npm run cf:deploy           # sestaví a nasadí
+```
+
+### Token, který se objevil v chatu, je nutné zrušit
+
+Dřívější API token byl vložený do konverzace. Takový token se považuje za
+prozrazený: zrušte ho v Cloudflare a vytvořte nový. Nový token patří jen
+do GitHub secrets nebo do proměnných prostředí — nikdy do repozitáře
+a nikdy do zprávy.
