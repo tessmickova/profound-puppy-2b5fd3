@@ -84,7 +84,23 @@ jobs:
 
       # Ověření proti skutečně vydanému HTML — ne proti tomu, co jsme
       # sestavili. Kdyby nasazení proběhlo napůl, pozná se to tady.
+      #
+      # Opakuje se: Cloudflare rozváží nové soubory po světě a chvíli po
+      # nasazení část adres ještě odpovídá ze starého vydání. Poprvé to
+      # vypadalo jako šest rozbitých stránek a špatné canonical adresy —
+      # přitom za minutu bylo všechno v pořádku. Jedno měření hned po
+      # nasazení tedy nic nedokazuje.
       - name: Kontrola nasazeného webu
         run: |
-          sleep 15
-          npm run kontrola:seo -- https://svetjmen.tereza-holtzerova.workers.dev
+          adresa=https://svetjmen.tereza-holtzerova.workers.dev
+          for pokus in 1 2 3; do
+            echo "── pokus $pokus ─────────────────────────────"
+            sleep 45
+            if npm run kontrola:seo -- "$adresa"; then
+              echo "Nasazený web je v pořádku (pokus $pokus)."
+              exit 0
+            fi
+            echo "Ještě to nesedí, zkusíme to znovu."
+          done
+          echo "::error::Nasazený web neprošel kontrolou ani po třech pokusech."
+          exit 1
