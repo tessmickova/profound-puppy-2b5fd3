@@ -337,14 +337,20 @@
   gap: 2px;
 }
 .prepinac button {
-  flex: 1;
+  /* `flex-basis: 0` srovná obě tlačítka na stejnou šířku bez ohledu na
+     délku textu — jinak je delší popisek širší a přepínač je nesouměrný.
+     `nowrap` pak brání tomu, aby se delší z nich zalomilo na dva řádky
+     a tlačítka měla různou výšku. */
+  flex: 1 1 0;
+  min-width: 0;
+  white-space: nowrap;
   border: none;
   background: none;
   font: inherit;
   font-size: 12.5px;
   font-weight: 600;
   color: #6b6156;
-  padding: 6px 8px;
+  padding: 6px 10px;
   border-radius: 999px;
   cursor: pointer;
   display: inline-flex;
@@ -2320,6 +2326,19 @@ body:has(.svetjmen-shell) { background-color: #faf6ef; }
 .svetjmen-shell h1 { font-weight: 800; letter-spacing: -0.015em; }
 .svetjmen-shell h3 { font-weight: 700; }
 
+/* Výchozí velikosti nadpisů.
+   Tailwind v základní vrstvě velikost nadpisů ruší, takže `h1` bez vlastního
+   pravidla vyjde stejně velký jako běžný text. Na `/porovnat-jmena`
+   a dalších nástrojích to tak opravdu vypadalo — nadpis stránky splýval
+   s odstavcem. Tohle je záchranná síť; konkrétnější pravidla ji přebijí. */
+.svetjmen-shell h1 { font-size: 32px; }
+.svetjmen-shell h2 { font-size: 21px; }
+.svetjmen-shell h3 { font-size: 17px; }
+
+@media (min-width: 640px) {
+  .svetjmen-shell h1 { font-size: 38px; }
+}
+
 /* ── Hledání jména ───────────────────────────────────────────────────────
    Nejčastější důvod návštěvy je „co znamená tohle jméno" — proto je pole
    nahoře a nabízí hned po prvním písmenu. */
@@ -2566,7 +2585,7 @@ body:has(.svetjmen-shell) { background-color: #faf6ef; }
    Nástroj patří nahoru, text až za něj. Kdo sem přijde s hotovými
    favority, nechce číst — chce je postavit vedle sebe. */
 .nastroj-hlava { margin-bottom: 22px; }
-.nastroj-hlava h1 { margin: 0 0 8px; }
+.nastroj-hlava h1 { margin: 0 0 10px; line-height: 1.08; }
 .nastroj-podnadpis { margin: 0; max-width: 54ch; font-size: 16.5px; color: #6b6156; }
 
 .porovnani, .test-jmena {
@@ -2895,12 +2914,14 @@ body:has(.svetjmen-shell) { background-color: #faf6ef; }
   .cesta:hover { transform: none; }
 }
 
-/* Hlavní nadpis stránky nese stejný vizuál jako sekce, jen o stupeň větší. */
+/* Hlavní nadpis stránky nese stejný vizuál jako sekce, jen o stupeň větší.
+   Velikost drží krok s nadpisy na nástrojových stránkách — 27 px vedle
+   38 px vypadalo, jako by katalog patřil k jinému webu. */
 .nadpis-sekce.nadpis-hlavni {
-  font-size: 27px;
-  letter-spacing: -.01em;
+  font-size: 33px;
+  letter-spacing: -.015em;
 }
-@media (max-width: 559px) { .nadpis-sekce.nadpis-hlavni { font-size: 23px; } }
+@media (max-width: 559px) { .nadpis-sekce.nadpis-hlavni { font-size: 27px; } }
 
 /* ── Detail jména jako pracovní stůl ───────────────────────────────────── */
 .jmeno-akce { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 14px 0 22px; }
@@ -3018,7 +3039,13 @@ a:hover .ilustrace,
 .rodina-hero-obrazek { flex: none; }
 
 .rodina-hero-formular { margin-top: 20px; }
-.rodina-hero-pohlavi { display: inline-flex; margin-bottom: 14px; }
+/* Na širokém displeji stačí šířka obsahu, na telefonu ať pás sedne přes
+   celou šířku — jinak by se popisky tiskly k sobě. */
+.rodina-hero-pohlavi { display: flex; width: fit-content; max-width: 100%; margin-bottom: 14px; }
+@media (max-width: 559px) {
+  .rodina-hero-pohlavi { width: 100%; }
+  .rodina-hero-pohlavi button { font-size: 12px; padding: 7px 6px; }
+}
 .rodina-hero-pole {
   display: grid;
   gap: 10px;
@@ -3122,6 +3149,84 @@ a:hover .ilustrace,
   a:hover .ilustrace, .dlazdice-obrazkova:hover .ilustrace { transform: none; }
   .dlazdice-obrazkova { transition: none; }
   .dlazdice-obrazkova:hover { transform: none; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   DETAIL JMÉNA
+
+   Tyhle styly chyběly úplně: stránka měla správné třídy, ale žádná pravidla
+   k nim, takže se vykreslovala jako holé HTML — nadpis v základní velikosti
+   a popisný seznam jako dva sloupce textu pod sebou. Testy to nechytily,
+   protože kontrolovaly jen texty, ne vzhled.
+   ══════════════════════════════════════════════════════════════════════════════ */
+.jmeno-detail { max-width: 62ch; }
+
+.jmeno-hlava { margin-bottom: 22px; }
+.jmeno-hlava h1 {
+  margin: 0;
+  font-family: var(--font-nadpis), system-ui, sans-serif;
+  font-size: 40px; font-weight: 800; line-height: 1.05; letter-spacing: -.01em;
+  color: #2b2723;
+}
+.jmeno-vyznam {
+  margin: 8px 0 0;
+  font-size: 17px; line-height: 1.6; color: #6b6156;
+}
+
+/* Popisný seznam jako čitelné řádky: vlevo tichý štítek, vpravo obsah.
+   Na telefonu se to skládá pod sebe, jinak by na štítek zbyla dvě slova
+   na řádek. */
+.jmeno-udaje {
+  margin: 0 0 30px;
+  border-top: 1px solid #efe7da;
+}
+.jmeno-udaje > div {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2px;
+  border-bottom: 1px solid #efe7da;
+  padding: 13px 0;
+}
+.jmeno-udaje dt {
+  font-size: 11.5px; font-weight: 700; letter-spacing: .04em;
+  text-transform: uppercase; color: #a2988a;
+}
+.jmeno-udaje dd {
+  margin: 0;
+  font-size: 15.5px; line-height: 1.6; color: #2b2723;
+}
+.jmeno-udaje dd strong { font-weight: 700; }
+
+@media (min-width: 560px) {
+  .jmeno-udaje > div { grid-template-columns: 190px minmax(0, 1fr); gap: 16px; align-items: baseline; }
+  .jmeno-udaje dt { padding-top: 2px; }
+}
+
+.jmeno-dalsi { margin: 0 0 30px; }
+.jmeno-dalsi h2 {
+  margin: 0 0 4px;
+  font-family: var(--font-nadpis), system-ui, sans-serif;
+  font-size: 20px; font-weight: 700; color: #2b2723;
+}
+.jmeno-dalsi > p { margin: 0 0 12px; font-size: 14.5px; color: #6b6156; }
+.jmeno-dalsi ul {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.jmeno-dalsi li { min-width: 0; }
+.jmeno-dalsi a {
+  display: inline-flex; align-items: center; min-height: 36px;
+  border: 1px solid #e8dfd2; border-radius: 999px; background: #fff;
+  padding: 6px 14px;
+  font-size: 14px; font-weight: 600; color: #2b2723; text-decoration: none;
+  transition: border-color .15s ease, background .15s ease;
+}
+.jmeno-dalsi a:hover { border-color: #d97757; background: #fdf7f3; }
+
+@media (max-width: 559px) {
+  .jmeno-hlava h1 { font-size: 31px; }
+  .jmeno-vyznam { font-size: 15.5px; }
+  .jmeno-dalsi h2 { font-size: 18px; }
 }
 
 }
