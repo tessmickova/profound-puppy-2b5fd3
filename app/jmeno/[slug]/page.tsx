@@ -9,6 +9,7 @@ import { ENTITY_SE_STRANKOU, entitaPodleSlugu, podobna, zemeEntity } from '@/lib
 import { KATEGORIE_INFO, VLNA_INFO } from '@/lib/names/types'
 import { ROK_REVIZE, vlnaJmena } from '@/lib/names/vlny'
 import { variantyZapisu } from '@/lib/names/zapis'
+import { osloveni, zdrobneliny } from '@/lib/names/cestina'
 import { WEB } from '@/lib/names/seo'
 import { velke } from '@/lib/names/logic'
 
@@ -55,6 +56,8 @@ export default async function JmenoStranka({ params }: { params: Promise<{ slug:
   // který ji má (české dětské jméno).
   const vlna = e.vyskyty.map(vlnaJmena).find(Boolean)
   const jineZapisy = variantyZapisu(e.jmeno)
+  const rodZensky = e.kategorie.some(k => ['holka', 'fenka', 'kocka'].includes(k))
+  const mazlive = zdrobneliny(e.jmeno, rodZensky, e.domacky)
 
   // DefinedTerm sedí na to, co stránka opravdu je: heslo se slovníkovým
   // významem. Recenze ani hodnocení si nevymýšlíme.
@@ -129,10 +132,22 @@ export default async function JmenoStranka({ params }: { params: Promise<{ slug:
               </dd>
             </div>
           )}
-          {e.domacky.length > 0 && (
+          <div>
+            <dt>Jak se volá</dt>
+            <dd><strong>{osloveni(e.jmeno)}!</strong></dd>
+          </div>
+          {(mazlive.bezne.length > 0 || mazlive.hrave.length > 0) && (
             <div>
-              <dt>Domácké tvary</dt>
-              <dd>{e.domacky.join(', ')}</dd>
+              <dt>Zdrobněliny</dt>
+              <dd>
+                {mazlive.bezne.join(', ')}
+                {mazlive.hrave.length > 0 && (
+                  <span className="jmeno-poznamka">
+                    Mazlivě a hravě: {mazlive.hrave.join(', ')}. Návrhy podle
+                    českých vzorů — vlastní přezdívka je vždycky nejlepší.
+                  </span>
+                )}
+              </dd>
             </div>
           )}
           <div>

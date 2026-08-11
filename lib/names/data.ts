@@ -68,7 +68,7 @@ let poradi = 0
 const vsechna: Jmeno[] = []
 
 const SAMCI_KATEGORIE: Kategorie[] = ['pes', 'kocour']
-const SAMICI_KATEGORIE: Kategorie[] = ['fenka', 'kocka']
+const SAMICI_KATEGORIE: Kategorie[] = ['fenka', 'kocka', 'koza']
 
 function pohlaviZvirete(jmeno: string, kategorie: Kategorie): PohlaviZvirete | undefined {
   if (kategorie === 'kluk' || kategorie === 'holka') return undefined
@@ -213,6 +213,94 @@ pridej('cz', 'papousek', [
 pridej('cz', 'krecek', [
   ['Křupka', 'chroupe, syslí a je k sežrání', 84, ['hravé'], 'živá'],
   ['Fíček',  'kapesní kamarád do dlaně', 74, ['hravé'], 'vyvážená'],
+])
+
+// ── Další domácí zvířata ──────────────────────────────────────────────────
+// Široká paleta druhů, které Češi doma opravdu mají. U každého druhu
+// startovní sada — ať výběr zvířete nekončí prázdnou stránkou.
+pridej('cz', 'morce', [
+  ['Pišta',    'pískač, který komentuje všechno', 86, ['hravé'], 'živá'],
+  ['Piškot',   'sladký, kulatý a pořád po ruce', 84, ['hravé'], 'klidná'],
+  ['Cvrček',   'malý a pořád slyšet', 82, ['hravé', 'přírodní'], 'živá'],
+  ['Bubu',     'dvě slabiky, které zvládne i batole', 81, ['hravé'], 'klidná'],
+  ['Ferda',    'pracovitý jako mravenec', 80, ['tradiční', 'hravé'], 'živá'],
+  ['Šmudla',   'věčně od pilin', 79, ['hravé'], 'klidná'],
+  ['Kvído',    'noblesa v kleci s hoblinami', 78, ['elegantní', 'hravé'], 'klidná'],
+  ['Pipin',    'malý král hobitího vzrůstu', 77, ['mytologické', 'hravé'], 'živá'],
+  ['Řepka',    'žlutá pochoutka na prvním místě', 75, ['přírodní', 'hravé'], 'klidná'],
+  ['Mrkvička', 'jasná volba podle jídelníčku', 74, ['přírodní', 'hravé'], 'klidná'],
+])
+pridej('cz', 'had', [
+  ['Syček',    'tichý sykot místo štěkotu', 84, ['přírodní'], 'klidná'],
+  ['Kaa',      'had z Knihy džunglí', 83, ['mytologické'], 'klidná'],
+  ['Monty',    'pocta nejslavnějšímu pythonovi', 82, ['hravé'], 'klidná'],
+  ['Naga',     'hadí král z asijských legend', 80, ['mytologické'], 'vyvážená'],
+  ['Šupinka',  'něžné jméno pro šupinatého parťáka', 79, ['hravé', 'přírodní'], 'klidná'],
+  ['Esíčko',   'stočený přesně do svého jména', 78, ['hravé'], 'klidná'],
+  ['Bazil',    'bazilišek v domácím vydání', 77, ['mytologické', 'hravé'], 'klidná'],
+  ['Zmijka',   'drobná a rychlá — jen naoko nebezpečná', 76, ['přírodní', 'hravé'], 'živá'],
+  ['Hypno',    'pohled, který vás dostane', 74, ['hravé'], 'klidná'],
+  ['Uzel',     'ráno v teráriu vždycky jeden najdete', 73, ['hravé'], 'klidná'],
+])
+pridej('cz', 'rybka', [
+  ['Bublina',  'mluví v bublinách', 86, ['hravé'], 'klidná'],
+  ['Nemo',     'nejhledanější rybka světa', 85, ['hravé'], 'živá'],
+  ['Dory',     'zapomnětlivá kamarádka z filmu', 83, ['hravé'], 'živá'],
+  ['Perla',    'poklad akvária', 82, ['elegantní'], 'klidná'],
+  ['Zlatka',   'zlatá rybka — přání se nekonají, radost ano', 81, ['tradiční', 'hravé'], 'klidná'],
+  ['Ploutvička', 'jemné jméno pro tichého plavce', 79, ['hravé', 'přírodní'], 'klidná'],
+  ['Neonka',   'svítí přes celé akvárium', 78, ['přírodní', 'hravé'], 'živá'],
+  ['Žralok',   'ironie pro tříčlennou rybku', 76, ['hravé'], 'živá'],
+  ['Kapka',    'malá část velkého moře', 75, ['přírodní'], 'klidná'],
+  ['Šupík',    'šupinatý kluk odvedle', 73, ['hravé'], 'klidná'],
+])
+pridej('cz', 'zelva', [
+  ['Turbo',    'ironie, kterou pochopí každá návštěva', 86, ['hravé', 'sportovní'], 'klidná'],
+  ['Loudal',   'pomalu, ale jistě — hlavně k misce', 84, ['hravé'], 'klidná'],
+  ['Krunýřek', 'domeček nosí s sebou', 82, ['hravé', 'přírodní'], 'klidná'],
+  ['Donatello','želví ninja s renesančním jménem', 81, ['hravé', 'mytologické'], 'vyvážená'],
+  ['Metuzalém','dožije se vás všech', 79, ['mytologické', 'hravé'], 'klidná'],
+  ['Žofka',    'moudrá dáma v krunýři', 78, ['tradiční', 'hravé'], 'klidná'],
+  ['Šnečko',   'popleta, co si spletl druh', 76, ['hravé'], 'klidná'],
+  ['Pancíř',   'rytíř bez koně', 75, ['královské', 'hravé'], 'klidná'],
+  ['Betonka',  'tvrdá slečna', 73, ['hravé'], 'klidná'],
+  ['Guliver',  'cestovatel vlastním tempem', 72, ['mytologické'], 'klidná'],
+])
+pridej('cz', 'fretka', [
+  ['Bandita',  'maska přes oči a čisté svědomí', 86, ['hravé'], 'živá'],
+  ['Zorro',    'mstitel se šuplíkem plným ponožek', 84, ['hravé', 'mytologické'], 'živá'],
+  ['Šmejdil',  'prohledá každou kapsu', 83, ['hravé'], 'živá'],
+  ['Čenich',   'napřed nos, pak zbytek fretky', 81, ['přírodní', 'hravé'], 'živá'],
+  ['Rarášek',  'zlobí s grácií', 80, ['hravé', 'mytologické'], 'živá'],
+  ['Šupito',   'rychlost jménem', 78, ['hravé', 'sportovní'], 'živá'],
+  ['Lupič',    'ukradne klíče a srdce', 77, ['hravé'], 'živá'],
+  ['Vydřička', 'vodní příbuzná v suchozemské verzi', 75, ['přírodní', 'hravé'], 'živá'],
+  ['Ponožka',  'podle nejčastější kořisti', 74, ['hravé'], 'živá'],
+  ['Tunel',    'kam zmizí, tam je doma', 72, ['hravé'], 'živá'],
+])
+pridej('cz', 'koza', [
+  ['Róza',     'koza Róza — česká klasika', 88, ['tradiční', 'hravé'], 'živá'],
+  ['Líza',     'drzá a chytrá', 84, ['hravé'], 'živá'],
+  ['Heidi',    'koza z hor jako z knížky', 82, ['tradiční', 'přírodní'], 'vyvážená'],
+  ['Cecilka',  'noblesní dáma z chlívku', 80, ['tradiční', 'elegantní'], 'klidná'],
+  ['Mekota',   'jméno, které si řekla sama', 79, ['hravé'], 'živá'],
+  ['Mína',     'krátké a mečivé', 77, ['tradiční'], 'klidná'],
+  ['Rohatka',  'parohy ne, růžky ano', 76, ['přírodní', 'hravé'], 'živá'],
+  ['Bety',     'kamarádka na pastvě', 75, ['hravé'], 'vyvážená'],
+  ['Karkulka', 'pohádka na dvorku', 74, ['hravé', 'mytologické'], 'živá'],
+  ['Pampeliška', 'sní všechno žluté', 72, ['přírodní', 'hravé'], 'klidná'],
+])
+pridej('cz', 'leguan', [
+  ['Drak',     'drak do bytu — oheň nehrozí, jen se sluní', 86, ['mytologické'], 'klidná'],
+  ['Iggy',     'iguana pro kamarády', 84, ['hravé'], 'klidná'],
+  ['Smaug',    'drak ze Středozemě na radiátoru', 83, ['mytologické'], 'klidná'],
+  ['Spike',    'ostny, které nikoho nebodnou', 81, ['hravé', 'sportovní'], 'vyvážená'],
+  ['Dino',     'dinosaurus kapesní velikosti', 80, ['hravé'], 'klidná'],
+  ['Yoshi',    'zelený parťák ze hry', 78, ['hravé'], 'živá'],
+  ['Godzila',  'metropole je v bezpečí, terárium ne', 77, ['hravé', 'mytologické'], 'klidná'],
+  ['Ozzy',     'rocker s šupinami', 75, ['hravé'], 'vyvážená'],
+  ['Ještěrka', 'prostě a přesně', 74, ['přírodní'], 'klidná'],
+  ['Kamil',    'kamarád chameleonů', 72, ['hravé'], 'klidná'],
 ])
 
 // ══ SLOVENSKO ════════════════════════════════════════════════════════════════
@@ -1857,6 +1945,81 @@ pridej('cz', 'holka', [
   ['Emily',   'pracovitá — anglická podoba Emílie', 82, ['moderní', 'elegantní'], 'vyvážená', []],
   ['Vivien',  'živá — jméno, které se nedá přeslechnout', 79, ['moderní', 'elegantní'], 'živá', []],
   ['Rebeka',  'ta, která poutá — měkké a starobylé zároveň', 78, ['moderní'], 'klidná', []],
+])
+
+// Rozšíření katalogu kvůli rodinnému ladění: čím víc skutečně používaných
+// českých jmen, tím větší šance, že něco sedne k oběma rodičům
+// i sourozenci najednou. Pořád platí: jen jména, která se v Česku
+// opravdu dávají — žádná výplň.
+pridej('cz', 'holka', [
+  // Modernější jména na vzestupu.
+  ['Vanesa',    'motýl — světové jméno s hebkým koncem', 82, ['moderní', 'elegantní'], 'vyvážená', []],
+  ['Nora',      'světlo — dvě slabiky, žádné zdrobňování nutné', 83, ['moderní'], 'vyvážená', []],
+  ['Alma',      'živitelka, duše — krátké a starobylé zároveň', 79, ['moderní'], 'klidná', []],
+  ['Olívie',    'oliva — mírové jméno s jižním sluncem', 82, ['moderní', 'elegantní'], 'klidná', []],
+  ['Amélie',    'pracovitá — francouzská sestřenice Amálie', 81, ['moderní', 'elegantní'], 'klidná', []],
+  ['Šarlota',   'svobodná — královské jméno v českém kabátě', 80, ['moderní', 'královské'], 'vyvážená', []],
+  ['Liliana',   'lilie — květinové jméno s dlouhým třpytem', 79, ['moderní', 'přírodní'], 'klidná', []],
+  ['Elena',     'pochodeň — jižní podoba Heleny', 80, ['moderní', 'elegantní'], 'klidná', []],
+  ['Alice',     'vznešená — jméno z říše divů', 81, ['moderní', 'elegantní'], 'vyvážená', [1]],
+  // Babiččina jména, která se vracejí.
+  ['Johana',    'Bůh je milostivý — pevné jméno se starou duší', 80, ['tradiční'], 'vyvážená', [8]],
+  ['Dorota',    'boží dar — jméno z pohádek, které se vrací', 76, ['tradiční'], 'klidná', [2]],
+  ['Apolena',   'zasvěcená Apollónovi — vzácný návrat', 74, ['tradiční'], 'klidná', [2]],
+  ['Antonie',   'neocenitelná — prvorepubliková noblesa', 77, ['tradiční', 'elegantní'], 'klidná', [6]],
+  ['Františka', 'svobodná — jméno po prababičce, co zase sluší', 75, ['tradiční'], 'klidná', [3]],
+  ['Edita',     'bojující o štěstí — strohá elegance', 74, ['tradiční', 'elegantní'], 'klidná', []],
+  // Stálice každé generace.
+  ['Magdaléna', 'z Magdaly — dlouhé jméno s krásnými zkráceninami', 81, ['tradiční'], 'vyvážená', [7]],
+  ['Markéta',   'perla — jméno letních luk', 82, ['tradiční'], 'vyvážená', [7]],
+  ['Eva',       'živoucí — první jméno vůbec', 80, ['tradiční'], 'vyvážená', [12]],
+  ['Gabriela',  'Bůh je má síla — měkké a důstojné', 79, ['tradiční', 'elegantní'], 'vyvážená', [3]],
+  ['Helena',    'pochodeň — jméno, pro které se vedly války', 78, ['tradiční'], 'klidná', [8]],
+  // Jména generace dnešních maminek.
+  ['Monika',    'rádkyně — jméno osmdesátých let', 76, ['tradiční'], 'vyvážená', [5]],
+  ['Šárka',     'divoká skála — ryze české jméno z pověstí', 75, ['tradiční'], 'živá', [6]],
+  ['Andrea',    'statečná — jméno generace maminek', 75, ['moderní'], 'vyvážená', [9]],
+  ['Simona',    'naslouchající — hladké a sebevědomé', 74, ['moderní', 'elegantní'], 'vyvážená', [12]],
+  ['Alena',     'světlá — česká klasika s měkkým středem', 74, ['tradiční'], 'klidná', [8]],
+  ['Ivana',     'Bůh je milostivý — pevné jméno s ruskou ozvěnou', 73, ['tradiční'], 'vyvážená', [4]],
+  // Vzácná bez ohledu na dobu.
+  ['Berenika',  'nesoucí vítězství — antická vzácnost', 72, ['elegantní', 'královské'], 'klidná', []],
+])
+pridej('cz', 'kluk', [
+  // Modernější jména na vzestupu.
+  ['Hugo',      'duchaplný — krátké jméno s noblesou', 83, ['moderní', 'elegantní'], 'vyvážená', [4]],
+  ['Theo',      'boží dar — zkrácenina, která obstojí sama', 81, ['moderní'], 'živá', []],
+  ['Vincent',   'vítězící — jméno malířů a snílků', 80, ['moderní', 'elegantní'], 'klidná', []],
+  ['Oskar',     'boží kopí — jméno se severským chladem i šarmem', 81, ['moderní'], 'vyvážená', []],
+  ['Albert',    'vznešeně zářící — jméno chytrých hlav', 79, ['tradiční', 'elegantní'], 'klidná', []],
+  ['Artur',     'medvěd — jméno kulatého stolu', 80, ['moderní', 'královské'], 'vyvážená', []],
+  ['Benjamin',  'syn pravice — nejmladší, na kterého se čekalo', 82, ['moderní', 'tradiční'], 'klidná', []],
+  ['Gabriel',   'Bůh je má síla — jméno se zprávou', 80, ['moderní', 'elegantní'], 'klidná', [3]],
+  ['Jonáš',     'holubice — měkké biblické jméno', 82, ['moderní', 'tradiční'], 'klidná', [9]],
+  ['Tadeáš',    'odvážné srdce — hravé i vážné zároveň', 83, ['moderní', 'tradiční'], 'živá', []],
+  ['Jáchym',    'Bůh pozvedá — staré jméno v novém kurzu', 82, ['moderní', 'tradiční'], 'vyvážená', []],
+  // Nejčastější na dnešních porodnicích.
+  ['Matouš',    'dar od Boha — bratr Matyáše a Matěje', 84, ['tradiční'], 'vyvážená', [9]],
+  // Stálice každé generace.
+  ['Václav',    'více slávy — jméno českého knížete', 83, ['tradiční', 'královské'], 'vyvážená', [9]],
+  ['Viktor',    'vítěz — přímé jméno beze švů', 79, ['tradiční'], 'vyvážená', []],
+  ['Robin',     'zářivá sláva — lehké jméno z lesů', 76, ['moderní'], 'živá', []],
+  // Pradědečkova jména, která se vracejí.
+  ['Jindřich',  'vládce domova — jméno českých králů', 76, ['tradiční', 'královské'], 'vyvážená', [7]],
+  ['Emil',      'horlivý — prvorepublikový návrat', 77, ['tradiční'], 'klidná', [5]],
+  ['Eduard',    'strážce majetku — noblesní a pevné', 74, ['tradiční', 'elegantní'], 'klidná', []],
+  ['Ludvík',    'slavný bojovník — jméno s korunou', 73, ['tradiční', 'královské'], 'klidná', [8]],
+  ['Otakar',    'strážce majetku — jméno přemyslovských králů', 72, ['tradiční', 'královské'], 'vyvážená', []],
+  ['Prokop',    'průkopník — jméno českého patrona', 74, ['tradiční'], 'vyvážená', [7]],
+  ['Hynek',     'vládce domova — česká podoba Jindřicha z Máje', 73, ['tradiční'], 'vyvážená', []],
+  // Jména generace dnešních tatínků.
+  ['Erik',      'mocný vládce — severské jméno devadesátek', 76, ['moderní'], 'živá', []],
+  ['Patrik',    'urozený — jméno přelomu tisíciletí', 75, ['moderní'], 'živá', [2]],
+  ['Robert',    'zářivá sláva — spolehlivé a světové', 75, ['tradiční'], 'vyvážená', []],
+  ['Miroslav',  'slavný mírem — jméno s holubicí v erbu', 72, ['tradiční'], 'klidná', []],
+  ['Jaroslav',  'slavný silou jara — jméno dědečků', 72, ['tradiční'], 'vyvážená', [4]],
+  // Vzácná bez ohledu na dobu.
+  ['Cyril',     'pánův — jméno věrozvěsta, dnes vzácnost', 70, ['tradiční'], 'klidná', [7]],
 ])
 pridej('cz', 'pes', [
   ['Fantom', 'stín, co běhá rychleji než vy', 76, ['sportovní'], 'živá', 'velké'],

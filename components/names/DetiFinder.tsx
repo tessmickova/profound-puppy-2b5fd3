@@ -24,6 +24,7 @@ import ShodaKarta from './ShodaKarta'
 import VolbaPodrobnosti from './VolbaPodrobnosti'
 import Rozvrzeni from './Rozvrzeni'
 import RodinnyVyhledavac from './RodinnyVyhledavac'
+import KonecSeznamu from './KonecSeznamu'
 import {
   AktivniFiltry, Chip, Chipy, PismenaMrizka, Posuvnik, Prepinac, Sekce, VyberZemi,
 } from './FiltrUI'
@@ -371,6 +372,26 @@ export default function DetiFinder() {
                 {vysledky.map((j, i) => <NameCard key={j.id} jmeno={j} poradi={razeni === 'popularita' ? i + 1 : undefined} />)}
               </div>
             )}
+
+            <KonecSeznamu celkem={vysledky.length}>
+              {aktivni.length > 0 ? (
+                <button
+                  type="button"
+                  className="vyber-tlacitko je-hlavni"
+                  onClick={() => { setFiltr(PRAZDNY_FILTR); setRychle([]) }}
+                >
+                  Objevit další jména — uvolnit filtr
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="vyber-tlacitko je-hlavni"
+                  onClick={() => { setRezim('shoda'); window.scrollTo({ top: 0 }) }}
+                >
+                  Objevit další jména podle vaší rodiny
+                </button>
+              )}
+            </KonecSeznamu>
 
           </section>
         </div>

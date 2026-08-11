@@ -108,3 +108,58 @@ test('nedostupné úložiště (soukromý režim) nespadne', async () => {
   const m = await nactiModul()
   assert.doesNotThrow(() => m.prepniOblibene('z'))
 })
+
+// ── hvězdičky a hlasy rodiny (záznam v2) ─────────────────────────────────
+
+test('hvězdička dělá ze jména i oblíbené — favorit mimo výběr nedává smysl', async () => {
+  const m = await nactiModul()
+  m.prepniHvezdu('cz-holka-1')
+  const d = JSON.parse(uloziste.getItem('svet-jmen-vyber')!)
+  assert.deepEqual(d.hvezdy, ['cz-holka-1'])
+  assert.deepEqual(d.oblibena, ['cz-holka-1'])
+})
+
+test('odebrání srdíčka bere s sebou hvězdu i hlasy', async () => {
+  const m = await nactiModul()
+  m.prepniHvezdu('x')
+  m.prepniHlas('x', 'maminka')
+  m.prepniOblibene('x')
+  const d = JSON.parse(uloziste.getItem('svet-jmen-vyber')!)
+  assert.deepEqual(d.oblibena, [])
+  assert.deepEqual(d.hvezdy, [])
+  assert.deepEqual(d.hlasy, {})
+})
+
+test('hlas se přidá i odebere, prázdný záznam mizí', async () => {
+  const m = await nactiModul()
+  m.prepniHlas('x', 'tatinek')
+  m.prepniHlas('x', 'dcera')
+  assert.deepEqual(JSON.parse(uloziste.getItem('svet-jmen-vyber')!).hlasy, { x: ['tatinek', 'dcera'] })
+  m.prepniHlas('x', 'tatinek')
+  m.prepniHlas('x', 'dcera')
+  assert.deepEqual(JSON.parse(uloziste.getItem('svet-jmen-vyber')!).hlasy, {})
+})
+
+test('hlas všech přidá celou rodinu, druhé klepnutí ji zase odebere', async () => {
+  const m = await nactiModul()
+  m.hlasVsech('x')
+  assert.deepEqual(JSON.parse(uloziste.getItem('svet-jmen-vyber')!).hlasy.x.sort(),
+    ['dcera', 'maminka', 'syn', 'tatinek'])
+  m.hlasVsech('x')
+  assert.deepEqual(JSON.parse(uloziste.getItem('svet-jmen-vyber')!).hlasy, {})
+})
+
+test('cizí hodnoty v hlasech se zahodí, hvězda bez srdíčka nepřežije', async () => {
+  uloziste.setItem('svet-jmen-vyber', JSON.stringify({
+    v: 2,
+    oblibena: ['a'],
+    hvezdy: ['a', 'b'],           // „b" není oblíbené — hvězda k ničemu nevisí
+    vyrazena: [],
+    hlasy: { a: ['maminka', 'vetřelec'], b: 'nesmysl' },
+  }))
+  const m = await nactiModul()
+  m.prepniOblibene('c')
+  const d = JSON.parse(uloziste.getItem('svet-jmen-vyber')!)
+  assert.deepEqual(d.hvezdy, ['a'])
+  assert.deepEqual(d.hlasy, { a: ['maminka'] })
+})

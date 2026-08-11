@@ -12,14 +12,16 @@
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
-import { ArrowRight, Heart, Plus, Sparkles, X } from 'lucide-react'
+import { ArrowRight, Heart, Plus, Sparkles, Star, X } from 'lucide-react'
 import { JMENA } from '@/lib/names/data'
 import { najdiNejlepsiShody } from '@/lib/names/logic'
-import { slugJmena } from '@/lib/names/slug'
+import { otevriDetail } from '@/lib/names/detail'
+import { MESICE_NAZVY } from '@/lib/names/types'
 import { useVyber } from '@/lib/names/vyber'
 
-/** Kolik jmen ukazujeme. Šest se vejde do dvou i tří sloupců beze zbytku. */
+/** Kolik jmen ukážeme na začátku a o kolik přidá „Objevit další". */
 const KOLIK = 6
+const NEJVIC = 24
 /** Kolik sourozenců jde zadat. Víc už je spíš překlep než rodina. */
 const NEJVIC_SOUROZENCU = 4
 
@@ -29,7 +31,9 @@ export default function RodinaHero() {
   const [maminka, setMaminka] = useState('')
   const [tatinek, setTatinek] = useState('')
   const [sourozenci, setSourozenci] = useState<string[]>([''])
-  const { prepniOblibene, jeOblibene } = useVyber()
+  const [mesic, setMesic] = useState<number | null>(null)
+  const [kolik, setKolik] = useState(KOLIK)
+  const { prepniOblibene, jeOblibene, prepniHvezdu, jeHvezda } = useVyber()
 
   const zadano = [prijmeni, maminka, tatinek, ...sourozenci].some(v => v.trim().length > 1)
 
@@ -38,14 +42,14 @@ export default function RodinaHero() {
     return najdiNejlepsiShody(JMENA, {
       pohlavi,
       prijmeni,
-      mesic: null,
+      mesic,
       styly: [],
       zeme: [],
       maminka,
       tatinek,
       sourozenci,
-    }, KOLIK)
-  }, [zadano, pohlavi, prijmeni, maminka, tatinek, sourozenci])
+    }, kolik)
+  }, [zadano, pohlavi, prijmeni, maminka, tatinek, sourozenci, mesic, kolik])
 
   const upravSourozence = (i: number, hodnota: string) =>
     setSourozenci(s => s.map((x, k) => (k === i ? hodnota : x)))
@@ -109,7 +113,25 @@ export default function RodinaHero() {
               </span>
             </label>
           ))}
+          <label>
+            <span>Měsíc narození</span>
+            <select
+              className="rodina-hero-select"
+              value={mesic ?? ''}
+              onChange={e => setMesic(e.target.value ? Number(e.target.value) : null)}
+            >
+              <option value="">— nevíme / nechceme řešit —</option>
+              {MESICE_NAZVY.map((m, i) => (
+                <option key={m} value={i + 1}>{m}</option>
+              ))}
+            </select>
+          </label>
         </div>
+
+        <p className="rodina-hero-mesic-pozn">
+          K čemu je měsíc: posuneme nahoru jména, která mají v tom měsíci
+          svátek — jmeniny pak oslavíte blízko narozenin. Nic víc v tom není.
+        </p>
 
         <div className="rodina-hero-radek">
           {sourozenci.length < NEJVIC_SOUROZENCU && (
@@ -139,18 +161,35 @@ export default function RodinaHero() {
             {shody.map(s => (
               <li key={s.jmeno.id} className="rodina-navrh">
                 <div className="rodina-navrh-hlava">
-                  <Link href={`/jmeno/${slugJmena(s.jmeno.jmeno)}`}>{s.jmeno.jmeno}</Link>
-                  <button
-                    type="button"
-                    className={`srdicko ${jeOblibene(s.jmeno.id) ? '' : 'opacity-45'}`}
-                    onClick={() => prepniOblibene(s.jmeno.id)}
-                    aria-pressed={jeOblibene(s.jmeno.id)}
-                    aria-label={jeOblibene(s.jmeno.id)
-                      ? `Odebrat ${s.jmeno.jmeno} z výběru`
-                      : `Uložit ${s.jmeno.jmeno} do výběru`}
-                  >
-                    <Heart size={15} fill={jeOblibene(s.jmeno.id) ? 'currentColor' : 'none'} aria-hidden />
+                  {/* Panel funguje pro každé jméno v katalogu; vlastní
+                      stránku mají jen některá a odkaz by končil na 404. */}
+                  <button type="button" className="rodina-navrh-jmeno" onClick={() => otevriDetail(s.jmeno.id)}>
+                    {s.jmeno.jmeno}
                   </button>
+                  <span className="rodina-navrh-akce">
+                    <button
+                      type="button"
+                      className={`hvezdicka ${jeHvezda(s.jmeno.id) ? 'je-aktivni' : ''}`}
+                      onClick={() => prepniHvezdu(s.jmeno.id)}
+                      aria-pressed={jeHvezda(s.jmeno.id)}
+                      aria-label={jeHvezda(s.jmeno.id)
+                        ? `Odebrat ${s.jmeno.jmeno} z favoritů`
+                        : `Označit ${s.jmeno.jmeno} jako favorita`}
+                    >
+                      <Star size={15} fill={jeHvezda(s.jmeno.id) ? 'currentColor' : 'none'} aria-hidden />
+                    </button>
+                    <button
+                      type="button"
+                      className={`srdicko ${jeOblibene(s.jmeno.id) ? 'je-aktivni' : ''}`}
+                      onClick={() => prepniOblibene(s.jmeno.id)}
+                      aria-pressed={jeOblibene(s.jmeno.id)}
+                      aria-label={jeOblibene(s.jmeno.id)
+                        ? `Odebrat ${s.jmeno.jmeno} z výběru`
+                        : `Uložit ${s.jmeno.jmeno} do výběru`}
+                    >
+                      <Heart size={15} fill={jeOblibene(s.jmeno.id) ? 'currentColor' : 'none'} aria-hidden />
+                    </button>
+                  </span>
                 </div>
                 {s.rodinnyStitek && (
                   <span className="rodina-navrh-stitek" title={s.rodinnyStitek.popis}>
@@ -164,11 +203,16 @@ export default function RodinaHero() {
             ))}
           </ul>
 
-          <p className="rodina-hero-dal">
+          <div className="rodina-hero-dal">
+            {shody.length >= kolik && kolik < NEJVIC && (
+              <button type="button" className="vyber-tlacitko" onClick={() => setKolik(k => k + KOLIK)}>
+                Objevit další jména
+              </button>
+            )}
             <Link href="/rodina">
-              Zadat celou rodinu včetně zvířat a měsíce narození <ArrowRight size={14} aria-hidden />
+              Zadat celou rodinu včetně zvířat <ArrowRight size={14} aria-hidden />
             </Link>
-          </p>
+          </div>
         </div>
       )}
     </section>

@@ -28,6 +28,14 @@ export const DOMACKY: Record<string, string[]> = {
   emilia: ['Emi', 'Mila'], benjamin: ['Benja', 'Benji'], josefina: ['Pepa', 'Fina'],
   isabella: ['Isa', 'Bella'], catalina: ['Cata'], milagros: ['Mili'],
   elias: ['Eli'], henry: ['Hank', 'Harry'], jack: ['Jackie'], scarlett: ['Scar', 'Lettie'],
+  // rozšíření katalogu 2026 (Česko)
+  vanesa: ['Vaneska', 'Vaninka'], johana: ['Johanka', 'Janka'],
+  magdalena: ['Magda', 'Majda'], marketa: ['Markétka', 'Megi'],
+  eva: ['Evička', 'Evi'], helena: ['Helenka', 'Helča'],
+  sarlota: ['Šarlotka', 'Lota'], vaclav: ['Vašek', 'Venda', 'Vašík'],
+  matous: ['Matoušek', 'Mates'], jonas: ['Jonášek', 'Joni'],
+  jachym: ['Jáchymek', 'Jáša'], tadeas: ['Tadeášek', 'Táda'],
+  vincent: ['Vincek', 'Vince'], jindrich: ['Jindra', 'Jindříšek'],
 }
 
 /** Jmeniny podle českého občanského kalendáře (jen jistá data). */
@@ -36,6 +44,11 @@ export const SVATKY_CZ: Record<string, string> = {
   vojtech: '23. 4.', filip: '26. 5.', mikulas: '6. 12.',
   eliska: '5. 10.', anna: '26. 7.', tereza: '15. 10.', adela: '2. 9.',
   amalie: '10. 6.', sofie: '15. 5.', viktorie: '10. 3.', ema: '8. 4.',
+  // rozšíření katalogu 2026
+  vaclav: '28. 9.', matous: '21. 9.', jonas: '27. 9.', prokop: '4. 7.',
+  cyril: '5. 7.', hugo: '1. 4.', emil: '22. 5.',
+  marketa: '13. 7.', magdalena: '22. 7.', eva: '24. 12.', helena: '18. 8.',
+  alena: '13. 8.', monika: '21. 5.', sarka: '30. 6.',
 }
 
 /** Jména používaná pro kluky i holčičky. */
@@ -54,6 +67,9 @@ export const SAMICE_ZVIRE = new Set([
   'lora', 'kiki', 'polly', 'kajsa', 'zuzu', 'sissa', 'kesza', 'hira',
   // křečci
   'krupka', 'biscotte', 'nocciola', 'bolita', 'kurumi', 'pacoca', 'baklava', 'pavlova',
+  // nové druhy
+  'zmijka', 'supinka', 'perla', 'zlatka', 'neonka', 'kapka', 'ploutvicka',
+  'zofka', 'betonka', 'vydricka', 'ponozka', 'jesterka', 'bublina', 'mrkvicka', 'repka',
 ])
 
 /** Zvířecí jména, která stejně dobře sednou samci i samičce. */

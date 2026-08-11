@@ -6,7 +6,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { RotateCcw, X } from 'lucide-react'
+import { Heart, RotateCcw, Star, X } from 'lucide-react'
 import { KATEGORIE_INFO, POHLAVI_INFO, VLNA_INFO } from '@/lib/names/types'
 import type { Jmeno } from '@/lib/names/types'
 import { zemePodleKodu } from '@/lib/names/data'
@@ -54,9 +54,32 @@ export function Srdicko({
         ? (oblibene ? `Odebrat ${jmeno} z oblíbených` : `Přidat ${jmeno} do oblíbených`)
         : (oblibene ? 'Odebrat z oblíbených' : 'Přidat do oblíbených')}
       title={oblibene ? 'Odebrat z oblíbených' : 'Uložit mezi oblíbená'}
-      className={`srdicko ${velke ? 'text-2xl' : 'text-lg'} ${poskoc ? 'srdce-poskoc' : ''} transition-transform hover:scale-125 ${oblibene ? '' : 'opacity-45 hover:opacity-100'}`}
+      className={`srdicko ${poskoc ? 'srdce-poskoc' : ''} ${oblibene ? 'je-aktivni' : ''}`}
     >
-      {oblibene ? '❤️' : '🤍'}
+      <Heart size={velke ? 20 : 16} strokeWidth={2.4} fill={oblibene ? 'currentColor' : 'none'} aria-hidden />
+    </button>
+  )
+}
+
+/**
+ * Hvězdička = opravdový favorit. Srdíčko říká „líbí se mi", hvězdička
+ * „z tohohle vybíráme". Hvězdičkové jméno je automaticky i oblíbené.
+ */
+export function Hvezdicka({ id, jmeno, velke }: { id: string; jmeno?: string; velke?: boolean }) {
+  const { jeHvezda, prepniHvezdu } = useVyber()
+  const je = jeHvezda(id)
+  return (
+    <button
+      type="button"
+      onClick={e => { e.stopPropagation(); prepniHvezdu(id) }}
+      aria-pressed={je}
+      aria-label={jmeno
+        ? (je ? `Odebrat ${jmeno} z favoritů` : `Označit ${jmeno} jako favorita`)
+        : (je ? 'Odebrat z favoritů' : 'Označit jako favorita')}
+      title={je ? 'Odebrat z favoritů' : 'Opravdový favorit'}
+      className={`hvezdicka ${je ? 'je-aktivni' : ''}`}
+    >
+      <Star size={velke ? 20 : 16} strokeWidth={2.4} fill={je ? 'currentColor' : 'none'} aria-hidden />
     </button>
   )
 }
@@ -147,6 +170,7 @@ export default function NameCard({
         )}
         <span className="karta-akce">
           <Vyradit id={jmeno.id} jmeno={jmeno.jmeno} />
+          <Hvezdicka id={jmeno.id} jmeno={jmeno.jmeno} />
           <Srdicko id={jmeno.id} jmeno={jmeno.jmeno} />
         </span>
       </div>

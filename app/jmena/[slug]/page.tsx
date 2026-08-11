@@ -17,6 +17,7 @@ import type { Kategorie } from '@/lib/names/types'
 
 const KATEGORIE: Kategorie[] = [
   'holka', 'kluk', 'pes', 'fenka', 'kocour', 'kocka', 'kun', 'kralik', 'papousek', 'krecek',
+  'morce', 'had', 'rybka', 'zelva', 'fretka', 'koza', 'leguan',
 ]
 
 const podleSlugu = (slug: string): Kategorie | undefined =>

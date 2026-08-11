@@ -46,7 +46,9 @@ export function osloveni(jmeno: string): string {
   if (posledni === 'o') return j                      // Hugo → Hugo
   if (posledni === 'y') return j
   if (SAMOHLASKY.includes(posledni)) return j
-  return j + 'e'                                      // Jan → Jane, Tomáš → Tomáši?
+  // Měkké zakončení volá na -i: Tomáš → Tomáši, Rex → Rexi, Ondřej → Ondřeji
+  if ('šžčřcjx'.includes(posledni)) return j + 'i'
+  return j + 'e'                                      // Jan → Jane
 }
 
 /** Ženská jména končící na souhlásku, která se neskloňují. */
@@ -175,4 +177,100 @@ export function vCizine(jmeno: string): {
   }
 
   return vysledky
+}
+
+// ── zdrobněliny ──────────────────────────────────────────────────────────
+
+/**
+ * Ručně vybrané hravé přezdívky. Generovat se nedají — „Vanilka" pro
+ * Vanesu je nápad, ne pravidlo — takže jich je málo a jsou jen tam, kde
+ * opravdu sedí. Kde jméno v tabulce není, hravou přezdívku prostě
+ * nenabízíme; vymyšlená by byla trapná.
+ */
+const HRAVE: Record<string, string[]> = {
+  vanesa: ['Vanilka'],
+  eliska: ['Elza'],
+  amalie: ['Máli'],
+  karolina: ['Kája'],
+  magdalena: ['Majda'],
+  albert: ['Berti'],
+  mikulas: ['Miki'],
+  frantisek: ['Fanda'],
+  josefina: ['Pepina'],
+  jakub: ['Kubajz'],
+  matylda: ['Tyldinka'],
+  teodor: ['Teddy'],
+  leo: ['Lvíček'],
+  ella: ['Elka'],
+  rozalie: ['Rozárka'],
+  barbora: ['Barunka'],
+  vojtech: ['Vojtík'],
+  anezka: ['Nezinka'],
+}
+
+const klicJmena = (s: string) => bezDiakritiky(s).toLowerCase()
+
+/** Změkčení souhlásky před -u- v mazlivých tvarech: Vanulinka → Vaňulinka. */
+function zmekci(kmen: string): string {
+  const posledni = kmen.slice(-1)
+  const mapa: Record<string, string> = { n: 'ň', t: 'ť', d: 'ď' }
+  return mapa[posledni] ? kmen.slice(0, -1) + mapa[posledni] : kmen
+}
+
+/**
+ * Krátký kmen jména — první slabika a souhláska za ní (Vanesa → Van,
+ * Martin → Mart). Z něj se staví mazlivé tvary.
+ */
+function kratkyKmen(jmeno: string): string {
+  const m = /^([^aáeéěiíoóuúůyý]*[aáeéěiíoóuúůyý])([^aáeéěiíoóuúůyý]+)/i.exec(jmeno)
+  if (!m) return jmeno
+  // z „Martin" vezmeme Mart, z „Vanesy" Van — souhláskovou skupinu
+  // zkrátíme na dvě, jinak by vyšlo „Vans" nebo naopak „Mar"
+  return m[1] + m[2].slice(0, 2)
+}
+
+export interface NavrhyZdrobnelin {
+  /** běžné tvary — kurátorské první, pak generované */
+  bezne: string[]
+  /** mazlivé a hravé tvary */
+  hrave: string[]
+}
+
+/**
+ * Zdrobněliny jména. **Návrhy podle vzorů, ne slovník** — kurátorské tvary
+ * (z katalogu) jdou první, generované za nimi. U generovaných se může
+ * čeština splést, proto se všude podávají jako nápady.
+ */
+export function zdrobneliny(
+  jmeno: string,
+  rodZensky: boolean,
+  kuratorske: string[] = [],
+): NavrhyZdrobnelin {
+  const j = jmeno.trim()
+  const bezne: string[] = [...kuratorske]
+  const hrave: string[] = (HRAVE[klicJmena(j)] ?? [])
+    .filter(x => !bezne.some(b => b.toLowerCase() === x.toLowerCase()))
+  const pridej = (kam: string[], tvar: string) => {
+    if (tvar.length < 3 || tvar.toLowerCase() === j.toLowerCase()) return
+    if (![...bezne, ...hrave].some(x => x.toLowerCase() === tvar.toLowerCase())) kam.push(tvar)
+  }
+
+  const kmen = kratkyKmen(j)
+  if (rodZensky) {
+    // Amálie → Amál (ne „Amáli"), Vanesa → Vanes
+    const plny = /ie$/i.test(j) ? j.slice(0, -2) : /[aáeé]$/i.test(j) ? j.slice(0, -1) : j
+    // Vaneska — plný kmen + ka; po k/č by vyšlo „Eliškka", to přeskočíme
+    if (!/[kč]$/i.test(plny)) pridej(bezne, plny + 'ka')
+    pridej(bezne, kmen + 'inka')      // Vaninka
+    pridej(hrave, zmekci(kmen) + 'uška')   // Vaňuška
+    pridej(hrave, zmekci(kmen) + 'ulka')   // Vaňulka
+    pridej(hrave, zmekci(kmen) + 'ulinka') // Vaňulinka
+  } else {
+    pridej(bezne, kmen + 'ík')        // Tomík, Rexík
+    pridej(bezne, kmen + 'ínek')      // Martínek
+    pridej(hrave, kmen + 'oušek')     // Filoušek
+    pridej(hrave, zmekci(kmen) + 'ulda')   // Maťulda
+  }
+
+  return { bezne: bezne.slice(0, 5), hrave: hrave.slice(0, 4) }
 }

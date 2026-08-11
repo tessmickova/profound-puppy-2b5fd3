@@ -26,6 +26,7 @@ export interface Adresa {
 
 const KATEGORIE: Kategorie[] = [
   'holka', 'kluk', 'pes', 'fenka', 'kocour', 'kocka', 'kun', 'kralik', 'papousek', 'krecek',
+  'morce', 'had', 'rybka', 'zelva', 'fretka', 'koza', 'leguan',
 ]
 
 export const ADRESY: Adresa[] = [

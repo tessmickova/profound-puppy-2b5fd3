@@ -5,6 +5,7 @@
 // vysouvá zespoda, na desktopu drží u levého okraje.
 
 import { useEffect, useMemo, useState } from 'react'
+import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import {
   ArrowDownAZ, Bird, Cat, Dices, Dog, Flame, Gem, Globe, Heart, Mars, Megaphone,
@@ -24,20 +25,20 @@ import { useVyber } from '@/lib/names/vyber'
 import NameCard from './NameCard'
 import Vyber from './Vyber'
 import Rozvrzeni from './Rozvrzeni'
+import KonecSeznamu from './KonecSeznamu'
 import {
   AktivniFiltry, Chip, Chipy, PismenaMrizka, Posuvnik, Prepinac, Sekce, VyberZemi,
 } from './FiltrUI'
 
-const ZVIRECI_KATEGORIE: { id: Kategorie; ikona: React.ReactNode }[] = [
-  { id: 'pes', ikona: <Dog size={13} /> },
-  { id: 'fenka', ikona: <Dog size={13} /> },
-  { id: 'kocour', ikona: <Cat size={13} /> },
-  { id: 'kocka', ikona: <Cat size={13} /> },
-  { id: 'kun', ikona: <Zap size={13} /> },
-  { id: 'kralik', ikona: <Rabbit size={13} /> },
-  { id: 'papousek', ikona: <Bird size={13} /> },
-  { id: 'krecek', ikona: <Rat size={13} /> },
-]
+// Druh se vybírá obrázkem — emoji z KATEGORIE_INFO. Čárová ikonka
+// neřekne nic; obrázek pozná i dítě, které vybírá jméno pro rybičku.
+const ZVIRECI_KATEGORIE: { id: Kategorie; ikona: React.ReactNode }[] = ([
+  'pes', 'fenka', 'kocour', 'kocka', 'kun', 'kralik', 'papousek', 'krecek',
+  'morce', 'had', 'rybka', 'zelva', 'fretka', 'koza', 'leguan',
+] as Kategorie[]).map(id => ({
+  id,
+  ikona: <span aria-hidden style={{ fontSize: 14, lineHeight: 1 }}>{KATEGORIE_INFO[id].emoji}</span>,
+}))
 const ENERGIE: Energie[] = ['klidná', 'vyvážená', 'živá']
 const VELIKOSTI: Velikost[] = ['malé', 'střední', 'velké']
 
@@ -376,6 +377,18 @@ export default function ZvirataFinder() {
               ))}
             </div>
           )}
+
+          <KonecSeznamu celkem={vysledky.length}>
+            {aktivni.length > 0 ? (
+              <button type="button" className="vyber-tlacitko je-hlavni" onClick={reset}>
+                Objevit další jména — uvolnit filtr
+              </button>
+            ) : (
+              <Link href="/vybrat-jmeno-pro-zvire" className="vyber-tlacitko je-hlavni">
+                Objevit další jména ve hře s dvojicemi
+              </Link>
+            )}
+          </KonecSeznamu>
 
         </section>
       </div>

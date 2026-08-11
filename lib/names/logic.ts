@@ -413,6 +413,14 @@ export function rodinnaHarmonie(j: Jmeno, clenove: ClenProShodu[], jmena: Jmeno[
       duvody.push(`rýmuje se se jménem ${clen.koho}`)
     }
 
+    // Stejné počáteční písmeno člověk vnímá jako „rodinné" — iniciály na
+    // ručníku, monogram na dárku. Malý bonus, ne pravidlo: kdo alianci
+    // nechce, přebijí ji ostatní kritéria.
+    if (bezDiakritiky(j.jmeno[0]) === klicC[0]) {
+      body += 4; sladeno += 1
+      duvody.push(`stejné počáteční písmeno jako ${clen.kdo} — pěkný rodinný monogram`)
+    }
+
     // najdeme jméno člena rodiny v katalogu a porovnáme styl a původ
     const ref = jmena.find(x =>
       (x.kategorie === 'kluk' || x.kategorie === 'holka') && bezDiakritiky(x.jmeno) === klicC)
@@ -429,6 +437,19 @@ export function rodinnaHarmonie(j: Jmeno, clenove: ClenProShodu[], jmena: Jmeno[
       if (Math.abs(j.popularita - ref.popularita) <= 12) {
         body += 3; sladeno += 1
         duvody.push(`podobně oblíbené jméno jako ${clen.koho}`)
+      }
+      // Svátky blízko sebe se doma slaví najednou — praktická drobnost,
+      // kterou rodiny opravdu řeší.
+      const spolecnyMesic = j.mesice.find(m => ref.mesice.includes(m))
+      if (spolecnyMesic) {
+        body += 4; sladeno += 1
+        duvody.push(`svátek či sezónu má ve stejném měsíci jako ${clen.kdo} — oslavíte je spolu`)
+      }
+      // Podobný rytmus jmen (stejný počet slabik u sourozence) zní při
+      // volání přes dvorek jako sada, ne jako náhoda.
+      if (clen.kdo === 'sourozenec' && j.slabiky === ref.slabiky) {
+        body += 3; sladeno += 1
+        duvody.push(`stejný rytmus jako jméno ${clen.koho} (${j.slabiky} slabiky)`)
       }
     }
 

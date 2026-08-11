@@ -3,6 +3,7 @@
 export type Kategorie =
   | 'pes' | 'fenka' | 'kocour' | 'kocka'
   | 'kun' | 'kralik' | 'papousek' | 'krecek'
+  | 'morce' | 'had' | 'rybka' | 'zelva' | 'fretka' | 'koza' | 'leguan'
   | 'kluk' | 'holka'
 
 export type Styl =
@@ -116,6 +117,13 @@ export const KATEGORIE_INFO: Record<Kategorie, {
   kralik:   { nazev: 'Králík',   mnozne: 'Králíci',  proKoho: 'králíky',   slug: 'kraliky',   emoji: '🐰' },
   papousek: { nazev: 'Papoušek', mnozne: 'Papoušci', proKoho: 'papoušky',  slug: 'papousky',  emoji: '🦜' },
   krecek:   { nazev: 'Křeček',   mnozne: 'Křečci',   proKoho: 'křečky',    slug: 'krecky',    emoji: '🐹' },
+  morce:    { nazev: 'Morče',    mnozne: 'Morčata',  proKoho: 'morčata',   slug: 'morcata',   emoji: '🐭' },
+  had:      { nazev: 'Had',      mnozne: 'Hadi',     proKoho: 'hady',      slug: 'hady',      emoji: '🐍' },
+  rybka:    { nazev: 'Rybka',    mnozne: 'Rybky',    proKoho: 'rybky',     slug: 'rybky',     emoji: '🐠' },
+  zelva:    { nazev: 'Želva',    mnozne: 'Želvy',    proKoho: 'želvy',     slug: 'zelvy',     emoji: '🐢' },
+  fretka:   { nazev: 'Fretka',   mnozne: 'Fretky',   proKoho: 'fretky',    slug: 'fretky',    emoji: '🦦' },
+  koza:     { nazev: 'Koza',     mnozne: 'Kozy',     proKoho: 'kozy',      slug: 'kozy',      emoji: '🐐' },
+  leguan:   { nazev: 'Leguán',   mnozne: 'Leguáni',  proKoho: 'leguány',   slug: 'leguany',   emoji: '🦎' },
   kluk:     { nazev: 'Kluk',     mnozne: 'Kluci',    proKoho: 'kluky',     slug: 'kluky',     emoji: '👦' },
   holka:    { nazev: 'Holčička', mnozne: 'Holčičky', proKoho: 'holčičky',  slug: 'holcicky',  emoji: '👧' },
 }

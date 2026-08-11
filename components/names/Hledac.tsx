@@ -29,7 +29,10 @@ const MAX_KOL = 8
 /** Kolik jmen ukazujeme naráz — víc už je zahlcení, ne pomoc. */
 const NAVRHU = 8
 
-const ZVIRATA: Kategorie[] = ['pes', 'fenka', 'kocour', 'kocka', 'kun', 'kralik', 'papousek', 'krecek']
+const ZVIRATA: Kategorie[] = [
+  'pes', 'fenka', 'kocour', 'kocka', 'kun', 'kralik', 'papousek', 'krecek',
+  'morce', 'had', 'rybka', 'zelva', 'fretka', 'koza', 'leguan',
+]
 
 interface Kolo { a: Jmeno; b: Jmeno }
 
@@ -225,7 +228,7 @@ export default function Hledac({ druh }: { druh: 'deti' | 'zvirata' }) {
                   <span className="hledac-skore">{slovemSkore(d.skore)}</span>
                   <button
                     type="button"
-                    className={`srdicko ${jeOblibene(d.jmeno.id) ? '' : 'opacity-45'}`}
+                    className={`srdicko ${jeOblibene(d.jmeno.id) ? 'je-aktivni' : ''}`}
                     onClick={() => prepniOblibene(d.jmeno.id)}
                     aria-pressed={jeOblibene(d.jmeno.id)}
                     aria-label={jeOblibene(d.jmeno.id)

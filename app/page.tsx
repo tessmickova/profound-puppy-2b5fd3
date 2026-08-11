@@ -15,6 +15,8 @@ import { JMENA, ZEME } from '@/lib/names/data'
 import { dobreSeVola, jeNavrat, jeStalice, jeVrchol, jeVzestup, serad } from '@/lib/names/logic'
 import { VYHLED } from '@/lib/names/vlny'
 import { znejeSvetove } from '@/lib/names/zapis'
+import { KATEGORIE_INFO } from '@/lib/names/types'
+import type { Kategorie } from '@/lib/names/types'
 import { CASTE_DOTAZY, jsonLdDotazy, jsonLdSeznam, WEB } from '@/lib/names/seo'
 
 // Úvodní stránka není katalog, ale rozcestník podle situace. První otázka
@@ -32,6 +34,12 @@ export const metadata: Metadata = {
     'jména pro děti', 'jména pro psy', 'jména pro kočky', 'význam jmen',
   ],
 }
+
+/** Široká paleta zvířat, která lidi doma opravdu mají. */
+const DRUHY: Kategorie[] = [
+  'pes', 'fenka', 'kocour', 'kocka', 'kralik', 'krecek', 'morce', 'papousek',
+  'rybka', 'zelva', 'had', 'fretka', 'kun', 'koza', 'leguan',
+]
 
 /** Kde v rozhodování je — každá cesta vede do konkrétního nástroje. */
 const CESTY = [
@@ -93,42 +101,36 @@ export default function Domov() {
               <Sekce
                 druh="lide"
                 nadpis="Modernější jména na vzestupu"
-                popis={`Kratší, měkčí a srozumitelná i za hranicemi — výhled na ${VYHLED[0]} a ${VYHLED[1]}.`}
                 jmena={moderniVzestup}
                 odkaz={{ href: '/deti', text: 'zobrazit všechna' }}
               />
               <Sekce
                 druh="lide"
                 nadpis="Jména, která znějí světově"
-                popis="Fungují doma i za hranicemi — u většiny vybíráte i zápis: Teodor, nebo Theodor?"
                 jmena={svetova}
                 odkaz={{ href: '/deti', text: 'zobrazit všechna' }}
               />
               <Sekce
                 druh="lide"
                 nadpis="Babiččina jména, která se vracejí"
-                popis="Menší, ale výrazný proud. Jména, která přeskočila generaci a zní znovu svěže."
                 jmena={navraty}
                 odkaz={{ href: '/deti', text: 'zobrazit všechna' }}
               />
               <Sekce
                 druh="lide"
                 nadpis="Nejčastější jména dnešních miminek"
-                popis="Tahle uslyšíte na hřišti nejčastěji — doporučení i důvod hledat dál."
                 jmena={nejcastejsi}
                 odkaz={{ href: '/deti', text: 'všechna dětská jména' }}
               />
               <Sekce
                 druh="lide"
                 nadpis="Stálice, které nezestárnou"
-                popis="Dávají se v každé generaci a za dvacet let nebudou znít ani staromódně."
                 jmena={stalice}
                 odkaz={{ href: '/deti', text: 'objevit další' }}
               />
               <Sekce
                 druh="lide"
                 nadpis="Krátká a zvučná jména"
-                popis="Do dvou slabik. Dobře se volají, píšou i pamatují."
                 jmena={kratka}
                 odkaz={{ href: '/deti', text: 'zobrazit všechna' }}
               />
@@ -158,20 +160,30 @@ export default function Domov() {
                     </Link>
                   </div>
                 </div>
+
+                {/* Koho doma máte? Obrázek pozná i dítě — proto emoji,
+                    ne čárové ikonky. Každé tlačítko vede rovnou do
+                    katalogu daného druhu. */}
+                <div className="zvire-druhy" role="list" aria-label="Vyberte druh zvířete">
+                  {DRUHY.map(d => (
+                    <Link key={d} role="listitem" href={`/zvirata?kategorie=${d}`} className="zvire-druh">
+                      <span className="zvire-druh-emoji" aria-hidden>{KATEGORIE_INFO[d].emoji}</span>
+                      <span className="zvire-druh-nazev">{KATEGORIE_INFO[d].nazev}</span>
+                    </Link>
+                  ))}
+                </div>
               </section>
 
               <div className="sekce-mrizka">
               <Sekce
                 druh="zvirata"
                 nadpis="Nejlíbivější zvířecí jména"
-                popis="Jména, na která zvíře uslyší a vy je budete rádi volat přes celý park."
                 jmena={topZvirata}
                 odkaz={{ href: '/zvirata', text: 'všechna zvířecí jména' }}
               />
               <Sekce
                 druh="zvirata"
                 nadpis="Dobře se volají"
-                popis="Krátká psí jména se samohláskou na konci, která se nepletou s povely."
                 jmena={volatelna}
                 odkaz={{ href: '/zvirata', text: 'zobrazit všechna' }}
               />
@@ -268,11 +280,10 @@ export default function Domov() {
 }
 
 function Sekce({
-  druh, nadpis, popis, jmena, odkaz,
+  druh, nadpis, jmena, odkaz,
 }: {
   druh: Druh
   nadpis: string
-  popis: string
   jmena: typeof JMENA
   odkaz: { href: string; text: string }
 }) {
@@ -284,7 +295,6 @@ function Sekce({
           {odkaz.text} →
         </Link>
       </div>
-      <p className="sekce-sklo-popis">{popis}</p>
       <div className="nastup mrizka-jmen mrizka-kompakt">
         {jmena.map((j, i) => <NameCard key={j.id} jmeno={j} poradi={i + 1} />)}
       </div>

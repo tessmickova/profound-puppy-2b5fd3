@@ -8,6 +8,7 @@ import { X } from 'lucide-react'
 import { JMENA, jeMezinarodni, zemePodleKodu } from '@/lib/names/data'
 import { JMENA_V_CESKU } from '@/lib/names/vCesku'
 import { jeHit, numerologie, rychlaAnalyza } from '@/lib/names/logic'
+import { osloveni, zdrobneliny } from '@/lib/names/cestina'
 import { vlnaJmena } from '@/lib/names/vlny'
 import { KATEGORIE_INFO, POHLAVI_INFO, VLNA_INFO } from '@/lib/names/types'
 import { useDetail } from '@/lib/names/detail'
@@ -48,6 +49,9 @@ export default function DetailPanel() {
   const num = numerologie(jmeno.jmeno)
   const vCesku = JMENA_V_CESKU.includes(jmeno.jmeno)
   const postrehy = rychlaAnalyza(jmeno, vCesku)
+  const rodZensky = ['holka', 'fenka', 'kocka'].includes(jmeno.kategorie)
+    || jmeno.pohlavi === 'samice'
+  const mazlive = zdrobneliny(jmeno.jmeno, rodZensky, jmeno.domacky ?? [])
   const oblibene = je(jmeno.id)
   const vlna = vlnaJmena(jmeno)
 
@@ -93,11 +97,31 @@ export default function DetailPanel() {
           <section className="detail-sekce">
             <h3>Význam</h3>
             <p className="text-[15px] leading-relaxed text-[#4d443a]">{jmeno.vyznam}</p>
-            {jmeno.domacky && jmeno.domacky.length > 0 && (
-              <p className="mt-2 text-[13px] text-[#8a7f71]">
-                Doma mu budete říkat: <strong className="text-[#2b2723]">{jmeno.domacky.join(', ')}</strong>
-              </p>
-            )}
+          </section>
+
+          <section className="detail-sekce">
+            <h3>Jak se volá a zdrobňuje</h3>
+            <dl className="detail-postrehy">
+              <div>
+                <dt>Zavoláte</dt>
+                <dd><strong className="text-[#2b2723]">{osloveni(jmeno.jmeno)}!</strong></dd>
+              </div>
+              {mazlive.bezne.length > 0 && (
+                <div>
+                  <dt>Doma se řekne</dt>
+                  <dd>{mazlive.bezne.join(', ')}</dd>
+                </div>
+              )}
+              {mazlive.hrave.length > 0 && (
+                <div>
+                  <dt>Mazlivě a hravě</dt>
+                  <dd>{mazlive.hrave.join(', ')}</dd>
+                </div>
+              )}
+            </dl>
+            <p className="mt-1.5 text-[12px] text-[#a2988a]">
+              Návrhy podle českých vzorů — vlastní přezdívka je vždycky nejlepší.
+            </p>
           </section>
 
           <section className="detail-sekce">

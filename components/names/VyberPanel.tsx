@@ -1,0 +1,142 @@
+'use client'
+
+// Levý panel: všechna vybraná jména na jedné hromádce.
+//
+// Pravý panel ukazuje detail jednoho jména; levý drží celý užší výběr,
+// ať je po ruce z kterékoli stránky. U každého jména je vidět, jestli je
+// srdíčkové nebo hvězdičkové, a barevné pastilky říkají, kdo z rodiny ho
+// chce: maminka červená, tatínek modrá, dcera růžová, syn světle modrá.
+//
+// Je to schválně extra jednoduché — klepnout na pastilku, hotovo. Podrobný
+// rozbor patří na stránku analýzy, ne do panelu.
+
+import { useState } from 'react'
+import Link from 'next/link'
+import { BarChart3, Heart, ListChecks, Star, Users, X } from 'lucide-react'
+import { JMENA } from '@/lib/names/data'
+import { HLASUJICI, useVyber } from '@/lib/names/vyber'
+import { otevriDetail } from '@/lib/names/detail'
+import { KATEGORIE_INFO } from '@/lib/names/types'
+
+export default function VyberPanel() {
+  const [otevren, setOtevren] = useState(false)
+  const {
+    oblibena, jeHvezda, hlasyPro, prepniHlas, hlasVsech, prepniOblibene,
+  } = useVyber()
+
+  const vybrana = oblibena
+    .map(id => JMENA.find(j => j.id === id))
+    .filter((j): j is NonNullable<typeof j> => Boolean(j))
+    // favorité nahoru — hvězdička znamená „z tohohle vybíráme"
+    .sort((a, b) => Number(jeHvezda(b.id)) - Number(jeHvezda(a.id)))
+
+  return (
+    <>
+      <button
+        type="button"
+        className={`vyber-panel-ucho ${otevren ? 'je-skryte' : ''}`}
+        onClick={() => setOtevren(true)}
+        aria-label={`Otevřít můj výběr jmen (${oblibena.length})`}
+      >
+        <ListChecks size={16} aria-hidden />
+        <span>Můj výběr</span>
+        {oblibena.length > 0 && <span className="vyber-panel-pocet">{oblibena.length}</span>}
+      </button>
+
+      {otevren && (
+        <>
+          <div className="detail-zaves" onClick={() => setOtevren(false)} aria-hidden />
+          <aside className="vyber-panel" role="dialog" aria-modal="true" aria-label="Můj výběr jmen">
+            <header className="vyber-panel-hlava">
+              <h2><ListChecks size={17} aria-hidden /> Můj výběr</h2>
+              <button onClick={() => setOtevren(false)} className="detail-zavrit" aria-label="Zavřít výběr">
+                <X size={18} />
+              </button>
+            </header>
+
+            {vybrana.length === 0 ? (
+              <div className="vyber-panel-prazdno">
+                <Heart size={22} aria-hidden />
+                <p>
+                  Zatím tu nic není. Klepněte u kteréhokoli jména na srdíčko
+                  a objeví se tady — hvězdička pak označí opravdové favority.
+                </p>
+              </div>
+            ) : (
+              <>
+                <p className="vyber-panel-napoveda">
+                  <Users size={13} aria-hidden /> Pastilkami označte, kdo z rodiny
+                  jméno chce. Barvy: maminka, tatínek, dcera, syn.
+                </p>
+
+                <ul className="vyber-panel-seznam">
+                  {vybrana.map(j => {
+                    const hlasy = hlasyPro(j.id)
+                    return (
+                      <li key={j.id} className="vyber-panel-polozka">
+                        <div className="vyber-panel-radek">
+                          <button type="button" className="vyber-panel-jmeno" onClick={() => otevriDetail(j.id)}>
+                            {jeHvezda(j.id)
+                              ? <Star size={14} className="je-hvezda" fill="currentColor" aria-label="Favorit" />
+                              : <Heart size={14} className="je-srdce" fill="currentColor" aria-label="Oblíbené" />}
+                            {j.jmeno}
+                            <span className="vyber-panel-druh" aria-hidden>{KATEGORIE_INFO[j.kategorie].emoji}</span>
+                          </button>
+                          <button
+                            type="button"
+                            className="vyber-panel-odebrat"
+                            onClick={() => prepniOblibene(j.id)}
+                            aria-label={`Odebrat ${j.jmeno} z výběru`}
+                          >
+                            <X size={13} aria-hidden />
+                          </button>
+                        </div>
+                        <div className="vyber-panel-hlasy">
+                          {HLASUJICI.map(h => {
+                            const ma = hlasy.includes(h.id)
+                            return (
+                              <button
+                                key={h.id}
+                                type="button"
+                                className={`vyber-hlas ${ma ? 'je-aktivni' : ''}`}
+                                style={{ ['--hlas-barva' as string]: h.barva }}
+                                onClick={() => prepniHlas(j.id, h.id)}
+                                aria-pressed={ma}
+                                aria-label={`${h.nazev} ${ma ? 'chce' : 'nechce'} jméno ${j.jmeno}`}
+                                title={h.nazev}
+                              >
+                                {h.nazev[0]}
+                              </button>
+                            )
+                          })}
+                          <button
+                            type="button"
+                            className="vyber-hlas vyber-hlas-vsichni"
+                            onClick={() => hlasVsech(j.id)}
+                            aria-label={`Všichni chtějí jméno ${j.jmeno}`}
+                            title="Všichni najednou"
+                          >
+                            ∀
+                          </button>
+                        </div>
+                      </li>
+                    )
+                  })}
+                </ul>
+
+                <div className="vyber-panel-pata">
+                  <Link href="/analyza-vyberu" className="vyber-tlacitko je-hlavni" onClick={() => setOtevren(false)}>
+                    <BarChart3 size={15} aria-hidden /> Podrobná analýza výběru
+                  </Link>
+                  <Link href="/oblibene" className="vyber-tlacitko" onClick={() => setOtevren(false)}>
+                    Celá stránka výběru
+                  </Link>
+                </div>
+              </>
+            )}
+          </aside>
+        </>
+      )}
+    </>
+  )
+}

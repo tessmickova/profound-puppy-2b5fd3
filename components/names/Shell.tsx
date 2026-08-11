@@ -7,6 +7,7 @@ import { useOblibene } from '@/lib/names/oblibene'
 import { useRodina } from '@/lib/names/rodina'
 import Paticka from './Paticka'
 import DetailPanel from './DetailPanel'
+import VyberPanel from './VyberPanel'
 import ReklamniRam from './ReklamniRam'
 import Hledani from './Hledani'
 
@@ -97,6 +98,9 @@ export default function Shell({ children }: { children: React.ReactNode }) {
 
       <Paticka />
 
+      {/* Levý panel s výběrem je PŘED detailem: když se z něj otevře
+          jméno, detail se vykreslí později v DOM, a je tedy navrchu. */}
+      <VyberPanel />
       <DetailPanel />
 
       {/* spodní lišta — hlavní navigace na telefonu */}

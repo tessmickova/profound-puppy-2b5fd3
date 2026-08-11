@@ -20,6 +20,7 @@ import NadpisSekce from './NadpisSekce'
 
 const PORADI: Kategorie[] = [
   'holka', 'kluk', 'pes', 'fenka', 'kocour', 'kocka', 'kun', 'kralik', 'papousek', 'krecek',
+  'morce', 'had', 'rybka', 'zelva', 'fretka', 'koza', 'leguan',
 ]
 
 type Zalozka = 'ulozena' | 'vyrazena'

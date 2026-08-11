@@ -31,6 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<{ kod: stri
 const PORADI_KATEGORII: Kategorie[] = [
   'holka', 'kluk',
   'pes', 'fenka', 'kocour', 'kocka', 'kun', 'kralik', 'papousek', 'krecek',
+  'morce', 'had', 'rybka', 'zelva', 'fretka', 'koza', 'leguan',
 ]
 
 export default async function ZemeStranka({ params }: { params: Promise<{ kod: string }> }) {
