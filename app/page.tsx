@@ -9,7 +9,7 @@ import Rozvrzeni from '@/components/names/Rozvrzeni'
 import PasyJmen from '@/components/names/PasyJmen'
 import NadpisSekce from '@/components/names/NadpisSekce'
 import RodinaHero from '@/components/names/RodinaHero'
-import { Miminko, Stene } from '@/components/names/Ilustrace'
+import UvodZalozky from '@/components/names/UvodZalozky'
 import type { Druh } from '@/components/names/NadpisSekce'
 import { JMENA, ZEME } from '@/lib/names/data'
 import { jeNavrat, jeStalice, jeVrchol, jeVzestup, serad } from '@/lib/names/logic'
@@ -17,9 +17,9 @@ import { VYHLED } from '@/lib/names/vlny'
 import { znejeSvetove } from '@/lib/names/zapis'
 import { CASTE_DOTAZY, jsonLdDotazy, jsonLdSeznam, WEB } from '@/lib/names/seo'
 
-// Úvodní stránka není katalog, ale rozcestník podle toho, **kde v
-// rozhodování člověk zrovna je**. Vyhledávání ani mřížka jmen tu nejsou
-// první — kdo neví, kde začít, se seznamem nepohne.
+// Úvodní stránka není katalog, ale rozcestník podle situace. První otázka
+// jsou dvě velké záložky — miminko, nebo zvíře — a všechno pod nimi se
+// přepne do zvolené situace. Rozcestník „kde jste teď" je až pod obsahem.
 
 export const metadata: Metadata = {
   title: 'Svět jmen — pomůžeme vám vybrat jméno a rozhodnout se',
@@ -32,29 +32,6 @@ export const metadata: Metadata = {
     'jména pro děti', 'jména pro psy', 'jména pro kočky', 'význam jmen',
   ],
 }
-
-/**
- * Kdo pojmenovává — první a nejjednodušší otázka.
- *
- * Místo ikon jsou tu kreslené ilustrace: mezi „miminko" a „zvíře" se má
- * člověk rozhodnout na první pohled a dvě čárové ikonky vypadají stejně.
- */
-const KOHO = [
-  {
-    href: '/vybrat-jmeno-pro-dite',
-    nazev: 'Miminko',
-    popis: 'Holčičku, chlapečka nebo ještě nevíme',
-    Obrazek: Miminko,
-    barva: '#f8dfe6',
-  },
-  {
-    href: '/vybrat-jmeno-pro-zvire',
-    nazev: 'Zvíře',
-    popis: 'Psa, kočku, králíka i papouška',
-    Obrazek: Stene,
-    barva: '#f6e6d3',
-  },
-]
 
 /** Kde v rozhodování je — každá cesta vede do konkrétního nástroje. */
 const CESTY = [
@@ -89,44 +66,99 @@ const CESTY = [
 ]
 
 export default function Domov() {
+  const detska = (f: (j: (typeof JMENA)[number]) => boolean) =>
+    serad(JMENA.filter(f), 'popularita').slice(0, 6)
+
+  const moderniVzestup = detska(jeVzestup)
+  const svetova = detska(znejeSvetove)
+  const navraty = detska(jeNavrat)
+  const nejcastejsi = detska(jeVrchol)
+  const stalice = detska(jeStalice)
   const topZvirata = serad(JMENA.filter(j => !['kluk', 'holka'].includes(j.kategorie)), 'popularita').slice(0, 6)
   const topDeti = serad(JMENA.filter(j => ['kluk', 'holka'].includes(j.kategorie)), 'popularita').slice(0, 6)
-  // Na tohle se maminky ptají nejčastěji: co se bude dávat teď a příští
-  // rok. Odpovídá dobové zařazení (`vlna`), ne styl „moderní" — ten
-  // o době neříká nic.
-  //
-  // Modernější jména a návraty babiččiných jmen jsou **dva různé proudy**
-  // a v jedné sekci se pletly: seřazeno podle líbivosti vyhrávaly Amálie
-  // a Alžběta a nabídka pak vypadala jako seznam pro prababičky. Mladé
-  // maminky chtějí především to první, takže má vlastní sekci a jde dřív.
-  const moderniVzestup = serad(JMENA.filter(jeVzestup), 'popularita').slice(0, 6)
-  const navraty = serad(JMENA.filter(jeNavrat), 'popularita').slice(0, 6)
-  // Třetí proud vedle moderních a návratů: jména, která znějí světově.
-  // Část rodičů nehledá jiné jméno, ale jinou podobu téhož — Teodor,
-  // nebo Theodor. Odpověď je na detailu jména, sem patří rozcestník.
-  const svetova = serad(JMENA.filter(znejeSvetove), 'popularita').slice(0, 6)
-  const nejcastejsi = serad(JMENA.filter(jeVrchol), 'popularita').slice(0, 6)
-  const stalice = serad(JMENA.filter(jeStalice), 'popularita').slice(0, 6)
 
   return (
     <Shell>
       <Rozvrzeni>
-        {/* Hlavní prvek stránky: jméno, které ladí k rodině. Tím se web
-            liší od katalogů — a proto to nesmí být schované v podstránce. */}
-        <RodinaHero />
+        <UvodZalozky
+          deti={(
+            <>
+              <RodinaHero />
 
-        <section className="uvod-koho">
-          <h2 className="uvod-otazka">Nebo začněte od začátku — koho pojmenováváte?</h2>
-          <div className="uvod-dlazdice nastup">
-            {KOHO.map(({ href, nazev, popis, Obrazek, barva }) => (
-              <Link key={href} href={href} className="dlazdice-obrazkova" style={{ ['--dlazdice-barva' as string]: barva }}>
-                <span className="dlazdice-obrazek"><Obrazek velikost={84} /></span>
-                <span className="dlazdice-nazev">{nazev}</span>
-                <span className="dlazdice-popis">{popis}</span>
-              </Link>
-            ))}
-          </div>
-        </section>
+              <Sekce
+                druh="lide"
+                nadpis={`Modernější jména, kterých bude přibývat — ${VYHLED[0]} a ${VYHLED[1]}`}
+                popis="Kratší, měkčí a srozumitelná i za hranicemi. Tudy jde dnes hlavní proud."
+                jmena={moderniVzestup}
+                odkaz={{ href: '/deti', text: 'zobrazit všechna' }}
+              />
+              <Sekce
+                druh="lide"
+                nadpis="Jména, která znějí světově"
+                popis="Fungují doma i za hranicemi — u většiny vybíráte i zápis: Teodor, nebo Theodor?"
+                jmena={svetova}
+                odkaz={{ href: '/deti', text: 'zobrazit všechna' }}
+              />
+              <Sekce
+                druh="lide"
+                nadpis="Babiččina jména, která se vracejí"
+                popis="Menší, ale výrazný proud. Jména, která přeskočila generaci a zní znovu svěže."
+                jmena={navraty}
+                odkaz={{ href: '/deti', text: 'zobrazit všechna' }}
+              />
+              <Sekce
+                druh="lide"
+                nadpis="Nejčastější jména dnešních miminek"
+                popis="Tahle uslyšíte na hřišti nejčastěji — doporučení i důvod hledat dál."
+                jmena={nejcastejsi}
+                odkaz={{ href: '/deti', text: 'všechna dětská jména' }}
+              />
+              <Sekce
+                druh="lide"
+                nadpis="Stálice, které nezestárnou"
+                popis="Dávají se v každé generaci a za dvacet let nebudou znít ani staromódně."
+                jmena={stalice}
+                odkaz={{ href: '/deti', text: 'objevit další' }}
+              />
+
+              <PasyJmen druh="lide" />
+            </>
+          )}
+          zvirata={(
+            <>
+              <section className="rodina-hero zvire-uvod">
+                <div className="rodina-hero-text">
+                  <h2 className="zvire-uvod-nadpis">
+                    Jméno, na které <span>vaše zvíře uslyší</span>
+                  </h2>
+                  <p className="rodina-hero-podnadpis">
+                    Krátké, zvučné a jiné než povely. Vyberte si z pár dvojic
+                    a my z toho poznáme, co se vám líbí — nebo rovnou
+                    projděte katalog podle druhu a plemene.
+                  </p>
+                  <div className="zvire-uvod-akce">
+                    <Link href="/vybrat-jmeno-pro-zvire" className="vyber-tlacitko je-hlavni">
+                      Ukažte mi dvojice <ArrowRight size={14} aria-hidden />
+                    </Link>
+                    <Link href="/zvirata" className="vyber-tlacitko">
+                      Procházet katalog
+                    </Link>
+                  </div>
+                </div>
+              </section>
+
+              <Sekce
+                druh="zvirata"
+                nadpis="Nejlíbivější zvířecí jména"
+                popis="Jména, na která zvíře uslyší a vy je budete rádi volat přes celý park."
+                jmena={topZvirata}
+                odkaz={{ href: '/zvirata', text: 'všechna zvířecí jména' }}
+              />
+
+              <PasyJmen druh="zvirata" />
+            </>
+          )}
+        />
 
         <section className="uvod-cesty">
           <h2 className="uvod-otazka">Kde jste teď?</h2>
@@ -141,63 +173,10 @@ export default function Domov() {
             ))}
           </div>
           <p className="uvod-pozn">
-            Hledáte jméno k sourozenci? <Link href="/rodina">Založte rodinný profil</Link>{' '}
-            a doporučíme jména, která ladí ke všem doma. Všechno funguje bez
-            registrace a bez e-mailu — <Link href="/soukromi">jak to máme se soukromím</Link>.
+            Všechno funguje bez registrace a bez e-mailu —{' '}
+            <Link href="/soukromi">jak to máme se soukromím</Link>.
           </p>
         </section>
-
-        <PasyJmen druh="lide" />
-
-        <Sekce
-          druh="lide"
-          nadpis={`Modernější jména, kterých bude přibývat — ${VYHLED[0]} a ${VYHLED[1]}`}
-          popis="Kratší, měkčí a srozumitelná i za hranicemi. Tudy jde dnes hlavní proud. Redakční zařazení podle toho, jak se v Česku jména dávají — ne statistika."
-          jmena={moderniVzestup}
-          odkaz={{ href: '/deti', text: 'zobrazit všechna' }}
-        />
-
-        <Sekce
-          druh="lide"
-          nadpis="Jména, která znějí světově"
-          popis="Fungují doma i za hranicemi. U většiny navíc vybíráte i zápis — Teodor, nebo Theodor? Sofie, nebo Sofia? Obojí matrika zapíše."
-          jmena={svetova}
-          odkaz={{ href: '/deti', text: 'zobrazit všechna' }}
-        />
-
-        <Sekce
-          druh="lide"
-          nadpis="Babiččina jména, která se vracejí"
-          popis="Druhý proud, o dost menší než ten první — ale výrazný. Jména, která přeskočila generaci a dnes zní znovu svěže."
-          jmena={navraty}
-          odkaz={{ href: '/deti', text: 'zobrazit všechna' }}
-        />
-
-        <Sekce
-          druh="lide"
-          nadpis="Nejčastější jména dnešních miminek"
-          popis="Tahle uslyšíte na hřišti nejčastěji. Někdo to bere jako doporučení, někdo jako důvod hledat dál."
-          jmena={nejcastejsi}
-          odkaz={{ href: '/deti', text: 'všechna dětská jména' }}
-        />
-
-        <PasyJmen druh="zvirata" />
-
-        <Sekce
-          druh="zvirata"
-          nadpis="Nejlíbivější zvířecí jména"
-          popis="Jména, na která vaše zvíře uslyší a vy je budete rádi volat."
-          jmena={topZvirata}
-          odkaz={{ href: '/zvirata', text: 'všechna zvířecí jména' }}
-        />
-
-        <Sekce
-          druh="lide"
-          nadpis="Stálice, které nezestárnou"
-          popis="Dávají se v každé generaci. Za dvacet let nebudou znít ani staromódně, ani jako móda jednoho roku."
-          jmena={stalice}
-          odkaz={{ href: '/deti', text: 'objevit další' }}
-        />
 
         <section className="uvod-duvera">
           <h2 className="uvod-otazka">Proč nám věřit</h2>
@@ -276,15 +255,15 @@ function Sekce({
   odkaz: { href: string; text: string }
 }) {
   return (
-    <section className="mb-12">
-      <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
-        <NadpisSekce druh={druh}>{nadpis}</NadpisSekce>
-        <Link href={odkaz.href} className="odkaz-dal text-[13.5px] text-[#8a7f71] underline decoration-dotted hover:text-[#2b2723]">
+    <section className="sekce-sklo">
+      <div className="sekce-sklo-hlava">
+        <NadpisSekce druh={druh} uroven={3}>{nadpis}</NadpisSekce>
+        <Link href={odkaz.href} className="odkaz-dal">
           {odkaz.text} →
         </Link>
       </div>
-      <p className="mb-4 max-w-2xl text-[13.5px] text-[#8a7f71]">{popis}</p>
-      <div className="nastup mrizka-jmen mrizka-sekce">
+      <p className="sekce-sklo-popis">{popis}</p>
+      <div className="nastup mrizka-jmen mrizka-kompakt">
         {jmena.map((j, i) => <NameCard key={j.id} jmeno={j} poradi={i + 1} />)}
       </div>
     </section>

@@ -4,71 +4,63 @@
 //
 // Tohle je to, čím se web liší od katalogů. Katalog odpoví „jaká jsou
 // jména pro holčičky". Tady se ptáme na lidi, co už doma jsou — příjmení,
-// maminka, tatínek, sourozenec — a hledáme jméno, které k nim sedí.
+// maminka, tatínek, sourozenci — a hledáme jméno, které k nim sedí.
 //
-// Proto stojí nahoře a ne v podstránce. Není to vyhledávání v databázi
-// (to na úvod nepatří), ale nástroj: nic se nevypisuje, dokud člověk
-// něco nezadá, a každý výsledek má napsané, **proč** vyšel.
+// Není to vyhledávání v databázi (to na úvod nepatří), ale nástroj:
+// nic se nevypisuje, dokud člověk něco nezadá, a každý výsledek má
+// napsané, **proč** vyšel.
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
-import { ArrowRight, Heart, Sparkles } from 'lucide-react'
+import { ArrowRight, Heart, Plus, Sparkles, X } from 'lucide-react'
 import { JMENA } from '@/lib/names/data'
 import { najdiNejlepsiShody } from '@/lib/names/logic'
 import { slugJmena } from '@/lib/names/slug'
 import { useVyber } from '@/lib/names/vyber'
-import { Rodina } from './Ilustrace'
 
 /** Kolik jmen ukazujeme. Šest se vejde do dvou i tří sloupců beze zbytku. */
 const KOLIK = 6
-
-interface Pole { klic: 'prijmeni' | 'maminka' | 'tatinek' | 'sourozenec'; popisek: string; napoveda: string }
-
-const POLE: Pole[] = [
-  { klic: 'prijmeni', popisek: 'Příjmení', napoveda: 'Nováková' },
-  { klic: 'maminka', popisek: 'Maminka', napoveda: 'Tereza' },
-  { klic: 'tatinek', popisek: 'Tatínek', napoveda: 'Martin' },
-  { klic: 'sourozenec', popisek: 'Sourozenec', napoveda: 'Vojtěch' },
-]
+/** Kolik sourozenců jde zadat. Víc už je spíš překlep než rodina. */
+const NEJVIC_SOUROZENCU = 4
 
 export default function RodinaHero() {
   const [pohlavi, setPohlavi] = useState<'holka' | 'kluk'>('holka')
-  const [rodina, setRodina] = useState({ prijmeni: '', maminka: '', tatinek: '', sourozenec: '' })
+  const [prijmeni, setPrijmeni] = useState('')
+  const [maminka, setMaminka] = useState('')
+  const [tatinek, setTatinek] = useState('')
+  const [sourozenci, setSourozenci] = useState<string[]>([''])
   const { prepniOblibene, jeOblibene } = useVyber()
 
-  const zadano = Object.values(rodina).some(v => v.trim().length > 1)
+  const zadano = [prijmeni, maminka, tatinek, ...sourozenci].some(v => v.trim().length > 1)
 
   const shody = useMemo(() => {
     if (!zadano) return []
     return najdiNejlepsiShody(JMENA, {
       pohlavi,
-      prijmeni: rodina.prijmeni,
+      prijmeni,
       mesic: null,
       styly: [],
       zeme: [],
-      maminka: rodina.maminka,
-      tatinek: rodina.tatinek,
-      sourozenec: rodina.sourozenec,
+      maminka,
+      tatinek,
+      sourozenci,
     }, KOLIK)
-  }, [zadano, pohlavi, rodina])
+  }, [zadano, pohlavi, prijmeni, maminka, tatinek, sourozenci])
 
-  const uprav = (klic: Pole['klic'], hodnota: string) =>
-    setRodina(r => ({ ...r, [klic]: hodnota }))
+  const upravSourozence = (i: number, hodnota: string) =>
+    setSourozenci(s => s.map((x, k) => (k === i ? hodnota : x)))
 
   return (
     <section className="rodina-hero">
-      <div className="rodina-hero-uvod">
-        <div className="rodina-hero-text">
-          <h1>
-            Jméno, které ladí k <span>celé vaší rodině</span>
-          </h1>
-          <p className="rodina-hero-podnadpis">
-            Řekněte nám, kdo už je doma. Podle příjmení, jmen rodičů
-            i sourozence najdeme jména, která k nim sedí — a u každého
-            napíšeme proč.
-          </p>
-        </div>
-        <Rodina velikost={196} className="rodina-hero-obrazek" />
+      <div className="rodina-hero-text">
+        <h1>
+          Jméno, které ladí k <span>celé vaší rodině</span>
+        </h1>
+        <p className="rodina-hero-podnadpis">
+          Řekněte nám, kdo už je doma. Podle příjmení, jmen rodičů
+          i sourozenců najdeme jména, která k nim sedí — a u každého
+          napíšeme proč.
+        </p>
       </div>
 
       <div className="rodina-hero-formular">
@@ -82,23 +74,58 @@ export default function RodinaHero() {
         </div>
 
         <div className="rodina-hero-pole">
-          {POLE.map(p => (
-            <label key={p.klic}>
-              <span>{p.popisek}</span>
-              <input
-                value={rodina[p.klic]}
-                onChange={e => uprav(p.klic, e.target.value)}
-                placeholder={p.napoveda}
-                autoComplete="off"
-              />
+          <label>
+            <span>Příjmení</span>
+            <input value={prijmeni} onChange={e => setPrijmeni(e.target.value)} placeholder="Nováková" autoComplete="off" />
+          </label>
+          <label>
+            <span>Maminka</span>
+            <input value={maminka} onChange={e => setMaminka(e.target.value)} placeholder="Tereza" autoComplete="off" />
+          </label>
+          <label>
+            <span>Tatínek</span>
+            <input value={tatinek} onChange={e => setTatinek(e.target.value)} placeholder="Martin" autoComplete="off" />
+          </label>
+          {sourozenci.map((s, i) => (
+            <label key={i}>
+              <span>{sourozenci.length > 1 ? `${i + 1}. sourozenec` : 'Sourozenec'}</span>
+              <span className="rodina-hero-vstup">
+                <input
+                  value={s}
+                  onChange={e => upravSourozence(i, e.target.value)}
+                  placeholder={i === 0 ? 'Vojtěch' : 'Amálie'}
+                  autoComplete="off"
+                />
+                {i > 0 && (
+                  <button
+                    type="button"
+                    className="rodina-hero-odebrat"
+                    onClick={() => setSourozenci(x => x.filter((_, k) => k !== i))}
+                    aria-label={`Odebrat ${i + 1}. sourozence`}
+                  >
+                    <X size={14} aria-hidden />
+                  </button>
+                )}
+              </span>
             </label>
           ))}
         </div>
 
-        <p className="rodina-hero-pozn">
-          Stačí jedno políčko. Nic se nikam neodesílá — počítá se to přímo
-          ve vašem prohlížeči.
-        </p>
+        <div className="rodina-hero-radek">
+          {sourozenci.length < NEJVIC_SOUROZENCU && (
+            <button
+              type="button"
+              className="rodina-hero-pridat"
+              onClick={() => setSourozenci(s => [...s, ''])}
+            >
+              <Plus size={14} aria-hidden /> Přidat sourozence
+            </button>
+          )}
+          <p className="rodina-hero-pozn">
+            Stačí jedno políčko. Nic se nikam neodesílá — počítá se to přímo
+            ve vašem prohlížeči.
+          </p>
+        </div>
       </div>
 
       {zadano && (

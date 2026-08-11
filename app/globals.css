@@ -3020,12 +3020,6 @@ a:hover .ilustrace,
   box-shadow: 0 10px 30px rgba(43, 39, 35, .06);
 }
 
-.rodina-hero-uvod {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 18px;
-}
 .rodina-hero-text h1 {
   margin: 0;
   font-family: var(--font-nadpis), system-ui, sans-serif;
@@ -3036,8 +3030,6 @@ a:hover .ilustrace,
   margin: 10px 0 0; max-width: 46ch;
   font-size: 15.5px; line-height: 1.6; color: #6b6156;
 }
-.rodina-hero-obrazek { flex: none; }
-
 .rodina-hero-formular { margin-top: 20px; }
 /* Na širokém displeji stačí šířka obsahu, na telefonu ať pás sedne přes
    celou šířku — jinak by se popisky tiskly k sobě. */
@@ -3131,10 +3123,8 @@ a:hover .ilustrace,
 
 @media (max-width: 719px) {
   .rodina-hero { padding: 20px 18px; border-radius: 22px; }
-  .rodina-hero-uvod { grid-template-columns: 1fr; justify-items: center; text-align: center; }
   .rodina-hero-text h1 { font-size: 25px; }
   .rodina-hero-podnadpis { font-size: 14.5px; }
-  .rodina-hero-obrazek { order: -1; }
   .rodina-hero-pole { grid-template-columns: 1fr 1fr; }
   .dlazdice-obrazkova { padding: 18px 12px 16px; }
 }
@@ -3227,6 +3217,122 @@ a:hover .ilustrace,
   .jmeno-hlava h1 { font-size: 31px; }
   .jmeno-vyznam { font-size: 15.5px; }
   .jmeno-dalsi h2 { font-size: 18px; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   ÚVOD: ZÁLOŽKY MIMINKO / ZVÍŘE
+   ══════════════════════════════════════════════════════════════════════════════ */
+.uvod-zalozky {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+.uvod-zalozka {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  min-height: 88px;
+  border: 1px solid #e8dfd2;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, .55);
+  padding: 14px 18px;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color .18s ease, background .18s ease, box-shadow .18s ease;
+}
+.uvod-zalozka:hover { border-color: #d9cfbe; background: rgba(255, 255, 255, .8); }
+.uvod-zalozka[aria-selected="true"] {
+  border-color: #d97757;
+  background: #fff;
+  box-shadow: 0 10px 26px rgba(217, 119, 87, .14);
+}
+.uvod-zalozka .ilustrace { flex: none; }
+.uvod-zalozka-text { display: grid; gap: 1px; min-width: 0; }
+.uvod-zalozka-text strong {
+  font-family: var(--font-nadpis), system-ui, sans-serif;
+  font-size: 20px; font-weight: 700; color: #2b2723; line-height: 1.15;
+}
+.uvod-zalozka-text small { font-size: 12.5px; color: #8a7f71; line-height: 1.35; }
+
+/* ── Skleněné sekce se jmény ──────────────────────────────────────────────
+   Jedna kategorie = jeden tichý průsvitný blok. Karty uvnitř jsou menší —
+   sekce je ochutnávka, ne katalog. */
+.sekce-sklo {
+  margin-bottom: 14px;
+  border: 1px solid rgba(255, 255, 255, .85);
+  border-radius: 22px;
+  background: linear-gradient(165deg, rgba(255, 255, 255, .78), rgba(255, 255, 255, .5));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 8px 26px rgba(43, 39, 35, .05);
+  padding: 16px 16px 14px;
+}
+.sekce-sklo-hlava {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap;
+}
+.sekce-sklo-hlava .nadpis-sekce { font-size: 16.5px; }
+.sekce-sklo-hlava .odkaz-dal {
+  font-size: 12.5px; color: #8a7f71; text-decoration: underline;
+  text-decoration-style: dotted; white-space: nowrap;
+}
+.sekce-sklo-hlava .odkaz-dal:hover { color: #2b2723; }
+.sekce-sklo-popis { margin: 2px 0 12px; font-size: 12.5px; color: #8a7f71; }
+
+.mrizka-kompakt { gap: 8px; grid-template-columns: repeat(auto-fill, minmax(126px, 1fr)); }
+.mrizka-kompakt .karta-klikatelna { padding: 10px 12px; gap: 5px; border-radius: 14px; }
+.mrizka-kompakt .karta-jmeno { font-size: 15.5px; }
+.mrizka-kompakt .karta-jmeno.je-dlouhe { font-size: 14px; }
+.mrizka-kompakt .karta-jmeno.je-velmi-dlouhe { font-size: 12.5px; }
+.mrizka-kompakt .karta-poradi { font-size: 11px; margin-right: 4px; }
+.mrizka-kompakt .karta-puvod { font-size: 12px; }
+.mrizka-kompakt .karta-stitek { font-size: 9px; padding: 2px 6px; }
+.mrizka-kompakt .karta-spodek { gap: 5px; }
+
+/* Zvířecí polovina úvodu — stejný rám jako rodinný nástroj. */
+.zvire-uvod-nadpis {
+  margin: 0;
+  font-family: var(--font-nadpis), system-ui, sans-serif;
+  font-size: 27px; font-weight: 800; line-height: 1.12; letter-spacing: -.01em;
+}
+.zvire-uvod-nadpis span { color: #d97757; }
+.zvire-uvod-akce { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+
+/* Přidání sourozence. */
+.rodina-hero-vstup { position: relative; display: block; }
+.rodina-hero-vstup input { padding-right: 36px; }
+.rodina-hero-odebrat {
+  position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+  display: grid; place-items: center; width: 26px; height: 26px;
+  border: none; border-radius: 999px; background: none; color: #a2988a; cursor: pointer;
+}
+.rodina-hero-odebrat:hover { background: #f3ecdf; color: #b3403a; }
+.rodina-hero-radek { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 10px; }
+.rodina-hero-radek .rodina-hero-pozn { margin: 0; }
+.rodina-hero-pridat {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 34px;
+  border: 1px dashed #d8cbb6; border-radius: 999px; background: none;
+  padding: 6px 14px; font: inherit; font-size: 13px; font-weight: 600;
+  color: #6b6156; cursor: pointer;
+}
+.rodina-hero-pridat:hover { border-color: #d97757; color: #2b2723; }
+
+@media (max-width: 559px) {
+  .uvod-zalozky { gap: 8px; margin-bottom: 16px; }
+  .uvod-zalozka { min-height: 72px; padding: 10px 12px; gap: 10px; flex-direction: column; text-align: center; }
+  .uvod-zalozka .ilustrace { width: 46px; height: 46px; }
+  .uvod-zalozka-text { justify-items: center; }
+  .uvod-zalozka-text strong { font-size: 17px; }
+  .uvod-zalozka-text small { font-size: 11px; }
+  .sekce-sklo { padding: 13px 12px 12px; border-radius: 18px; }
+  .zvire-uvod-nadpis { font-size: 23px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .uvod-zalozka { transition: none; }
 }
 
 }

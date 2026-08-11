@@ -237,6 +237,8 @@ export interface VstupShody {
   maminka?: string
   tatinek?: string
   sourozenec?: string
+  /** další sourozenci; jméno má ladit ke každému z nich */
+  sourozenci?: string[]
 }
 
 export interface Shoda {
@@ -531,10 +533,17 @@ export function najdiProRodinu(jmena: Jmeno[], clenove: string[], kategorie: Kat
 
 export function najdiNejlepsiShody(jmena: Jmeno[], vstup: VstupShody, limit = 12): Shoda[] {
   const prijmeni = vstup.prijmeni.trim()
+  // Sourozenců může být víc — druhé dítě je nejčastější situace, třetí
+  // není výjimka. Duplicitní zápis téhož jména se počítá jen jednou.
+  const sourozenci = [...new Set(
+    [vstup.sourozenec ?? '', ...(vstup.sourozenci ?? [])]
+      .map(x => x.trim())
+      .filter(Boolean),
+  )]
   const rodina: ClenProShodu[] = [
     { jmeno: (vstup.maminka ?? '').trim(), kdo: 'maminka', koho: 'maminky' },
     { jmeno: (vstup.tatinek ?? '').trim(), kdo: 'tatínek', koho: 'tatínka' },
-    { jmeno: (vstup.sourozenec ?? '').trim(), kdo: 'sourozenec', koho: 'sourozence' },
+    ...sourozenci.map(x => ({ jmeno: x, kdo: 'sourozenec', koho: 'sourozence' })),
   ].filter(c => c.jmeno)
 
   const kandidati = jmena.filter(j =>
