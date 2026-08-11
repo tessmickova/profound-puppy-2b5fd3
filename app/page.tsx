@@ -12,7 +12,7 @@ import RodinaHero from '@/components/names/RodinaHero'
 import UvodZalozky from '@/components/names/UvodZalozky'
 import type { Druh } from '@/components/names/NadpisSekce'
 import { JMENA, ZEME } from '@/lib/names/data'
-import { jeNavrat, jeStalice, jeVrchol, jeVzestup, serad } from '@/lib/names/logic'
+import { dobreSeVola, jeNavrat, jeStalice, jeVrchol, jeVzestup, serad } from '@/lib/names/logic'
 import { VYHLED } from '@/lib/names/vlny'
 import { znejeSvetove } from '@/lib/names/zapis'
 import { CASTE_DOTAZY, jsonLdDotazy, jsonLdSeznam, WEB } from '@/lib/names/seo'
@@ -74,7 +74,11 @@ export default function Domov() {
   const navraty = detska(jeNavrat)
   const nejcastejsi = detska(jeVrchol)
   const stalice = detska(jeStalice)
+  // Šestá kategorie doplňuje mřížku na sudý počet — boxy stojí ve dvojicích
+  // a lichý by nechal vedle sebe prázdné místo.
+  const kratka = detska(j => j.zeme === 'cz' && j.slabiky <= 2)
   const topZvirata = serad(JMENA.filter(j => !['kluk', 'holka'].includes(j.kategorie)), 'popularita').slice(0, 6)
+  const volatelna = serad(JMENA.filter(dobreSeVola), 'popularita').slice(0, 6)
   const topDeti = serad(JMENA.filter(j => ['kluk', 'holka'].includes(j.kategorie)), 'popularita').slice(0, 6)
 
   return (
@@ -85,10 +89,11 @@ export default function Domov() {
             <>
               <RodinaHero />
 
+              <div className="sekce-mrizka">
               <Sekce
                 druh="lide"
-                nadpis={`Modernější jména, kterých bude přibývat — ${VYHLED[0]} a ${VYHLED[1]}`}
-                popis="Kratší, měkčí a srozumitelná i za hranicemi. Tudy jde dnes hlavní proud."
+                nadpis="Modernější jména na vzestupu"
+                popis={`Kratší, měkčí a srozumitelná i za hranicemi — výhled na ${VYHLED[0]} a ${VYHLED[1]}.`}
                 jmena={moderniVzestup}
                 odkaz={{ href: '/deti', text: 'zobrazit všechna' }}
               />
@@ -120,6 +125,14 @@ export default function Domov() {
                 jmena={stalice}
                 odkaz={{ href: '/deti', text: 'objevit další' }}
               />
+              <Sekce
+                druh="lide"
+                nadpis="Krátká a zvučná jména"
+                popis="Do dvou slabik. Dobře se volají, píšou i pamatují."
+                jmena={kratka}
+                odkaz={{ href: '/deti', text: 'zobrazit všechna' }}
+              />
+              </div>
 
               <PasyJmen druh="lide" />
             </>
@@ -147,6 +160,7 @@ export default function Domov() {
                 </div>
               </section>
 
+              <div className="sekce-mrizka">
               <Sekce
                 druh="zvirata"
                 nadpis="Nejlíbivější zvířecí jména"
@@ -154,6 +168,14 @@ export default function Domov() {
                 jmena={topZvirata}
                 odkaz={{ href: '/zvirata', text: 'všechna zvířecí jména' }}
               />
+              <Sekce
+                druh="zvirata"
+                nadpis="Dobře se volají"
+                popis="Krátká psí jména se samohláskou na konci, která se nepletou s povely."
+                jmena={volatelna}
+                odkaz={{ href: '/zvirata', text: 'zobrazit všechna' }}
+              />
+              </div>
 
               <PasyJmen druh="zvirata" />
             </>

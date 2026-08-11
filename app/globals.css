@@ -3260,6 +3260,19 @@ a:hover .ilustrace,
 /* ── Skleněné sekce se jmény ──────────────────────────────────────────────
    Jedna kategorie = jeden tichý průsvitný blok. Karty uvnitř jsou menší —
    sekce je ochutnávka, ne katalog. */
+/* Boxy kategorií stojí ve dvojicích — přes celou šířku působily jako
+   další katalog. Poloviční box je ochutnávka. Na telefonu pod sebou. */
+.sekce-mrizka {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+@media (min-width: 760px) {
+  .sekce-mrizka { grid-template-columns: 1fr 1fr; gap: 14px; }
+}
+.sekce-mrizka .sekce-sklo { margin-bottom: 0; }
+
 .sekce-sklo {
   margin-bottom: 14px;
   border: 1px solid rgba(255, 255, 255, .85);
