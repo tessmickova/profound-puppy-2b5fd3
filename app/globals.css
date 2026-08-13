@@ -3778,6 +3778,10 @@ a:hover .ilustrace,
 .analyza-prazdno svg { color: #d97757; }
 .analyza-prazdno p { margin: 0; font-size: 13.5px; line-height: 1.55; }
 
+/* Rozbalení kategorie na úvodu — každý box roste zvlášť. */
+.sekce-dalsi { display: flex; justify-content: center; margin-top: 12px; }
+.sekce-dalsi .vyber-tlacitko { font-size: 12.5px; padding: 7px 14px; }
+
 /* Konec seznamu — vždy s cestou dál, nikdy slepá ulička. */
 .konec-seznamu {
   display: grid;

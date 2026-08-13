@@ -36,6 +36,9 @@ export const DOMACKY: Record<string, string[]> = {
   matous: ['Matoušek', 'Mates'], jonas: ['Jonášek', 'Joni'],
   jachym: ['Jáchymek', 'Jáša'], tadeas: ['Tadeášek', 'Táda'],
   vincent: ['Vincek', 'Vince'], jindrich: ['Jindra', 'Jindříšek'],
+  mila: ['Milka', 'Miluška'], ester: ['Esterka', 'Esti'],
+  jasmina: ['Jasmínka', 'Mína'], maxmilian: ['Max', 'Maxík'],
+  natan: ['Natánek', 'Nati'], ben: ['Beník', 'Benny'],
 }
 
 /** Jmeniny podle českého občanského kalendáře (jen jistá data). */
@@ -49,6 +52,9 @@ export const SVATKY_CZ: Record<string, string> = {
   cyril: '5. 7.', hugo: '1. 4.', emil: '22. 5.',
   marketa: '13. 7.', magdalena: '22. 7.', eva: '24. 12.', helena: '18. 8.',
   alena: '13. 8.', monika: '21. 5.', sarka: '30. 6.',
+  terezie: '15. 10.', zora: '26. 1.', tamara: '3. 6.',
+  milan: '18. 6.', ales: '13. 4.', radim: '25. 8.', radek: '21. 3.',
+  ladislav: '27. 6.', rudolf: '17. 4.', alois: '21. 6.',
 }
 
 /** Jména používaná pro kluky i holčičky. */

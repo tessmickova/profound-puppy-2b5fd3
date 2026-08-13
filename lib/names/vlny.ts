@@ -135,6 +135,20 @@ const VLNY: Record<string, Vlna> = {
   Jaroslav: 'dozniva',
   Cyril: 'vzacne',
 
+  // Co se dává právě teď a co má našlápnuto na další roky.
+  Maxmilián: 'stoupa',
+  Noe: 'stoupa',
+  Natan: 'stoupa',
+  Ben: 'stoupa',
+  Alois: 'retro',
+  Ladislav: 'retro',
+  Rudolf: 'retro',
+  Radim: 'dozniva',
+  Radek: 'dozniva',
+  Aleš: 'dozniva',
+  Milan: 'dozniva',
+  Alfréd: 'vzacne',
+
   // Vzácná bez ohledu na dobu — skutečné originály.
   Kryšpín: 'vzacne',
 
@@ -229,6 +243,22 @@ const VLNY: Record<string, Vlna> = {
   Alena: 'dozniva',
   Ivana: 'dozniva',
   Berenika: 'vzacne',
+
+  // Co se dává právě teď a co má našlápnuto na další roky.
+  Lea: 'stoupa',
+  Lara: 'stoupa',
+  Luna: 'stoupa',
+  Mila: 'stoupa',
+  Ester: 'stoupa',
+  Terezie: 'retro',
+  Dita: 'retro',
+  Jasmína: 'stalice',
+  Klaudie: 'dozniva',
+  Sabina: 'dozniva',
+  Silvie: 'dozniva',
+  Tamara: 'dozniva',
+  Adriana: 'dozniva',
+  Zora: 'vzacne',
 }
 
 /**

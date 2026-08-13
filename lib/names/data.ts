@@ -1985,6 +1985,46 @@ pridej('cz', 'holka', [
   // Vzácná bez ohledu na dobu.
   ['Berenika',  'nesoucí vítězství — antická vzácnost', 72, ['elegantní', 'královské'], 'klidná', []],
 ])
+
+// Co se dává právě teď a co má našlápnuto na další roky — krátká,
+// mezinárodně čitelná jména, která rostou v celé Evropě a česká
+// matrika je bez výjimky pouští.
+pridej('cz', 'holka', [
+  ['Lea',      'lvice — tři písmena, něha i síla', 84, ['moderní'], 'klidná', []],
+  ['Lara',     'chránící domov — hebké jméno bez ostrých hran', 82, ['moderní', 'elegantní'], 'klidná', []],
+  ['Luna',     'měsíc — jméno, které svítí do tmy', 81, ['moderní', 'přírodní'], 'klidná', []],
+  ['Mila',     'milá — česky srozumitelné a světově nosné', 82, ['moderní'], 'klidná', []],
+  ['Ester',    'hvězda — biblické jméno na vzestupu', 80, ['moderní', 'tradiční'], 'vyvážená', []],
+  // Návraty a stálice.
+  ['Terezie',  'sklízející — starší sestra Terezy se vrací', 77, ['tradiční'], 'klidná', [10]],
+  ['Dita',     'bojující o štěstí — krátký návrat první republiky', 74, ['tradiční'], 'vyvážená', []],
+  ['Jasmína',  'květ jasmínu — voňavé a hravé', 76, ['přírodní', 'moderní'], 'klidná', []],
+  // Jména generace dnešních maminek.
+  ['Klaudie',  'z rodu Claudiů — jemné a nepřehlédnutelné', 73, ['elegantní'], 'klidná', []],
+  ['Sabina',   'z kmene Sabinů — hladké jméno devadesátek', 74, ['moderní'], 'vyvážená', []],
+  ['Silvie',   'z lesa — tichá elegance', 74, ['elegantní'], 'klidná', []],
+  ['Tamara',   'datlovník — pevné jméno s měkkým středem', 73, ['tradiční'], 'vyvážená', [6]],
+  ['Adriana',  'z Hadrie — dlouhé a zpěvné', 73, ['moderní', 'elegantní'], 'vyvážená', []],
+  // Vzácná bez ohledu na dobu.
+  ['Zora',     'úsvit — jméno, kterým začíná den', 72, ['tradiční', 'přírodní'], 'klidná', [1]],
+])
+pridej('cz', 'kluk', [
+  ['Maxmilián','největší — velké jméno s hotovou zkráceninou Max', 82, ['moderní', 'královské'], 'vyvážená', []],
+  ['Noe',      'odpočinek — dvě slabiky a celá archa příběhu', 79, ['moderní', 'tradiční'], 'klidná', []],
+  ['Natan',    'Bůh dal — krátké biblické jméno na vzestupu', 79, ['moderní'], 'vyvážená', []],
+  ['Ben',      'syn — kratší už to nejde', 78, ['moderní'], 'živá', []],
+  // Návraty.
+  ['Alois',    'slavný bojovník — pradědečkovo jméno zpátky ve hře', 74, ['tradiční'], 'klidná', [6]],
+  ['Ladislav', 'vláda a sláva — jméno králů i dědečků', 72, ['tradiční', 'královské'], 'klidná', [6]],
+  ['Rudolf',   'slavný vlk — habsburská klasika', 72, ['tradiční', 'královské'], 'vyvážená', [4]],
+  // Jména generace dnešních tatínků.
+  ['Radim',    'radostný mír — ryze české a nenápadné', 74, ['tradiční'], 'klidná', [8]],
+  ['Radek',    'radující se — kamarádské jméno osmdesátek', 73, ['tradiční'], 'vyvážená', [3]],
+  ['Aleš',     'ochránce — krátké české jméno s vlastní hlavou', 73, ['tradiční'], 'vyvážená', [4]],
+  ['Milan',    'milý — jednoduché jméno, které drží', 74, ['tradiční'], 'vyvážená', [6]],
+  // Vzácná bez ohledu na dobu.
+  ['Alfréd',   'rádce elfů — noblesa s motýlkem', 70, ['elegantní', 'tradiční'], 'klidná', []],
+])
 pridej('cz', 'kluk', [
   // Modernější jména na vzestupu.
   ['Hugo',      'duchaplný — krátké jméno s noblesou', 83, ['moderní', 'elegantní'], 'vyvážená', [4]],

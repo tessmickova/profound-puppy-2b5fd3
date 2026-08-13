@@ -4,13 +4,11 @@ import {
   ArrowRight, Globe2, Heart, ListChecks, Lock, Scale, ShieldCheck, Users,
 } from 'lucide-react'
 import Shell from '@/components/names/Shell'
-import NameCard from '@/components/names/NameCard'
 import Rozvrzeni from '@/components/names/Rozvrzeni'
 import PasyJmen from '@/components/names/PasyJmen'
-import NadpisSekce from '@/components/names/NadpisSekce'
 import RodinaHero from '@/components/names/RodinaHero'
+import SekceJmen from '@/components/names/SekceJmen'
 import UvodZalozky from '@/components/names/UvodZalozky'
-import type { Druh } from '@/components/names/NadpisSekce'
 import { JMENA, ZEME } from '@/lib/names/data'
 import { dobreSeVola, jeNavrat, jeStalice, jeVrchol, jeVzestup, serad } from '@/lib/names/logic'
 import { VYHLED } from '@/lib/names/vlny'
@@ -74,8 +72,10 @@ const CESTY = [
 ]
 
 export default function Domov() {
+  // Každý box ukáže šest jmen a dalších až osmnáct má připravených
+  // pro vlastní „Objevit další jména" — rozbaluje se každá kategorie zvlášť.
   const detska = (f: (j: (typeof JMENA)[number]) => boolean) =>
-    serad(JMENA.filter(f), 'popularita').slice(0, 6)
+    serad(JMENA.filter(f), 'popularita').slice(0, 24)
 
   const moderniVzestup = detska(jeVzestup)
   const svetova = detska(znejeSvetove)
@@ -85,8 +85,8 @@ export default function Domov() {
   // Šestá kategorie doplňuje mřížku na sudý počet — boxy stojí ve dvojicích
   // a lichý by nechal vedle sebe prázdné místo.
   const kratka = detska(j => j.zeme === 'cz' && j.slabiky <= 2)
-  const topZvirata = serad(JMENA.filter(j => !['kluk', 'holka'].includes(j.kategorie)), 'popularita').slice(0, 6)
-  const volatelna = serad(JMENA.filter(dobreSeVola), 'popularita').slice(0, 6)
+  const topZvirata = serad(JMENA.filter(j => !['kluk', 'holka'].includes(j.kategorie)), 'popularita').slice(0, 24)
+  const volatelna = serad(JMENA.filter(dobreSeVola), 'popularita').slice(0, 24)
   const topDeti = serad(JMENA.filter(j => ['kluk', 'holka'].includes(j.kategorie)), 'popularita').slice(0, 6)
 
   return (
@@ -98,37 +98,37 @@ export default function Domov() {
               <RodinaHero />
 
               <div className="sekce-mrizka">
-              <Sekce
+              <SekceJmen
                 druh="lide"
                 nadpis="Modernější jména na vzestupu"
                 jmena={moderniVzestup}
                 odkaz={{ href: '/deti', text: 'zobrazit všechna' }}
               />
-              <Sekce
+              <SekceJmen
                 druh="lide"
                 nadpis="Jména, která znějí světově"
                 jmena={svetova}
                 odkaz={{ href: '/deti', text: 'zobrazit všechna' }}
               />
-              <Sekce
+              <SekceJmen
                 druh="lide"
                 nadpis="Babiččina jména, která se vracejí"
                 jmena={navraty}
                 odkaz={{ href: '/deti', text: 'zobrazit všechna' }}
               />
-              <Sekce
+              <SekceJmen
                 druh="lide"
                 nadpis="Nejčastější jména dnešních miminek"
                 jmena={nejcastejsi}
                 odkaz={{ href: '/deti', text: 'všechna dětská jména' }}
               />
-              <Sekce
+              <SekceJmen
                 druh="lide"
                 nadpis="Stálice, které nezestárnou"
                 jmena={stalice}
                 odkaz={{ href: '/deti', text: 'objevit další' }}
               />
-              <Sekce
+              <SekceJmen
                 druh="lide"
                 nadpis="Krátká a zvučná jména"
                 jmena={kratka}
@@ -175,13 +175,13 @@ export default function Domov() {
               </section>
 
               <div className="sekce-mrizka">
-              <Sekce
+              <SekceJmen
                 druh="zvirata"
                 nadpis="Nejlíbivější zvířecí jména"
                 jmena={topZvirata}
                 odkaz={{ href: '/zvirata', text: 'všechna zvířecí jména' }}
               />
-              <Sekce
+              <SekceJmen
                 druh="zvirata"
                 nadpis="Dobře se volají"
                 jmena={volatelna}
@@ -279,25 +279,3 @@ export default function Domov() {
   )
 }
 
-function Sekce({
-  druh, nadpis, jmena, odkaz,
-}: {
-  druh: Druh
-  nadpis: string
-  jmena: typeof JMENA
-  odkaz: { href: string; text: string }
-}) {
-  return (
-    <section className="sekce-sklo">
-      <div className="sekce-sklo-hlava">
-        <NadpisSekce druh={druh} uroven={3}>{nadpis}</NadpisSekce>
-        <Link href={odkaz.href} className="odkaz-dal">
-          {odkaz.text} →
-        </Link>
-      </div>
-      <div className="nastup mrizka-jmen mrizka-kompakt">
-        {jmena.map((j, i) => <NameCard key={j.id} jmeno={j} poradi={i + 1} />)}
-      </div>
-    </section>
-  )
-}
