@@ -25,7 +25,7 @@ export default function SekceJmen({
 }) {
   const [kolik, setKolik] = useState(KOLIK)
   return (
-    <section className="sekce-sklo">
+    <section className="sekce-sklo odhal">
       <div className="sekce-sklo-hlava">
         <NadpisSekce druh={druh} uroven={3}>{nadpis}</NadpisSekce>
         <Link href={odkaz.href} className="odkaz-dal">

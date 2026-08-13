@@ -8,6 +8,7 @@ import Rozvrzeni from '@/components/names/Rozvrzeni'
 import PasyJmen from '@/components/names/PasyJmen'
 import RodinaHero from '@/components/names/RodinaHero'
 import SekceJmen from '@/components/names/SekceJmen'
+import StatPruh from '@/components/names/StatPruh'
 import UvodZalozky from '@/components/names/UvodZalozky'
 import { JMENA, ZEME } from '@/lib/names/data'
 import { dobreSeVola, jeNavrat, jeStalice, jeVrchol, jeVzestup, serad } from '@/lib/names/logic'
@@ -194,7 +195,15 @@ export default function Domov() {
           )}
         />
 
-        <section className="uvod-cesty">
+        {/* Čísla webu — skutečné počty z katalogu, žádná marketingová vata. */}
+        <StatPruh staty={[
+          { hodnota: JMENA.length, jednotka: '', popis: 'jmen v katalogu' },
+          { hodnota: ZEME.length, jednotka: '', popis: 'zemí světa' },
+          { hodnota: 15, jednotka: '', popis: 'druhů zvířat' },
+          { hodnota: 0, jednotka: ' Kč', popis: 'zdarma, bez registrace' },
+        ]} />
+
+        <section className="uvod-cesty odhal">
           <h2 className="uvod-otazka">Kde jste teď?</h2>
           <div className="cesty-mrizka">
             {CESTY.map(({ href, nadpis, popis, cta, Ikona }) => (
@@ -212,7 +221,7 @@ export default function Domov() {
           </p>
         </section>
 
-        <section className="uvod-duvera">
+        <section className="uvod-duvera odhal">
           <h2 className="uvod-otazka">Proč nám věřit</h2>
           <div className="duvera-mrizka">
             <div className="duvera-bod">
@@ -246,7 +255,7 @@ export default function Domov() {
           </div>
         </section>
 
-        <section className="mt-14">
+        <section className="odhal mt-14">
           <h2 className="mb-4 [font-family:var(--font-nadpis)] text-2xl font-bold">Časté otázky o výběru jména</h2>
           <div className="grid gap-2.5">
             {CASTE_DOTAZY.map(d => (

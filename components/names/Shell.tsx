@@ -8,6 +8,7 @@ import { useRodina } from '@/lib/names/rodina'
 import Paticka from './Paticka'
 import DetailPanel from './DetailPanel'
 import VyberPanel from './VyberPanel'
+import Odhalovani from './Odhalovani'
 import ReklamniRam from './ReklamniRam'
 import Hledani from './Hledani'
 
@@ -29,6 +30,12 @@ export default function Shell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="svetjmen-shell min-h-screen bg-[#faf6ef] pb-16 text-[#2b2723] lg:pb-0">
+      {/* Živé pozadí: dvě pomalu plující barevné skvrny za obsahem.
+          Čistě dekorace — pointer-events none, žádný vliv na čtení. */}
+      <div className="pozadi-zare" aria-hidden>
+        <span /><span /><span />
+      </div>
+      <Odhalovani />
       {/* Reklama: postranní sloupce na širokém okně, jinak lišta nahoře. */}
       <ReklamniRam />
       <header className="hlavicka sticky top-0 z-40 border-b border-[#e8dfd2] bg-[#faf6ef]/92 backdrop-blur-sm">
