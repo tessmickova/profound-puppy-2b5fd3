@@ -3,12 +3,12 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
-    "db:schema": "wrangler d1 execute svetjmen-ads --remote --file=./schema.sql",
-    "db:schema:local": "wrangler d1 execute svetjmen-ads --local --file=./schema.sql",
-    "db:migrace-003": "wrangler d1 execute svetjmen-ads --remote --file=./migrace/003-nastaveni.sql",
-    "db:migrace-003:local": "wrangler d1 execute svetjmen-ads --local --file=./migrace/003-nastaveni.sql",
+    "dev": "wrangler dev -c wrangler.toml",
+    "deploy": "wrangler deploy -c wrangler.toml",
+    "db:schema": "wrangler d1 execute svetjmen-ads --remote -c wrangler.toml --file=./schema.sql",
+    "db:schema:local": "wrangler d1 execute svetjmen-ads --local -c wrangler.toml --file=./schema.sql",
+    "db:migrace-003": "wrangler d1 execute svetjmen-ads --remote -c wrangler.toml --file=./migrace/003-nastaveni.sql",
+    "db:migrace-003:local": "wrangler d1 execute svetjmen-ads --local -c wrangler.toml --file=./migrace/003-nastaveni.sql",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

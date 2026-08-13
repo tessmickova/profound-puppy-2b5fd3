@@ -98,12 +98,20 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           npm ci
+          # `-c wrangler.toml` je nutné: po cf:build leží v kořeni repozitáře
+          # přesměrování `.wrangler/deploy/config.json` (OpenNext) a wrangler
+          # by ho odsud našel dřív — místo služby by podruhé nasadil web.
+          #
           # Migrace potřebuje na tokenu oprávnění „D1: Edit". Když chybí,
           # nasazení nezastavíme — služba bez tabulky jede s výchozím
           # „vše zapnuto" a migraci jde pustit ručně: npm run db:migrace-003
-          npx wrangler d1 execute svetjmen-ads --remote --file=./migrace/003-nastaveni.sql \
+          npx wrangler d1 execute svetjmen-ads --remote -c wrangler.toml --file=./migrace/003-nastaveni.sql \
             || echo "::warning::Migrace D1 se nepovedla — tokenu nejspíš chybí oprávnění D1 Edit. Spusťte v ads-worker ručně: npm run db:migrace-003"
-          npx wrangler deploy
+          npx wrangler deploy -c wrangler.toml
+          # Ověření, že se opravdu nasadila služba, ne omylem web:
+          sleep 5
+          curl -sf https://svetjmen-ads.tereza-holtzerova.workers.dev/api/nastaveni | grep -q '"nastaveni"' \
+            || { echo "::error::Reklamní služba po nasazení neodpovídá na /api/nastaveni."; exit 1; }
 
       # Ověření proti skutečně vydanému HTML — ne proti tomu, co jsme
       # sestavili. Kdyby nasazení proběhlo napůl, pozná se to tady.
