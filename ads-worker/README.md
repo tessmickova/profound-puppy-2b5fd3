@@ -46,6 +46,23 @@ curl -s -X POST localhost:8799/api/admin/potvrdit \
 curl -s "localhost:8799/api/reklamy?plocha=deti-bocni"
 ```
 
+## Správa z webu (/sprava)
+
+Stránka `/sprava` na webu se přihlašuje týmž `ADMIN_TOKEN` a umí: přehled
+objednávek, potvrzení platby podle VS, denní úklid ručně a **přepínače
+webu** (reklamy, panel „Můj výběr", analýza výběru). Přepínače sedí
+v tabulce `nastaveni` — na existující databázi ji založí migrace:
+
+```bash
+npm run db:migrace-003          # ostrá databáze
+npm run db:migrace-003:local    # lokální vývoj
+```
+
+Endpointy: veřejné `GET /api/nastaveni` (web, cache 60 s); s tokenem
+`GET /api/admin/overeni`, `GET /api/admin/prehled`,
+`POST /api/admin/potvrdit`, `POST /api/admin/nastaveni`
+(`{"klic":"reklamy","hodnota":false}`), `POST /api/admin/uklid`.
+
 ## Kde co je
 
 | Soubor | Obsah |

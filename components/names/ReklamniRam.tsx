@@ -30,6 +30,7 @@ import {
   inzeratyProPlochu, type Inzerat,
 } from '@/lib/names/reklamy'
 import { ADRESA_REKLAM, nactiVsechnyInzeraty } from '@/lib/names/reklamniServer'
+import { usePrepinace } from '@/lib/names/nastaveni'
 
 const IKONY: Record<string, LucideIcon> = {
   bone: Bone, dog: Dog, house: House, 'shield-check': ShieldCheck, cat: Cat,
@@ -62,6 +63,7 @@ export default function ReklamniRam() {
   const [stopnuto, setStopnuto] = useState(false)
   const [otoceno, setOtoceno] = useState(false)
   const pauza = useRef(false)
+  const prepinace = usePrepinace()
 
   useEffect(() => {
     if (!ADRESA_REKLAM) return
@@ -109,6 +111,8 @@ export default function ReklamniRam() {
   }, [])
 
   if (rezim === null) return null
+  // Vypnuto z adminu — plochy zmizí, kampaně v databázi zůstávají.
+  if (!prepinace.reklamy) return null
 
   const spolecne = { mapa, tise, pauza, stopnuto, drz }
 

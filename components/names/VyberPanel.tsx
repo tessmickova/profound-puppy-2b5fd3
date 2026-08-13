@@ -14,15 +14,20 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { BarChart3, Heart, ListChecks, Star, Users, X } from 'lucide-react'
 import { JMENA } from '@/lib/names/data'
+import { usePrepinace } from '@/lib/names/nastaveni'
 import { HLASUJICI, useVyber } from '@/lib/names/vyber'
 import { otevriDetail } from '@/lib/names/detail'
 import { KATEGORIE_INFO } from '@/lib/names/types'
 
 export default function VyberPanel() {
   const [otevren, setOtevren] = useState(false)
+  const prepinace = usePrepinace()
   const {
     oblibena, jeHvezda, hlasyPro, prepniHlas, hlasVsech, prepniOblibene,
   } = useVyber()
+
+  // Vypnuto z adminu — ouško ani panel se nevykreslí.
+  if (!prepinace.vyber_panel) return null
 
   const vybrana = oblibena
     .map(id => JMENA.find(j => j.id === id))

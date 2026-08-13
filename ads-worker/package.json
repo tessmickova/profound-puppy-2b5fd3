@@ -7,6 +7,8 @@
     "deploy": "wrangler deploy",
     "db:schema": "wrangler d1 execute svetjmen-ads --remote --file=./schema.sql",
     "db:schema:local": "wrangler d1 execute svetjmen-ads --local --file=./schema.sql",
+    "db:migrace-003": "wrangler d1 execute svetjmen-ads --remote --file=./migrace/003-nastaveni.sql",
+    "db:migrace-003:local": "wrangler d1 execute svetjmen-ads --local --file=./migrace/003-nastaveni.sql",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

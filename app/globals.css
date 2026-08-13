@@ -3782,6 +3782,170 @@ a:hover .ilustrace,
 .sekce-dalsi { display: flex; justify-content: center; margin-top: 12px; }
 .sekce-dalsi .vyber-tlacitko { font-size: 12.5px; padding: 7px 14px; }
 
+/* ══════════════════════════════════════════════════════════════════════════════
+   SPRÁVA WEBU — /admin: objednávky, přepínače a provozní audit
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.admin { display: grid; gap: 16px; max-width: 860px; }
+.admin-sekce {
+  border: 1px solid #e8dfd2;
+  border-radius: 20px;
+  background: #fff;
+  padding: 16px 18px;
+}
+.admin-sekce > h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  font-family: var(--font-nadpis), system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+}
+.admin-sekce h3 {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 18px 0 8px;
+  font-family: var(--font-nadpis), system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.admin-prihlaseni { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px; }
+.admin-prihlaseni label { display: grid; gap: 4px; flex: 1 1 260px; }
+.admin-prihlaseni label span { font-size: 12px; font-weight: 600; color: #8a7f71; }
+.admin-prihlaseni input {
+  border: 1px solid #e8dfd2;
+  border-radius: 12px;
+  background: #faf6ef;
+  padding: 9px 12px;
+  font: inherit;
+  font-size: 14px;
+}
+.admin-prihlaseni input:focus { outline: none; border-color: #2b2723; }
+
+.admin-radek { display: flex; flex-wrap: wrap; gap: 8px; }
+.admin-pozn { margin: 8px 0 0; font-size: 12.5px; line-height: 1.55; color: #8a7f71; }
+.admin-pozn code { background: #f6ece2; border-radius: 6px; padding: 1px 5px; font-size: 12px; }
+.admin-varovani {
+  margin: 0;
+  border: 1px solid #ecc9b6;
+  border-radius: 12px;
+  background: #fdeeea;
+  padding: 10px 13px;
+  font-size: 13px;
+  color: #7a3d2e;
+}
+.admin-hlaska {
+  margin: 12px 0 0;
+  border: 1px solid #cfe0cf;
+  border-radius: 12px;
+  background: #eef6ee;
+  padding: 9px 13px;
+  font-size: 13px;
+  color: #2f5c39;
+}
+
+.admin-prepinace { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.admin-prepinace li { display: flex; align-items: flex-start; gap: 12px; }
+.admin-prepinace strong { font-size: 13.5px; }
+.admin-prepinace p { margin: 1px 0 0; font-size: 12.5px; color: #8a7f71; }
+.admin-prepinac {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: none;
+  background: none;
+  padding: 2px 0;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  color: #8a7f71;
+  cursor: pointer;
+  min-width: 92px;
+}
+.admin-prepinac.je-zapnuty { color: #4d8b5c; }
+.admin-prepinac-drah {
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+  border-radius: 999px;
+  background: #d9cfbe;
+  position: relative;
+  transition: background .15s;
+}
+.admin-prepinac-drah span {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: #fff;
+  transition: left .15s;
+}
+.admin-prepinac.je-zapnuty .admin-prepinac-drah { background: #4d8b5c; }
+.admin-prepinac.je-zapnuty .admin-prepinac-drah span { left: 18px; }
+
+.admin-tabulka-obal { overflow-x: auto; margin-top: 6px; }
+.admin-tabulka { width: 100%; border-collapse: collapse; font-size: 13px; }
+.admin-tabulka th {
+  text-align: left;
+  padding: 6px 10px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: #a2988a;
+  border-bottom: 1px solid #e8dfd2;
+}
+.admin-tabulka td { padding: 8px 10px; border-bottom: 1px solid #f0e8dc; vertical-align: top; }
+.admin-tabulka small { color: #8a7f71; }
+.admin-tabulka code { background: #f6ece2; border-radius: 6px; padding: 1px 5px; }
+
+.admin-audit { margin: 0; padding: 0; list-style: none; display: grid; gap: 12px; }
+.admin-audit-polozka { display: flex; align-items: flex-start; gap: 10px; }
+.admin-audit-polozka strong { font-size: 13.5px; }
+.admin-audit-polozka p { margin: 2px 0 0; font-size: 12.5px; line-height: 1.55; color: #6b6156; }
+.admin-audit-polozka .admin-akce { color: #2b2723; }
+.admin-stitek {
+  flex: none;
+  margin-top: 1px;
+  border: 1.4px solid var(--stav-barva);
+  border-radius: 999px;
+  padding: 2px 9px;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--stav-barva);
+  min-width: 92px;
+  text-align: center;
+}
+
+.admin-inventura h3 { margin-top: 12px; }
+.admin-inventura ul {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 3px;
+  font-size: 13px;
+  color: #6b6156;
+}
+.admin-inventura li::marker { color: #d97757; }
+
+.admin-doporuceni {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #6b6156;
+}
+.admin-doporuceni li::marker { color: #d97757; font-weight: 700; }
+
 /* Konec seznamu — vždy s cestou dál, nikdy slepá ulička. */
 .konec-seznamu {
   display: grid;

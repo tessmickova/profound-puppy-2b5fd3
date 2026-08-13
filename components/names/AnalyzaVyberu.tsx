@@ -20,6 +20,7 @@ import { otevriDetail } from '@/lib/names/detail'
 import { KATEGORIE_INFO } from '@/lib/names/types'
 import { HLASUJICI, useVyber } from '@/lib/names/vyber'
 import { useRodina } from '@/lib/names/rodina'
+import { usePrepinace } from '@/lib/names/nastaveni'
 
 /** Druhý pád rolí pro věty typu „jméno maminky". */
 const KOHO: Record<string, string> = {
@@ -49,6 +50,7 @@ function Prouzek({ popisek, body }: { popisek: string; body: number }) {
 export default function AnalyzaVyberu() {
   const { oblibena, jeHvezda, hlasyPro } = useVyber()
   const { clenove } = useRodina()
+  const prepinace = usePrepinace()
 
   // Rodinný profil → vstup pro naše pravidla ladění. Bereme všechny členy —
   // i u zvířat dává smysl hlídat iniciály a záměnu jmen.
@@ -78,6 +80,15 @@ export default function AnalyzaVyberu() {
       return { j, hlasy, hvezda, podleVas, harmonie, celkem }
     }).sort((a, b) => b.celkem - a.celkem)
   }, [oblibena, hlasyPro, jeHvezda, proShodu])
+
+  if (!prepinace.analyza_vyberu) {
+    return (
+      <div className="analyza-prazdno">
+        <p>Tahle stránka je dočasně vypnutá správcem webu.</p>
+        <Link href="/" className="vyber-tlacitko">Zpět na úvod</Link>
+      </div>
+    )
+  }
 
   if (rozbory.length === 0) {
     return (

@@ -144,7 +144,8 @@ function hlavickyCors(req: Request, env: Prostredi): Record<string, string> {
     return {
       'Access-Control-Allow-Origin': origin,
       'Access-Control-Allow-Methods': 'GET, POST, PATCH, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
+      // Authorization kvůli stránce /admin na webu — posílá Bearer token.
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
       'Vary': 'Origin',
     }
   }
@@ -580,28 +581,70 @@ async function upravInzerat(
   return json({ ulozeno: true }, {}, cors)
 }
 
+// ── přepínače webu ───────────────────────────────────────────────────────
+//
+// Web je statický; tohle je jediné místo, kde jde funkci vypnout hned,
+// bez nasazování. Klíče jsou pevný seznam — admin nemůže založit cizí
+// a databáze se nezaplní smetím. Co není uložené, je zapnuté.
+
+const PREPINACE = ['reklamy', 'vyber_panel', 'analyza_vyberu'] as const
+
+async function dejNastaveni(env: Prostredi, cors: Record<string, string>) {
+  const stav: Record<string, boolean> = Object.fromEntries(PREPINACE.map(k => [k, true]))
+  try {
+    const { results } = await env.DB.prepare('SELECT klic, hodnota FROM nastaveni').all<{ klic: string; hodnota: string }>()
+    for (const r of results ?? []) {
+      if ((PREPINACE as readonly string[]).includes(r.klic)) stav[r.klic] = r.hodnota !== '0'
+    }
+  } catch (e) {
+    // Stará databáze bez tabulky — web pojede s výchozím „vše zapnuto".
+    console.error('nastaveni se nepodarilo precist', e)
+  }
+  return json({ nastaveni: stav }, {
+    // Minutová cache: vypnutí se projeví rychle a služba nedostává
+    // dotaz od každého návštěvníka zvlášť.
+    headers: { 'Cache-Control': 'public, max-age=60' },
+  }, cors)
+}
+
+async function zapisNastaveni(req: Request, env: Prostredi, cors: Record<string, string>) {
+  let telo: { klic?: unknown; hodnota?: unknown }
+  try { telo = await req.json() } catch { return chyba('Nečitelná data.', 400, cors) }
+
+  const klic = text(telo.klic, 40)
+  if (!(PREPINACE as readonly string[]).includes(klic)) return chyba('Neznámý přepínač.', 400, cors)
+  if (typeof telo.hodnota !== 'boolean') return chyba('Hodnota musí být ano/ne.', 400, cors)
+
+  await env.DB.prepare(
+    `INSERT INTO nastaveni (klic, hodnota, zmeneno) VALUES (?1, ?2, ?3)
+     ON CONFLICT(klic) DO UPDATE SET hodnota = ?2, zmeneno = ?3`,
+  ).bind(klic, telo.hodnota ? '1' : '0', new Date().toISOString()).run()
+
+  return json({ ulozeno: true, klic, hodnota: telo.hodnota }, {}, cors)
+}
+
 // ── správa ───────────────────────────────────────────────────────────────
 
-async function potvrdPlatbu(req: Request, env: Prostredi) {
+async function potvrdPlatbu(req: Request, env: Prostredi, cors: Record<string, string> = {}) {
   let telo: { vs?: string; od?: string }
-  try { telo = await req.json() } catch { return chyba('Nečitelná data.') }
+  try { telo = await req.json() } catch { return chyba('Nečitelná data.', 400, cors) }
 
   const vs = text(telo.vs, 12)
-  if (!vs) return chyba('Chybí variabilní symbol.')
+  if (!vs) return chyba('Chybí variabilní symbol.', 400, cors)
 
   const o = await env.DB.prepare("SELECT * FROM objednavky WHERE vs = ?1 AND stav = 'ceka_na_platbu'")
     .bind(vs).first<{ id: string; obdobi: string }>()
-  if (!o) return chyba('K tomuhle symbolu nečeká žádná objednávka.', 404)
+  if (!o) return chyba('K tomuhle symbolu nečeká žádná objednávka.', 404, cors)
 
   const od = text(telo.od, 10) || dnesISO()
   const do_ = platiDo(od, o.obdobi as ObdobiId)
   await env.DB.prepare("UPDATE objednavky SET stav = 'aktivni', plati_od = ?1, plati_do = ?2 WHERE id = ?3")
     .bind(od, do_, o.id).run()
 
-  return json({ stav: 'aktivni', plati_od: od, plati_do: do_ })
+  return json({ stav: 'aktivni', plati_od: od, plati_do: do_ }, {}, cors)
 }
 
-async function prehled(env: Prostredi) {
+async function prehled(env: Prostredi, cors: Record<string, string> = {}) {
   const { results } = await env.DB.prepare(
     `SELECT o.id, o.plocha, o.obdobi, o.cena_kc, o.vs, o.stav, o.plati_od, o.plati_do,
             n.firma, n.email, i.znacka, i.nadpis
@@ -611,7 +654,7 @@ async function prehled(env: Prostredi) {
       ORDER BY o.vytvoreno DESC
       LIMIT 200`,
   ).all()
-  return json({ objednavky: results ?? [] })
+  return json({ objednavky: results ?? [] }, {}, cors)
 }
 
 // ── router ───────────────────────────────────────────────────────────────
@@ -634,6 +677,7 @@ async function obsluz(req: Request, env: Prostredi): Promise<Response> {
       if (req.method === 'GET' && cesta === '/api/reklamy') return dejReklamy(url, env, cors)
       if (req.method === 'GET' && cesta === '/api/reklamy-vse') return dejVsechnyReklamy(url, env, cors)
       if (req.method === 'GET' && cesta === '/api/sloty') return dejSloty(env, cors)
+      if (req.method === 'GET' && cesta === '/api/nastaveni') return dejNastaveni(env, cors)
       if (req.method === 'POST' && cesta === '/api/objednavka') {
         if (await prekrocenLimit(req, env, 'objednavka', 10)) {
           return chyba('Příliš mnoho pokusů. Zkuste to prosím za hodinu.', 429, cors)
@@ -662,13 +706,16 @@ async function obsluz(req: Request, env: Prostredi): Promise<Response> {
       if (req.method === 'GET' && souborLoga) return dejLogo(souborLoga[1], env)
 
       if (cesta.startsWith('/api/admin/')) {
-        if (!jeAdmin(req, env)) return chyba('Nemáte oprávnění.', 401)
-        if (req.method === 'POST' && cesta === '/api/admin/potvrdit') return potvrdPlatbu(req, env)
-        if (req.method === 'GET' && cesta === '/api/admin/prehled') return prehled(env)
+        // Admin volá i stránka /admin na webu — potřebuje CORS jako ostatní.
+        if (!jeAdmin(req, env)) return chyba('Nemáte oprávnění.', 401, cors)
+        if (req.method === 'GET' && cesta === '/api/admin/overeni') return json({ ok: true }, {}, cors)
+        if (req.method === 'POST' && cesta === '/api/admin/potvrdit') return potvrdPlatbu(req, env, cors)
+        if (req.method === 'GET' && cesta === '/api/admin/prehled') return prehled(env, cors)
+        if (req.method === 'POST' && cesta === '/api/admin/nastaveni') return zapisNastaveni(req, env, cors)
         if (req.method === 'POST' && cesta === '/api/admin/uklid') {
           const prosle = await zhasniProsle(env)
           const zrusene = await zrusNezaplacene(env)
-          return json({ prosle, zrusene })
+          return json({ prosle, zrusene }, {}, cors)
         }
       }
 

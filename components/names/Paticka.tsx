@@ -22,6 +22,7 @@ const O_PROJEKTU = [
   { href: '/reklama/ucet', text: 'Účet inzerenta' },
   { href: '/podminky', text: 'Podmínky' },
   { href: '/soukromi', text: 'Ochrana údajů' },
+  { href: '/sprava', text: 'Správa webu' },
 ]
 
 function Sloupec({ nadpis, deti }: { nadpis: string; deti: React.ReactNode }) {

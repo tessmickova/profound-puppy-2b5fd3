@@ -65,3 +65,11 @@ CREATE TABLE limity (
 );
 
 CREATE INDEX idx_limity_okno ON limity(okno);
+
+-- Přepínače webu spravované z adminu ('1' zapnuto / '0' vypnuto).
+-- Co v tabulce není, je zapnuté.
+CREATE TABLE nastaveni (
+  klic     TEXT PRIMARY KEY,
+  hodnota  TEXT NOT NULL,
+  zmeneno  TEXT NOT NULL
+);

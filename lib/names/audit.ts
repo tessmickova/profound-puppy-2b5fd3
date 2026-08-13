@@ -1,0 +1,220 @@
+// Provozní audit projektu — jeden zdroj pravdy pro stránku /sprava.
+//
+// Tohle je ta část auditu, která se nemění za běhu: co je postavené, jaké
+// hrozby jsou ošetřené, co čeká na majitelku a co se doporučuje dál.
+// Žije v repozitáři schválně — každá změna auditu projde Gitem a je vidět
+// v historii, nikdo (ani AI) ho nemůže tiše přepsat v databázi.
+//
+// Pravidlo obsahu: žádné uklidňující fráze. Když něco není hotové nebo
+// bezpečné, píše se to sem červeně a s návodem, co s tím.
+
+export const AUDIT_REVIZE = '2026-08-13'
+
+export type StavPolozky = 'podchyceno' | 'ceka-na-vas' | 'trva'
+
+export interface PolozkaAuditu {
+  stav: StavPolozky
+  nazev: string
+  popis: string
+  /** co přesně udělat, když je stav ceka-na-vas nebo trva */
+  akce?: string
+}
+
+export const STAV_INFO: Record<StavPolozky, { stitek: string; barva: string }> = {
+  podchyceno: { stitek: 'podchyceno', barva: '#4d8b5c' },
+  'ceka-na-vas': { stitek: 'čeká na vás', barva: '#c98a2e' },
+  trva: { stitek: 'trvá — riziko', barva: '#b3403a' },
+}
+
+// ── bezpečnost ────────────────────────────────────────────────────────────
+
+export const BEZPECNOST: PolozkaAuditu[] = [
+  {
+    stav: 'trva',
+    nazev: 'Cloudflare API token a GitHub token byly vloženy do chatu',
+    popis: 'Oba tokeny prošly konverzací s AI, a proto je nutné je považovat '
+      + 'za vyzrazené — kdokoli s přístupem k přepisu by je mohl použít.',
+    akce: 'Cloudflare → My Profile → API Tokens → Roll/Delete a vytvořit nový '
+      + '(oprávnění: Workers Scripts Edit + D1 Edit, ať CI zvládne i migrace databáze); '
+      + 'GitHub → Settings → Developer settings → tokens → Revoke. Nové hodnoty '
+      + 'vložit jen do GitHub → repozitář → Settings → Secrets → Actions.',
+  },
+  {
+    stav: 'ceka-na-vas',
+    nazev: 'ADMIN_TOKEN reklamní služby zatím není nastaven',
+    popis: 'Bez něj se nedá přihlásit do adminu a schvalovat platby. Dokud '
+      + 'není nastaven, admin API odmítá úplně všechno — to je bezpečný stav, '
+      + 'ale nic se nedá spravovat.',
+    akce: 'Vygenerovat dlouhý náhodný řetězec (min. 32 znaků) a v adresáři '
+      + 'ads-worker spustit: npx wrangler secret put ADMIN_TOKEN. Token uložit '
+      + 'do správce hesel — je to jediný klíč k adminu.',
+  },
+  {
+    stav: 'ceka-na-vas',
+    nazev: 'Ochrana hlavní větve na GitHubu',
+    popis: 'Web se nasazuje automaticky při každém pushi. Bez ochrany větve '
+      + 'může kdokoli s přístupem k repozitáři (včetně AI agentů) poslat změnu '
+      + 'rovnou do produkce.',
+    akce: 'GitHub → Settings → Branches → Add branch protection rule: vyžadovat '
+      + 'pull request s vaším schválením před sloučením. Pak AI může navrhovat, '
+      + 'ale o nasazení rozhodujete vy.',
+  },
+  {
+    stav: 'podchyceno',
+    nazev: 'Admin API chráněné tokenem s porovnáním v konstantním čase',
+    popis: 'Schvalování plateb, přehled objednávek a přepínače vyžadují Bearer '
+      + 'token; porovnává se po znacích bez časového úniku a bez tokenu v URL.',
+  },
+  {
+    stav: 'podchyceno',
+    nazev: 'Vstupy od inzerentů se čistí a ověřují',
+    popis: 'Texty procházejí normalizací, odstraněním řídicích a obousměrných '
+      + 'znaků; odkazy jen http(s) bez přihlašovacích údajů; loga se čtou po '
+      + 'bajtech (PNG/JPG/WEBP) a servírují se sandboxovanou CSP.',
+  },
+  {
+    stav: 'podchyceno',
+    nazev: 'Limity proti zahlcení objednávkami',
+    popis: 'Počet objednávek, úprav a nahrání loga z jedné adresy je omezen '
+      + 'na hodinu; IP se ukládá jen jako otisk, ne čitelně.',
+  },
+  {
+    stav: 'podchyceno',
+    nazev: 'Tajemství nejsou v repozitáři',
+    popis: 'Deploy klíče žijí v GitHub Actions Secrets, ADMIN_TOKEN ve Wrangler '
+      + 'secrets. V kódu ani v historii commitů žádné tokeny nejsou.',
+  },
+  {
+    stav: 'podchyceno',
+    nazev: 'Web nesbírá osobní údaje návštěvníků',
+    popis: 'Žádné cookies, žádná analytika třetích stran, žádné odesílání '
+      + 'zadaných jmen — výběr i rodina zůstávají v prohlížeči (localStorage).',
+  },
+  {
+    stav: 'podchyceno',
+    nazev: 'Oddělení webu a reklamní služby',
+    popis: 'Výpadek reklamní služby web nepoloží — plochy se schovají a obsah '
+      + 'jede dál. CORS pouští jen vyjmenované domény.',
+  },
+]
+
+// ── právo ─────────────────────────────────────────────────────────────────
+
+export const PRAVO: PolozkaAuditu[] = [
+  {
+    stav: 'trva',
+    nazev: 'V patičce a ve wrangler.toml jsou zástupné údaje provozovatele',
+    popis: '„VYPLNIT s.r.o., IČO 00000000" a „VYPLNIT/0000" jako bankovní účet. '
+      + 'Dokud tam nejsou skutečné údaje, nesmí se prodávat reklama — objednávka '
+      + 'by odkazovala na neexistujícího příjemce platby a chyběl by povinný '
+      + 'údaj o provozovateli.',
+    akce: 'Doplnit skutečné jméno/firmu, IČO, sídlo, e-mail a účet do '
+      + 'ads-worker/wrangler.toml (sekce [vars]) a do patičky webu '
+      + '(components/names/Paticka.tsx), pak nasadit.',
+  },
+  {
+    stav: 'ceka-na-vas',
+    nazev: 'Objednávky reklamy obsahují osobní údaje',
+    popis: 'E-mail a případně IČO inzerenta jsou osobní údaje — vy jste jejich '
+      + 'správce podle GDPR. Stránka /soukromi to popisuje; je potřeba, aby '
+      + 'uvedený kontakt skutečně někdo četl.',
+    akce: 'Zkontrolovat text /soukromi a /podminky po doplnění provozovatele '
+      + 'a mít funkční kontaktní e-mail.',
+  },
+  {
+    stav: 'podchyceno',
+    nazev: 'Reklama je označená',
+    popis: 'Každý inzerát nese viditelný štítek REKLAMA — splňuje požadavek '
+      + 'zákona o regulaci reklamy na rozlišitelnost od obsahu.',
+  },
+  {
+    stav: 'podchyceno',
+    nazev: 'Bez cookie lišty — protože bez cookies',
+    popis: 'Web nepoužívá cookies ani jiné sledování, takže souhlasová lišta '
+      + 'není potřeba. Kdyby se někdy přidala analytika, musí být bezcookies '
+      + '(např. Cloudflare Web Analytics), jinak lišta bude nutná.',
+  },
+  {
+    stav: 'podchyceno',
+    nazev: 'Podmínky a soukromí existují a jsou propojené',
+    popis: 'Stránky /podminky a /soukromi jsou na webu i v objednávce reklamy '
+      + '(souhlas s podmínkami je povinný krok).',
+  },
+]
+
+// ── peníze a provoz ───────────────────────────────────────────────────────
+
+export const PROVOZ: PolozkaAuditu[] = [
+  {
+    stav: 'podchyceno',
+    nazev: 'Všechno běží na bezplatných úrovních Cloudflare',
+    popis: 'Workers (web i reklamní služba), D1 databáze a R2 úložiště log '
+      + 'jsou v rámci free tieru. Projekt nemá žádné placené API ani '
+      + 'předplatné — bez vašeho zásahu se nemá kde utrácet.',
+  },
+  {
+    stav: 'ceka-na-vas',
+    nazev: 'Upozornění na útratu v Cloudflare',
+    popis: 'Pojistka pro klid: kdyby provoz někdy přerostl free tier, ať '
+      + 'přijde e-mail dřív, než faktura.',
+    akce: 'Cloudflare dashboard → Notifications → přidat Billing a '
+      + 'Usage-based upozornění na e-mail.',
+  },
+  {
+    stav: 'ceka-na-vas',
+    nazev: 'Vlastní doména',
+    popis: 'Web běží na workers.dev adrese. Pro důvěryhodnost i prodej '
+      + 'reklamy je vlastní doména (v kódu se už počítá s jmenaprodeti.cz) '
+      + 'výrazný krok — a u Cloudflare stojí jen poplatek za registraci.',
+    akce: 'Zaregistrovat doménu, přidat do Cloudflare, přesměrovat Worker '
+      + 'a aktualizovat WEB_URL + POVOLENE_ORIGINY ve wrangler.toml.',
+  },
+  {
+    stav: 'podchyceno',
+    nazev: 'Nasazení jede přes CI s kontrolami',
+    popis: 'Každý push projde typy, kontrolou dat, 78 testy a po nasazení '
+      + 'SEO kontrolou 279 adres. Rozbitá verze se pozná hned.',
+  },
+]
+
+// ── doporučení dál ────────────────────────────────────────────────────────
+
+export const DOPORUCENI: string[] = [
+  'Zapnout Cloudflare Web Analytics (bez cookies, zdarma) — ať je vidět návštěvnost a odkud lidé chodí, bez právních povinností navíc.',
+  'Po nasazení nové verze spouštět skript IndexNow (npm run indexnow) — vyhledávače se o změnách dozvědí během hodin, ne týdnů.',
+  'Psát obsah na dotazy, které lidé hledají: „jména pro holčičky 2026", „jak vybrat jméno k příjmení" — podklad je v docs/CONTENT_ROADMAP.md.',
+  'Ceník reklamy ladit podle obsazenosti: když se plochy plní, zdražit další období; když zejí prázdnotou, nabídnout první měsíc levněji.',
+  'Jednou za čtvrt rok projít dobové zařazení jmen (lib/names/vlny.ts, ROK_REVIZE) — bez revize štítky „jde nahoru" zestárnou.',
+  'Až bude vlastní doména, nechat si zkontrolovat podmínky a soukromí právníkem — texty jsou poctivé, ale nejsou právní služba.',
+]
+
+// ── co AI postavila (inventura) ──────────────────────────────────────────
+
+export const INVENTURA: { oblast: string; polozky: string[] }[] = [
+  {
+    oblast: 'Web pro návštěvníky',
+    polozky: [
+      'Katalog 1443 jmen (děti + 15 druhů zvířat, 25 zemí), 241 jmen s vlastní stránkou',
+      'Rodinné ladění: jméno k příjmení, rodičům, sourozencům; skóre s vypsanými důvody',
+      'Výběr: srdíčka, hvězdičky, hlasy členů rodiny, levý panel, stránka analýzy',
+      'Nástroje: dvojice, porovnání, jméno k příjmení, neshoda rodičů, test jména',
+      'Volání, oslovení a zdrobněliny generované českou morfologií',
+    ],
+  },
+  {
+    oblast: 'Reklamní služba (samostatný Worker + D1 + R2)',
+    polozky: [
+      'Samoobslužná objednávka: plocha, období, cena, platba převodem s VS',
+      'Admin API: potvrzení platby, přehled, denní úklid prošlých kampaní',
+      'Přepínače webu (reklamy, panel, analýza) čtené webem za běhu',
+    ],
+  },
+  {
+    oblast: 'Provoz',
+    polozky: [
+      'GitHub Actions: typy → data → testy → build → nasazení → SEO kontrola',
+      'Mapa webu po vrstvách, robots, IndexNow skript, strukturovaná data',
+      'Stránka /sprava: přihlášení tokenem, objednávky, přepínače, tento audit',
+    ],
+  },
+]

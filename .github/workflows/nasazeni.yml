@@ -74,6 +74,10 @@ jobs:
         run: npm run kontrola
 
       - name: Sestavení pro Cloudflare
+        env:
+          # Adresa reklamní služby se zapéká do klientského kódu při buildu.
+          # Bez ní web ukazuje ukázkové inzeráty a /admin nemá na co sahat.
+          NEXT_PUBLIC_ADS_API: https://svetjmen-ads.tereza-holtzerova.workers.dev
         run: npm run cf:build
 
       - name: Nasazení
@@ -81,6 +85,25 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: npx wrangler deploy -c wrangler.jsonc
+
+      # Reklamní služba se mění zřídka, ale když se změní, musí ven spolu
+      # s webem — jinak /admin volá endpointy, které ještě neexistují.
+      # Migrace je idempotentní (CREATE TABLE IF NOT EXISTS), smí běžet
+      # opakovaně. Tajemství ADMIN_TOKEN tímhle nasazením nemizí —
+      # wrangler secrets přežívají deploy.
+      - name: Nasazení reklamní služby
+        working-directory: ads-worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          npm ci
+          # Migrace potřebuje na tokenu oprávnění „D1: Edit". Když chybí,
+          # nasazení nezastavíme — služba bez tabulky jede s výchozím
+          # „vše zapnuto" a migraci jde pustit ručně: npm run db:migrace-003
+          npx wrangler d1 execute svetjmen-ads --remote --file=./migrace/003-nastaveni.sql \
+            || echo "::warning::Migrace D1 se nepovedla — tokenu nejspíš chybí oprávnění D1 Edit. Spusťte v ads-worker ručně: npm run db:migrace-003"
+          npx wrangler deploy
 
       # Ověření proti skutečně vydanému HTML — ne proti tomu, co jsme
       # sestavili. Kdyby nasazení proběhlo napůl, pozná se to tady.
