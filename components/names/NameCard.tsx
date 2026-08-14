@@ -99,14 +99,17 @@ function delkaTridy(jmeno: string, poradi?: number | null): string {
 }
 
 export default function NameCard({
-  jmeno, poradi, odkaz = false,
+  jmeno, poradi, odkaz = false, dalsiZeme,
 }: {
   jmeno: Jmeno
   poradi?: number
   /** true = jméno má vlastní stránku, karta je tedy skutečný odkaz */
   odkaz?: boolean
+  /** kódy dalších zemí, kde se jméno používá — mezinárodní jméno má jednu kartu s vlaječkami */
+  dalsiZeme?: string[]
 }) {
   const zeme = zemePodleKodu(jmeno.zeme)
+  const dalsi = (dalsiZeme ?? []).filter(k => k !== jmeno.zeme).map(zemePodleKodu)
   const kat = KATEGORIE_INFO[jmeno.kategorie]
   const stitek = hlavniStitek(jmeno)
 
@@ -125,7 +128,7 @@ export default function NameCard({
       <div className="karta-spodek">
         <span
           className="karta-puvod"
-          title={`${kat.nazev}${jmeno.pohlavi ? ` · ${POHLAVI_INFO[jmeno.pohlavi].nazev}` : ''} · ${zeme?.nazev ?? ''}`}
+          title={`${kat.nazev}${jmeno.pohlavi ? ` · ${POHLAVI_INFO[jmeno.pohlavi].nazev}` : ''} · ${[zeme, ...dalsi].map(z => z?.nazev).filter(Boolean).join(', ')}`}
         >
           {kat.emoji}
           {jmeno.pohlavi && jmeno.pohlavi !== 'unisex' && (
@@ -134,6 +137,8 @@ export default function NameCard({
             </span>
           )}
           {zeme?.vlajka}
+          {dalsi.slice(0, 3).map(z => z && <span key={z.kod}>{z.vlajka}</span>)}
+          {dalsi.length > 3 && <span className="text-[11px] text-[#8a7f71]">+{dalsi.length - 3}</span>}
         </span>
         {stitek && (
           <span className={`karta-stitek ${stitek.trida}`}>{stitek.text}</span>

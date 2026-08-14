@@ -100,13 +100,17 @@ export default function Paticka() {
           <p>
             Svět jmen — katalog jmen pro děti i zvířata. Zdarma, bez registrace.
           </p>
-          <p>
-            {PRAVNI.provozovatel}
-            {PRAVNI.ico ? `, IČO ${PRAVNI.ico}` : ''} ·{' '}
-            <a href={`mailto:${PRAVNI.email}`} className="hover:text-[#2b2723] hover:underline">
-              {PRAVNI.email}
-            </a>
-          </p>
+          {/* Zástupné údaje („VYPLNIT s.r.o., IČO 00000000") na web nepatří —
+              řádek se ukáže až s doplněnými skutečnými údaji provozovatele. */}
+          {PRAVNI.kompletni && (
+            <p>
+              {PRAVNI.provozovatel}
+              {PRAVNI.ico ? `, IČO ${PRAVNI.ico}` : ''} ·{' '}
+              <a href={`mailto:${PRAVNI.email}`} className="hover:text-[#2b2723] hover:underline">
+                {PRAVNI.email}
+              </a>
+            </p>
+          )}
         </div>
       </div>
     </footer>

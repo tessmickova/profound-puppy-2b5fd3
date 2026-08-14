@@ -20,6 +20,7 @@ import type { Filtr, Razeni } from '@/lib/names/logic'
 import { KATEGORIE_INFO, MESICE_NAZVY, VSECHNY_STYLY } from '@/lib/names/types'
 import type { Energie, Kategorie, Styl } from '@/lib/names/types'
 import { useVyber } from '@/lib/names/vyber'
+import { clenPodleRole, ROLE_DETI, useRodina } from '@/lib/names/rodina'
 import NameCard from './NameCard'
 import Vyber from './Vyber'
 import ShodaKarta from './ShodaKarta'
@@ -81,20 +82,45 @@ export default function DetiFinder() {
     kategorie: params.get('kategorie') === 'holka' ? ['holka'] : params.get('kategorie') === 'kluk' ? ['kluk'] : [],
     zeme: params.get('zeme') ? [params.get('zeme')!] : [],
   }))
+
+  // Adresa je zdroj pravdy i po klientské navigaci: kliknutí na
+  // /deti?kategorie=kluk nebo ?filtr=trendy přenastaví filtr vždy,
+  // ne jen při prvním načtení.
+  useEffect(() => {
+    const kat = params.get('kategorie')
+    const zeme = params.get('zeme')
+    setFiltr(f => ({
+      ...f,
+      kategorie: kat === 'holka' ? ['holka'] : kat === 'kluk' ? ['kluk'] : f.kategorie,
+      zeme: zeme ? [zeme] : f.zeme,
+    }))
+    const rychlyFiltr = params.get('filtr')
+    if (rychlyFiltr && ['hit', 'trendy', 'original', 'unisex', 'mezinarodni', 'svatek'].includes(rychlyFiltr)) {
+      setRychle(r => (r.includes(rychlyFiltr) ? r : [...r, rychlyFiltr]))
+    }
+  }, [params])
   const [razeni, setRazeni] = useState<Razeni>('popularita')
   const [rychle, setRychle] = useState<string[]>([])
   const [nahodne, setNahodne] = useState<string | null>(null)
   const [panelOtevren, setPanelOtevren] = useState(false)
   const { oblibena, vyrazena } = useVyber()
 
-  const [pohlavi, setPohlavi] = useState<'kluk' | 'holka'>('holka')
-  const [prijmeni, setPrijmeni] = useState('')
+  const [pohlavi, setPohlavi] = useState<'kluk' | 'holka'>(() => (params.get('kategorie') === 'kluk' ? 'kluk' : 'holka'))
   const [mesic, setMesic] = useState<number | null>(null)
   const [stylyShody, setStylyShody] = useState<Styl[]>([])
   const [zemeShody, setZemeShody] = useState<string[]>([])
-  const [sourozenec, setSourozenec] = useState('')
-  const [maminka, setMaminka] = useState('')
-  const [tatinek, setTatinek] = useState('')
+
+  // Rodina je sdílený profil (localStorage) — stejná data jako na úvodní
+  // stránce a na /rodina. Úprava pole tady se propíše všude.
+  const rodina = useRodina()
+  const prijmeni = rodina.prijmeni
+  const maminka = clenPodleRole(rodina.clenove, 'maminka')?.jmeno ?? ''
+  const tatinek = clenPodleRole(rodina.clenove, 'tatinek')?.jmeno ?? ''
+  const sourozenec = clenPodleRole(rodina.clenove, ...ROLE_DETI)?.jmeno ?? ''
+  const setPrijmeni = rodina.nastavPrijmeni
+  const setMaminka = (j: string) => rodina.nastavPodleRole(['maminka'], 'maminka', j)
+  const setTatinek = (j: string) => rodina.nastavPodleRole(['tatinek'], 'tatinek', j)
+  const setSourozenec = (j: string) => rodina.nastavPodleRole(ROLE_DETI, 'dite', j)
 
   const detska = useMemo(() => JMENA.filter(j => j.kategorie === 'kluk' || j.kategorie === 'holka'), [])
 
@@ -373,7 +399,7 @@ export default function DetiFinder() {
         <RodinnyVyhledavac
           pohlavi={pohlavi}
           onPohlavi={setPohlavi}
-          popisPod="Stačí vyplnit, co víte — každé pole zpřesní výběr. Jména, která ladí s víc členy rodiny, dostanou štítek, a poznáme i podobu jména po rodiči (Petr → Petra)."
+          popisPod="Stačí vyplnit, co víte — každé pole zpřesní výběr a uloží se do vašeho rodinného profilu. Jména, která ladí s víc členy rodiny, dostanou štítek, a poznáme i podobu jména po rodiči (Petr → Petra)."
           pole={[
             { klic: 'prijmeni', popisek: 'Příjmení dítěte', hodnota: prijmeni, napoveda: pohlavi === 'holka' ? 'např. Nováková' : 'např. Novák', onZmena: setPrijmeni },
             { klic: 'maminka', popisek: 'Maminka', hodnota: maminka, napoveda: 'např. Jana', onZmena: setMaminka },
@@ -388,7 +414,7 @@ export default function DetiFinder() {
               <Sparkles size={16} aria-hidden /> Doplňující výběr
             </h2>
 
-            <Sekce nazev="Měsíc narození" ikona={<Calendar size={13} />} pocet={mesic ? 1 : 0}>
+            <Sekce nazev="Měsíc narození (volitelné)" ikona={<Calendar size={13} />} pocet={mesic ? 1 : 0}>
               <Vyber
                 hodnota={mesic ? String(mesic) : ''}
                 prazdne="— nevím / nechci zadat —"

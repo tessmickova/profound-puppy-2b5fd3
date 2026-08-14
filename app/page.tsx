@@ -5,6 +5,7 @@ import Shell from '@/components/names/Shell'
 import NameCard from '@/components/names/NameCard'
 import Rozvrzeni from '@/components/names/Rozvrzeni'
 import PasyJmen from '@/components/names/PasyJmen'
+import RodinnyStart from '@/components/names/RodinnyStart'
 import NadpisSekce from '@/components/names/NadpisSekce'
 import type { Druh } from '@/components/names/NadpisSekce'
 import { JMENA, ZEME } from '@/lib/names/data'
@@ -50,6 +51,7 @@ export default function Domov() {
             Vybírat jméno má být radost, ne tabulka. Řekněte nám, koho čekáte —
             a my vybereme jména, která sedí k vašemu příjmení, rodině i povaze.
           </p>
+          <RodinnyStart />
         </section>
 
         <section className="mb-14">
@@ -82,7 +84,7 @@ export default function Domov() {
           nadpis="Populární trendy právě teď"
           popis="Moderní jména, která letí nahoru — poznáte je podle štítku."
           jmena={trendy}
-          odkaz={{ href: '/deti', text: 'filtrovat trendy' }}
+          odkaz={{ href: '/deti?filtr=trendy', text: 'všechna trendy jména' }}
         />
 
         <PasyJmen druh="zvirata" />
@@ -100,7 +102,7 @@ export default function Domov() {
           nadpis="Originální a pěkná"
           popis="Skryté poklady — jména, která nepotkáte na každém hřišti ani v každém parku."
           jmena={originaly}
-          odkaz={{ href: '/deti', text: 'objevit další' }}
+          odkaz={{ href: '/deti?filtr=original', text: 'všechna originální jména' }}
         />
 
         <section className="mt-14">

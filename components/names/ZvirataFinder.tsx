@@ -51,6 +51,18 @@ export default function ZvirataFinder() {
     zeme: params.get('zeme') ? [params.get('zeme')!] : [],
     kategorie: params.get('kategorie') ? [params.get('kategorie') as Kategorie] : [],
   }))
+
+  // Adresa řídí filtr i po klientské navigaci — /zvirata?kategorie=pes
+  // funguje vždy, ne jen při prvním načtení stránky.
+  useEffect(() => {
+    const kat = params.get('kategorie')
+    const zeme = params.get('zeme')
+    setFiltr(f => ({
+      ...f,
+      kategorie: kat ? [kat as Kategorie] : f.kategorie,
+      zeme: zeme ? [zeme] : f.zeme,
+    }))
+  }, [params])
   const [razeni, setRazeni] = useState<Razeni | 'doporucene'>('popularita')
   const [plemeno, setPlemeno] = useState('')
   const [zivot, setZivot] = useState('')

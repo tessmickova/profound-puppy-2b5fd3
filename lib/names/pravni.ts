@@ -4,8 +4,11 @@
 // z `lib/config.ts`, aby se nemohly rozejít.
 
 import { OVERENO, PRAVNI_UCINNOST, PROVOZOVATEL, ADRESA_REKLAM as ADRESA } from '@/lib/config'
+import { chybejiciUdaje } from '@/shared/provozovatel'
 
 export const PRAVNI = {
+  /** Údaje o provozovateli jsou doplněné (nejde o zástupné VYPLNIT/00000000). */
+  kompletni: chybejiciUdaje(PROVOZOVATEL).length === 0,
   provozovatel: PROVOZOVATEL.nazev,
   ico: PROVOZOVATEL.ico,
   dic: PROVOZOVATEL.dic,

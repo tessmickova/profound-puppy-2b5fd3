@@ -106,6 +106,22 @@ export const zemeEntity = (e: Entita) =>
   e.zeme.map(k => ZEME.find(z => z.kod === k)).filter(Boolean) as typeof ZEME
 
 /**
+ * Výpis bez duplicit: „Alice" použitá v pěti zemích je jedna karta
+ * s pěti vlaječkami, ne pět karet. Pořadí vstupu se zachovává —
+ * reprezentantem je první (tedy např. nejoblíbenější) výskyt.
+ */
+export function unikatniPodleJmena(jmena: Jmeno[]): { jmeno: Jmeno; zeme: string[] }[] {
+  const mapa = new Map<string, { jmeno: Jmeno; zeme: string[] }>()
+  for (const j of jmena) {
+    const klic = slugJmena(j.jmeno)
+    const cur = mapa.get(klic)
+    if (!cur) mapa.set(klic, { jmeno: j, zeme: [j.zeme] })
+    else if (!cur.zeme.includes(j.zeme)) cur.zeme.push(j.zeme)
+  }
+  return [...mapa.values()]
+}
+
+/**
  * Podobná jména: stejná kategorie, blízká délka i počet slabik.
  * Slouží jako pokračování cesty, ne jako výplň.
  */
