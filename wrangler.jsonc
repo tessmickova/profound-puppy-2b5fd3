@@ -15,14 +15,13 @@
   "observability": {
     "enabled": true
   },
-  // Vlastní doména. Odkomentovat, až bude zóna svetjmen.cz v Cloudflare
-  // ve stavu Active — wrangler pak doménu připojí a DNS záznam si založí
-  // sám. Nasazení s neaktivní zónou by skončilo chybou, proto to zatím
-  // spí. Postup celý: docs/DOMENA.md
-  // "routes": [
-  //   { "pattern": "svetjmen.cz", "custom_domain": true },
-  //   { "pattern": "www.svetjmen.cz", "custom_domain": true }
-  // ],
+  // Vlastní doména. Wrangler ji při nasazení připojí jako Custom Domain
+  // a DNS záznam si založí sám — ruční CNAME není potřeba. Adresa
+  // workers.dev tím nemizí a zůstává funkční jako záloha.
+  "routes": [
+    { "pattern": "svetjmen.cz", "custom_domain": true },
+    { "pattern": "www.svetjmen.cz", "custom_domain": true }
+  ],
   "vars": {
     // Veřejná adresa webu — používá ji sitemap, robots a JSON-LD.
     // Dokud neběží vlastní doména, míří na adresu, kde web opravdu je.
