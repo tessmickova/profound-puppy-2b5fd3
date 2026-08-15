@@ -11,6 +11,10 @@ compatibility_date = "2026-08-01"
 pattern = "reklama.svetjmen.cz"
 custom_domain = true
 
+# MUSÍ tu být: s vyplněnými `routes` wrangler workers.dev adresu jinak
+# vypne. Záložní adresa musí připojení domény přežít, ne kvůli němu spadnout.
+workers_dev = true
+
 # Denně po půlnoci zhasneme prošlé kampaně a uvolníme jejich sloty.
 [triggers]
 crons = ["10 0 * * *"]

@@ -22,6 +22,11 @@
     { "pattern": "svetjmen.cz", "custom_domain": true },
     { "pattern": "www.svetjmen.cz", "custom_domain": true }
   ],
+  // MUSÍ tu být: jakmile je vyplněné `routes`, wrangler jinak workers.dev
+  // adresu VYPNE. Stalo se to 15. 8. — web i reklamní služba začaly na
+  // workers.dev vracet 404, zatímco doména ještě nefungovala. Záložní
+  // adresa musí přežít připojení domény, ne kvůli ní spadnout.
+  "workers_dev": true,
   "vars": {
     // Veřejná adresa webu — používá ji sitemap, robots a JSON-LD.
     // Dokud neběží vlastní doména, míří na adresu, kde web opravdu je.
