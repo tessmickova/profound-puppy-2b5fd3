@@ -4,19 +4,22 @@
 // z `lib/config.ts`, aby se nemohly rozejít.
 
 import { OVERENO, PRAVNI_UCINNOST, PROVOZOVATEL, ADRESA_REKLAM as ADRESA } from '@/lib/config'
-import { chybejiciUdaje } from '@/shared/provozovatel'
+import { PLATBA_PRIPRAVENA, TOTOZNOST_DOPLNENA } from '@/lib/config'
 
 /**
- * Jsou údaje o provozovateli skutečné?
+ * Smí se vypsat, kdo web provozuje?
  *
- * Náhled běží se zástupnými hodnotami („VYPLNIT s.r.o., IČO 00000000“)
- * a ty nesmí být vidět: na produkčně vypadajícím webu působí jako
- * nedodělek a zároveň by tvrdily něco, co není pravda. Kde se údaje
- * vypisují, se proto řádek raději vynechá, dokud je majitelka nedoplní.
- * Produkční build hlídá `zkontrolujProdukci()` — tohle je jen clona
- * pro náhled.
+ * Identifikace provozovatele je zákonná povinnost, takže se vypisuje,
+ * jakmile jsou údaje skutečné. Naopak zástupné hodnoty („VYPLNIT s.r.o.,
+ * IČO 00000000“) vidět být nesmí — působí jako nedodělek a hlavně tvrdí
+ * něco, co není pravda.
+ *
+ * Bankovní účet se posuzuje zvlášť (`PLATBA_PRIPRAVENA`): bez něj se
+ * nesmí prodávat reklama, ale web tím nijak netrpí.
  */
-export const UDAJE_PROVOZOVATELE_DOPLNENY = chybejiciUdaje(PROVOZOVATEL).length === 0
+export const UDAJE_PROVOZOVATELE_DOPLNENY = TOTOZNOST_DOPLNENA
+
+export { PLATBA_PRIPRAVENA }
 
 export const PRAVNI = {
   provozovatel: PROVOZOVATEL.nazev,

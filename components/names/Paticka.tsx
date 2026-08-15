@@ -105,7 +105,8 @@ export default function Paticka() {
           {UDAJE_PROVOZOVATELE_DOPLNENY && (
             <p>
               {PRAVNI.provozovatel}
-              {PRAVNI.ico ? `, IČO ${PRAVNI.ico}` : ''} ·{' '}
+              {PRAVNI.ico ? `, IČO ${PRAVNI.ico}` : ''}
+              {PRAVNI.sidlo ? `, ${PRAVNI.sidlo}` : ''} ·{' '}
               <a href={`mailto:${PRAVNI.email}`} className="hover:text-[#2b2723] hover:underline">
                 {PRAVNI.email}
               </a>

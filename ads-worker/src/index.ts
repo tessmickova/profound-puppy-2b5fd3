@@ -260,6 +260,20 @@ function branaComgate(env: Prostredi): NastaveniBrany | null {
   return { merchant, secret, test: (env.COMGATE_TEST ?? '').trim().toLowerCase() === 'true' }
 }
 
+/**
+ * Dá se za reklamu vůbec zaplatit?
+ *
+ * Buď je nastavená brána, nebo je vyplněný bankovní účet. Když neplatí ani
+ * jedno, nesmí objednávka vzniknout: zákazník by dostal pokyn poslat peníze
+ * na „VYPLNIT/0000“, my bychom evidovali pohledávku, kterou nelze zaplatit,
+ * a plocha by se mezitím tvářila jako obsazená.
+ */
+function lzeZaplatit(env: Prostredi): boolean {
+  if (branaComgate(env)) return true
+  const ucet = (env.BANKOVNI_UCET ?? '').trim()
+  return Boolean(ucet) && !ucet.includes('VYPLNIT') && !/^0+\/?0*$/.test(ucet.replace(/\s/g, ''))
+}
+
 // ── čtení pro web ────────────────────────────────────────────────────────
 
 async function dejReklamy(url: URL, env: Prostredi, cors: Record<string, string>) {
@@ -313,6 +327,9 @@ async function dejVsechnyReklamy(url: URL, env: Prostredi, cors: Record<string, 
 async function dejSloty(env: Prostredi, cors: Record<string, string>) {
   const obsazeno = await obsazenost(env)
   return json({
+    // Samoobsluha se podle toho pozná, že nemá nabízet objednávkový
+    // formulář — místo toho řekne pravdu a nabídne kontakt.
+    prodejPozastaven: !lzeZaplatit(env),
     kapacita: KAPACITA,
     obdobi: OBDOBI.map(o => ({ id: o.id, nazev: o.nazev, dnu: o.dnu })),
     ikony: IKONY,
@@ -411,6 +428,16 @@ async function odpovedNaObjednavku(
 }
 
 async function vytvorObjednavku(req: Request, env: Prostredi, cors: Record<string, string>) {
+  // Bez účtu i brány není kam poslat peníze. Radši objednávku nepřijmeme,
+  // než abychom zákazníkovi dali pokyn k platbě, který nikam nevede.
+  if (!lzeZaplatit(env)) {
+    return chyba(
+      'Prodej reklamy je dočasně pozastavený — dokončujeme nastavení plateb. '
+      + 'Napište nám na uvedený kontakt a ozveme se, jakmile to půjde.',
+      503, cors,
+    )
+  }
+
   // Formulář má pár set znaků; cokoli většího je pokus o zahlcení.
   const delka = Number(req.headers.get('Content-Length') ?? '0')
   if (delka > MAX_TELO) return chyba('Data formuláře jsou příliš velká.', 413, cors)

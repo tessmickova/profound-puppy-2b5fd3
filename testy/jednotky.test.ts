@@ -143,7 +143,7 @@ test('zástupné údaje projdou kontrolou jako chybějící', () => {
 
 test('doplněné údaje projdou', () => {
   const chybi = chybejiciUdaje({
-    nazev: 'Ukázka s.r.o.', ico: '12345678', dic: '', platceDph: false,
+    nazev: 'Ukázka s.r.o.', ico: '12345679', dic: '', platceDph: false,
     sidlo: 'Ukázková 1, Praha', email: 'info@example.com',
     emailReklama: 'reklama@example.com', ucet: '123456789/0800',
   })
@@ -152,7 +152,7 @@ test('doplněné údaje projdou', () => {
 
 test('plátce DPH bez DIČ neprojde', () => {
   const chybi = chybejiciUdaje({
-    nazev: 'Ukázka s.r.o.', ico: '12345678', dic: '', platceDph: true,
+    nazev: 'Ukázka s.r.o.', ico: '12345679', dic: '', platceDph: true,
     sidlo: 'Ukázková 1, Praha', email: 'info@example.com',
     emailReklama: 'reklama@example.com', ucet: '123456789/0800',
   })

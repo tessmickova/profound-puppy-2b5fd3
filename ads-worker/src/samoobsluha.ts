@@ -251,6 +251,22 @@ export function samoobsluha(env: Prostredi): string {
         '<td>' + korun(p.ceny.mesic) + ' / měsíc</td></tr>';
     }).join('');
     $('tabulka').innerHTML = '<div class="rolovaci"><table><thead><tr><th>Plocha</th><th>Volno</th><th>Od</th></tr></thead><tbody>' + radky + '</tbody></table></div>';
+
+    // Než je kam poslat peníze, nemá smysl nechat někoho vyplnit celý
+    // formulář a teprve na konci mu říct, že to nejde. Ceník ať vidí.
+    if (d.prodejPozastaven) {
+      var zprava = document.createElement('p');
+      zprava.className = 'poznamka';
+      zprava.setAttribute('role', 'status');
+      zprava.innerHTML = '<strong>Objednávky jsou dočasně pozastavené.</strong> '
+        + 'Dokončujeme nastavení plateb. Napište nám a ozveme se, jakmile to půjde — '
+        + '<a href="mailto:${esc(kontakt)}">${esc(kontakt)}</a>.';
+      $('tabulka').appendChild(zprava);
+      var krokPlocha = $('krok-plocha');
+      if (krokPlocha) krokPlocha.querySelectorAll('tr').forEach(function (r) { r.classList.add('obsazena'); });
+      return;
+    }
+
     stav.ceny = {};
     d.plochy.forEach(function (p) { stav.ceny[p.id] = { ceny: p.ceny, nazev: p.nazev, volno: p.volno }; });
 

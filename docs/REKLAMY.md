@@ -135,11 +135,14 @@ Tři tabulky (`schema.sql`), nic navíc:
 
 - **`inzerenti`** — firma, IČO, e-mail. Jen to, bez čeho nejde vystavit faktura.
 - **`objednavky`** — plocha, období, cena, variabilní symbol, stav
-  (`ceka_na_platbu` / `aktivni` / `vyprsela` / `zrusena`), token, platnost od–do.
+  (`ceka_na_platbu` / `aktivni` / `vyprsela` / `zrusena`), token, platnost od–do
+  a u platby kartou i `transakce_id`, `zaplaceno_kc`, `zaplaceno_kdy`
+  a `zpusob_platby`.
 - **`inzeraty`** — značka, nadpis, text, tlačítko, odkaz a buď klíč loga
   v úložišti, nebo ikona. **Logo je to hlavní** — nahrává se rovnou při
   objednávce a na kartě je vidět místo ikony; ikona slouží jen jako náhrada,
-  dokud firma logo nedodá.
+  dokud firma logo nedodá. K tomu `schvaleno`, `zamitnuto_duvod`
+  a `schvaleno_kdy` — bez `schvaleno = 1` kreativa ven nejde.
 
 Loga leží v objektovém úložišti, ne v databázi.
 
@@ -237,9 +240,11 @@ curl -X POST https://<adresa-sluzby>/api/admin/potvrdit \
 
 ## Co ještě chybí
 
-- **Automatické párování plateb.** Dnes se platba potvrzuje ručně jedním
-  příkazem. Napojení na bankovní výpis je další krok.
-- **E-maily.** Pokyny k platbě si zatím inzerent opíše z potvrzovací obrazovky;
-  odesílání e-mailů služba nedělá.
-- **Úprava inzerátu inzerentem.** Podmínky ji slibují — dnes ji děláme na
-  vyžádání zásahem do databáze.
+- **Párování plateb převodem.** Karty přes bránu se potvrzují samy, ale platbu
+  na účet je pořád potřeba odklepnout ručně podle variabilního symbolu.
+  Napojení na bankovní výpis je další krok.
+- **E-maily.** Nikdo se nedozví, že objednávka čeká na schválení ani že byla
+  kreativa zamítnuta — obojí je vidět jen po přihlášení. Notifikační e-mail
+  majitelce a inzerentovi je nejbližší užitečná věc, kterou přidat.
+- **Vracení peněz.** Zamítnutá kreativa dnes znamená „opravte text";
+  vrácení platby přes bránu (ComGate to umí) služba neřeší a dělá se ručně.

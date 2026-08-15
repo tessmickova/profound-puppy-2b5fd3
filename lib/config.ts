@@ -7,7 +7,8 @@
 // `zkontrolujProdukci()`, které volá `next.config.js`.
 
 import {
-  ZASTUPNA, chybejiciUdaje, jeProdukcniAdresa, type Provozovatel,
+  PROVOZOVATEL_UDAJE, chybejiciPlatba, chybejiciTotoznost, chybejiciUdaje,
+  jeProdukcniAdresa, type Provozovatel,
 } from '@/shared/provozovatel'
 
 const env = (klic: string, vychozi: string): string =>
@@ -35,15 +36,19 @@ export const WEB = {
     + 'jmeninami a výběrem podle příjmení, rodiny a plemene.',
 } as const
 
+// Výchozí hodnoty jsou skutečné údaje provozovatele (`PROVOZOVATEL_UDAJE`),
+// ne zástupné. Proměnná prostředí je smí přebít, ale nemusí být nastavená —
+// dřív se hodnoty držely jen ve `wrangler.jsonc`, takže se dvě kopie mohly
+// rozejít a část webu tvrdila něco jiného než druhá.
 export const PROVOZOVATEL: Provozovatel = {
-  nazev: env('NEXT_PUBLIC_PROVOZOVATEL', `${ZASTUPNA} s.r.o.`),
-  ico: env('NEXT_PUBLIC_ICO', '00000000'),
-  dic: env('NEXT_PUBLIC_DIC', ''),
-  platceDph: env('NEXT_PUBLIC_PLATCE_DPH', '') === '1',
-  sidlo: env('NEXT_PUBLIC_SIDLO', `${ZASTUPNA} — sídlo`),
-  email: env('NEXT_PUBLIC_KONTAKT', `${ZASTUPNA}@example.com`),
-  emailReklama: env('NEXT_PUBLIC_KONTAKT_REKLAMA', `${ZASTUPNA}@example.com`),
-  ucet: env('NEXT_PUBLIC_UCET', `${ZASTUPNA}/0000`),
+  nazev: env('NEXT_PUBLIC_PROVOZOVATEL', PROVOZOVATEL_UDAJE.nazev),
+  ico: env('NEXT_PUBLIC_ICO', PROVOZOVATEL_UDAJE.ico),
+  dic: env('NEXT_PUBLIC_DIC', PROVOZOVATEL_UDAJE.dic),
+  platceDph: env('NEXT_PUBLIC_PLATCE_DPH', PROVOZOVATEL_UDAJE.platceDph ? '1' : '') === '1',
+  sidlo: env('NEXT_PUBLIC_SIDLO', PROVOZOVATEL_UDAJE.sidlo),
+  email: env('NEXT_PUBLIC_KONTAKT', PROVOZOVATEL_UDAJE.email),
+  emailReklama: env('NEXT_PUBLIC_KONTAKT_REKLAMA', PROVOZOVATEL_UDAJE.emailReklama),
+  ucet: env('NEXT_PUBLIC_UCET', PROVOZOVATEL_UDAJE.ucet),
 }
 
 /** Adresa reklamní služby; prázdná = reklamy se nevykreslí. */
@@ -54,6 +59,12 @@ export const PRAVNI_UCINNOST = env('NEXT_PUBLIC_PRAVNI_UCINNOST', '2026-08-01')
 
 /** Kdy jsme naposledy ověřovali fakta u úředních tvrzení. */
 export const OVERENO = env('NEXT_PUBLIC_OVERENO', '2026-08-08')
+
+/** Chybí něco k identifikaci provozovatele? Prázdné = web smí ven. */
+export const TOTOZNOST_DOPLNENA = chybejiciTotoznost(PROVOZOVATEL).length === 0
+
+/** Můžeme přijímat peníze za reklamu? Bez účtu ani brány se prodávat nedá. */
+export const PLATBA_PRIPRAVENA = chybejiciPlatba(PROVOZOVATEL).length === 0
 
 /** Co ještě musí majitel projektu doplnit. Prázdné = můžeme do produkce. */
 export function chybejici(): string[] {

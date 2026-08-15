@@ -25,9 +25,9 @@
     // Dokud nemáme vlastní doménu, míří na workers.dev adresu služby; po
     // překlopení domény sem patří https://reklama.jmenaprodeti.cz.
     "NEXT_PUBLIC_ADS_API": "https://svetjmen-ads.tereza-holtzerova.workers.dev",
-    "NEXT_PUBLIC_PROVOZOVATEL": "VYPLNIT s.r.o.",
-    "NEXT_PUBLIC_ICO": "00000000",
-    "NEXT_PUBLIC_SIDLO": "VYPLNIT — sídlo",
+    "NEXT_PUBLIC_PROVOZOVATEL": "Vítězslav Miček",
+    "NEXT_PUBLIC_ICO": "07347219",
+    "NEXT_PUBLIC_SIDLO": "Těšínská 1240/50b, Havířov",
     "NEXT_PUBLIC_DIC": "",
     "NEXT_PUBLIC_PLATCE_DPH": "0",
     "NEXT_PUBLIC_UCET": "VYPLNIT/0000",

@@ -15,29 +15,59 @@ doporučení). Tenhle soubor popisuje jen to, co se dělá mimo web.
 
    Token uložte do správce hesel. Bez něj admin API odmítá všechno.
 
-2. **Založit tabulku přepínačů** na ostré databázi a nasadit službu:
+2. **Doplnit databázi** o to, co v kódu přibylo, a nasadit službu:
 
    ```bash
    cd ads-worker
-   npm run db:migrace
+   npm run db:migrace     # pustí všechny migrace v pořadí, opakovat nevadí
    npm run deploy
    ```
 
-3. **Vyměnit vyzrazené tokeny** (Cloudflare API token, GitHub token) —
+   **Po migraci `004` čekají na schválení i kampaně, které do té chvíle
+   běžely.** Je to schválně — bezpečný směr je radši nic neukázat. Projděte
+   je jednou na `/sprava` a schvalte.
+
+3. **Zapnout platbu kartou** — nepovinné. Bez toho se prodává převodem
+   s variabilním symbolem, přesně jako dosud.
+
+   ```bash
+   cd ads-worker
+   npx wrangler secret put COMGATE_SECRET   # tajemství z portálu ComGate
+   ```
+
+   K tomu vyplnit `COMGATE_MERCHANT` ve `wrangler.toml` (sekce `[vars]`)
+   a v portálu ComGate nastavit dvě adresy — v kódu být nemůžou:
+
+   - notifikace: `https://<adresa-sluzby>/api/platba/notifikace`
+   - návrat: `https://<adresa-sluzby>/api/platba/navrat`
+
+   Nechte `COMGATE_TEST = "true"`, projděte celou objednávku nanečisto,
+   a teprve pak přepněte na `"false"`. Skutečné tajemství nikdy nepatří
+   do repozitáře, jen do `wrangler secret`.
+
+4. **Vyměnit vyzrazené tokeny** (Cloudflare API token, GitHub token) —
    podrobný postup je v auditu na `/sprava`, sekce Bezpečnost.
 
-4. **Doplnit skutečné údaje provozovatele** — patička webu
+5. **Doplnit skutečné údaje provozovatele** — patička webu
    (`components/names/Paticka.tsx`) a `ads-worker/wrangler.toml`
    (účet, firma, IČO, sídlo, e-mail). Bez toho neprodávat reklamu.
 
-5. **Zapnout ochranu větve** na GitHubu (Settings → Branches): vyžadovat
+6. **Zapnout ochranu větve** na GitHubu (Settings → Branches): vyžadovat
    pull request s vaším schválením. Od té chvíle AI může jen navrhovat —
    do produkce nic nedoputuje bez vašeho kliknutí.
 
 ## Běžný provoz
 
-- **Došla platba za reklamu** → `/sprava` → u objednávky „Platba došla".
-  Kampaň se rozsvítí do 5 minut.
+- **Přišla nová objednávka** → `/sprava` → „Čeká na schválení". Přečtěte
+  text a **klikněte na cílový odkaz** — text bývá v pořádku a odkaz vede
+  jinam. Pak Schválit, nebo Zamítnout s důvodem (inzerent ho uvidí ve svém
+  účtu a text opraví). Do schválení není inzerát na webu vidět, ani když je
+  zaplacený. Po schválení se objeví do 5 minut.
+- **Inzerent si upravil text** → kreativa se sama vrátí mezi čekající.
+  Je to schválně: jinak by stačilo nechat si schválit slušný inzerát
+  a hned nato do něj napsat cokoli.
+- **Došla platba převodem** → `/sprava` → u objednávky „Platba došla".
+  Platby kartou přes bránu se potvrzují samy, klikat na ně nemusíte.
 - **Něco chci vypnout** (reklamy, panel, analýzu) → `/sprava` → Přepínače.
   Projeví se do minuty, nic se nemaže.
 - **Nasazení webu** — samo při každém pushi do větve; průběh je v GitHub

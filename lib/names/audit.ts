@@ -144,15 +144,31 @@ export const BEZPECNOST: PolozkaAuditu[] = [
 
 export const PRAVO: PolozkaAuditu[] = [
   {
-    stav: 'trva',
-    nazev: 'V patičce a ve wrangler.toml jsou zástupné údaje provozovatele',
-    popis: '„VYPLNIT s.r.o., IČO 00000000" a „VYPLNIT/0000" jako bankovní účet. '
-      + 'Dokud tam nejsou skutečné údaje, nesmí se prodávat reklama — objednávka '
-      + 'by odkazovala na neexistujícího příjemce platby a chyběl by povinný '
-      + 'údaj o provozovateli.',
-    akce: 'Doplnit skutečné jméno/firmu, IČO, sídlo, e-mail a účet do '
-      + 'ads-worker/wrangler.toml (sekce [vars]) a do patičky webu '
-      + '(components/names/Paticka.tsx), pak nasadit.',
+    stav: 'podchyceno',
+    nazev: 'Provozovatel je uvedený a jeho IČO ověřené',
+    popis: 'Vítězslav Miček, IČO 07347219, Těšínská 1240/50b, Havířov — údaje '
+      + 'jsou v patičce webu i na objednávce reklamy. IČO prochází kontrolou '
+      + 'kontrolní číslice, takže se do provozu nedostane překlep.',
+  },
+  {
+    stav: 'ceka-na-vas',
+    nazev: 'Bez podnikatelského účtu se reklama neprodává',
+    popis: 'Účet je zatím zástupný, a proto služba objednávky vůbec nepřijímá '
+      + '(vrací 503 a samoobsluha to rovnou napíše). Je to schválně: zákazník '
+      + 'by jinak dostal pokyn poslat peníze na neexistující účet a plocha by '
+      + 'se mezitím tvářila jako obsazená.',
+    akce: 'Až bude účet založený, zapsat ho do ads-worker/wrangler.toml '
+      + '(BANKOVNI_UCET) a do wrangler.jsonc (NEXT_PUBLIC_UCET) — nebo místo '
+      + 'toho nastavit ComGate. Prodej se odemkne sám.',
+  },
+  {
+    stav: 'ceka-na-vas',
+    nazev: 'Kontaktní e-mail musí někdo skutečně číst',
+    popis: 'V patičce i v objednávce je info@jmenaprodeti.cz a '
+      + 'reklama@jmenaprodeti.cz. Doména zatím neběží, takže na tyhle adresy '
+      + 'nikdo nedoručí — a kontakt na provozovatele je zákonná povinnost.',
+    akce: 'Buď zaregistrovat doménu a schránky založit, nebo v config.ts '
+      + 'a ads-worker/wrangler.toml dočasně uvést existující e-mail.',
   },
   {
     stav: 'ceka-na-vas',

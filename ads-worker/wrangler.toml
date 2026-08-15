@@ -29,11 +29,11 @@ WEB_URL = "https://svetjmen.tereza-holtzerova.workers.dev"
 POVOLENE_ORIGINY = "https://jmenaprodeti.cz,https://www.jmenaprodeti.cz,https://svetjmen.tereza-holtzerova.workers.dev,http://localhost:3000"
 # Bankovní spojení do pokynů k platbě
 BANKOVNI_UCET = "VYPLNIT/0000"
-PROVOZOVATEL = "VYPLNIT s.r.o."
-PROVOZOVATEL_ICO = "00000000"
+PROVOZOVATEL = "Vítězslav Miček"
+PROVOZOVATEL_ICO = "07347219"
 PROVOZOVATEL_EMAIL = "reklama@jmenaprodeti.cz"
 # Sídlo a DIČ na fakturu. DIČ nechte prázdné, když provozovatel není plátce.
-PROVOZOVATEL_SIDLO = "VYPLNIT — sídlo"
+PROVOZOVATEL_SIDLO = "Těšínská 1240/50b, Havířov"
 PROVOZOVATEL_DIC = ""
 
 # ── platební brána ComGate ────────────────────────────────────────────────
