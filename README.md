@@ -11,9 +11,9 @@ světě. Česky, bez vymyšlených statistik: každé doporučení umí říct p
 
 | Adresa | Co to je |
 |---|---|
-| `svetjmen.tereza-holtzerova.workers.dev` | web (zatím hlavní adresa) |
-| `svetjmen-ads.tereza-holtzerova.workers.dev` | reklamní služba |
-| `svetjmen.cz` | cílová doména — čeká na delegaci jmenných serverů, viz [docs/DOMENA.md](docs/DOMENA.md) |
+| `svetjmen.cz` | web — hlavní adresa |
+| `reklama.svetjmen.cz` | reklamní služba |
+| `*.tereza-holtzerova.workers.dev` | tytéž dva Workery jako záloha, viz [docs/DOMENA.md](docs/DOMENA.md) |
 | `/sprava` | správa: objednávky reklam, přepínače funkcí, audit projektu |
 
 Technicky: Next.js 16 + React 19 + Tailwind 4, sestavené přes OpenNext
@@ -27,7 +27,7 @@ npm install
 npm run dev            # vývojový server
 npm run kontrola       # typy + kontrola dat + testy (totéž, co pouští CI)
 npm run cf:build       # sestavení pro Cloudflare
-npm run kontrola:seo -- https://svetjmen.tereza-holtzerova.workers.dev
+npm run kontrola:seo -- https://svetjmen.cz
 ```
 
 Nasazuje **výhradně** GitHub Actions při pushi do `main` nebo do vývojové

@@ -78,6 +78,34 @@ jobs:
           fi
           echo "Tajemství jsou nastavená."
 
+      # Doména se ověřuje PŘED sestavením, ne až po nasazení.
+      #
+      # Adresa `svetjmen.cz` se zapéká do HTML jako kanonický odkaz a do
+      # klientského kódu jako adresa reklamní služby. Kdyby doména
+      # neodpovídala, vyhledávače by dostaly odkazy do prázdna a web by
+      # neměl inzeráty — a poznalo by se to až na živém webu. Když tenhle
+      # krok selže, nenasadí se nic a běží dál to, co běželo.
+      #
+      # Ověřuje se odsud, protože vývojové prostředí AI má vlastní
+      # egress proxy, která cizí domény nepouští — 000 odtamtud neznamená
+      # „doména neběží", ale „odsud se to nedá změřit".
+      - name: Kontrola domény
+        run: |
+          spatne=""
+          for adresa in https://svetjmen.cz https://www.svetjmen.cz https://reklama.svetjmen.cz/api/nastaveni; do
+            kod=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$adresa" || echo 000)
+            echo "$kod  $adresa"
+            case "$kod" in 2*|3*) ;; *) spatne="$spatne $adresa($kod)" ;; esac
+          done
+          if [ -n "$spatne" ]; then
+            echo "::error::Doména neodpovídá:$spatne — nasazení zastaveno."
+            echo "Kód 000 = jméno se nepřeložilo: zóna svetjmen.cz nejspíš není v Cloudflare *Active*"
+            echo "(jmenné servery u registrátora), nebo Worker nemá připojenou vlastní doménu."
+            echo "Postup: docs/DOMENA.md"
+            exit 1
+          fi
+          echo "Doména odpovídá, pokračuji."
+
       - uses: actions/checkout@v5
 
       - uses: actions/setup-node@v5
@@ -97,7 +125,7 @@ jobs:
         env:
           # Adresa reklamní služby se zapéká do klientského kódu při buildu.
           # Bez ní web ukazuje ukázkové inzeráty a /admin nemá na co sahat.
-          NEXT_PUBLIC_ADS_API: https://svetjmen-ads.tereza-holtzerova.workers.dev
+          NEXT_PUBLIC_ADS_API: https://reklama.svetjmen.cz
         run: npm run cf:build
 
       - name: Nasazení
@@ -149,7 +177,7 @@ jobs:
           npx wrangler deploy -c wrangler.toml
           # Ověření, že se opravdu nasadila služba, ne omylem web:
           sleep 5
-          curl -sf https://svetjmen-ads.tereza-holtzerova.workers.dev/api/nastaveni | grep -q '"nastaveni"' \
+          curl -sf https://reklama.svetjmen.cz/api/nastaveni | grep -q '"nastaveni"' \
             || { echo "::error::Reklamní služba po nasazení neodpovídá na /api/nastaveni."; exit 1; }
 
       # Ověření proti skutečně vydanému HTML — ne proti tomu, co jsme
@@ -162,7 +190,7 @@ jobs:
       # nasazení tedy nic nedokazuje.
       - name: Kontrola nasazeného webu
         run: |
-          adresa=https://svetjmen.tereza-holtzerova.workers.dev
+          adresa=https://svetjmen.cz
           for pokus in 1 2 3; do
             echo "── pokus $pokus ─────────────────────────────"
             sleep 45

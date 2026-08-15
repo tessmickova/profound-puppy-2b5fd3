@@ -1,8 +1,7 @@
 # Doména svetjmen.cz — co kam patří
 
-Stav k 15. 8. 2026: doména **zatím neběží** (nemá delegované jmenné servery,
-v DNS není nic). Až bude v Cloudflare, je zapojení jeden krok — konfigurace
-je připravená, viz níž.
+Stav k 15. 8. 2026: zóna je v Cloudflare **Active**, domény jsou připojené
+k Workerům a web se nasazuje na `svetjmen.cz` jako na hlavní adresu.
 
 ## Co kde poběží
 
@@ -21,9 +20,12 @@ vlastní subdoménu, aby ji výpadek webu (ani naopak) nezasáhl.
 | `https://reklama.svetjmen.cz/api/…` | rozhraní reklam (volá ho web) | Worker `svetjmen-ads` |
 
 Žádný projekt Cloudflare Pages v tomhle repozitáři není — všechno jsou
-Workers. `netlify.toml` a `vercel.json` jsou pozůstatky a nic neřídí.
+Workers. `vercel.json` je pozůstatek a nic neřídí (`netlify.toml` je pryč).
 
 ## Zapojení, krok za krokem
+
+(Kroky 1–4 a 6 jsou hotové, zůstávají **schránky, krok 5**. Popis nechávám
+kvůli tomu, aby se dal postup zopakovat u další domény.)
 
 1. **Doménu přidat do Cloudflare** (Add a site) a u registrátora přepsat
    jmenné servery na ty, které Cloudflare přidělí. Než se to rozejde,
@@ -59,26 +61,32 @@ Workers. `netlify.toml` a `vercel.json` jsou pozůstatky a nic neřídí.
 6. **Zkontrolovat**: `npm run kontrola:seo -- https://svetjmen.cz` projde
    všech 279 adres a ověří i kanonické odkazy.
 
-## Co je hotovo a co drhne (15. 8.)
+## Hotovo (15. 8.)
 
-Kroky 3 a 4 jsou udělané: `wrangler.jsonc` i `ads-worker/wrangler.toml` mají
-aktivní bloky `routes` s `custom_domain = true` a nasazení proběhlo bez
-chyby, takže Cloudflare domény k Workerům připojil.
+Adresy v konfiguraci ukazují na doménu:
 
-Zůstává krok 1–2: `svetjmen.cz` **stále neodpovídá** (HTTP 000, jméno se
-nepřeloží). Zóna v Cloudflare existuje, ale u registrátora nejsou přepsané
-jmenné servery na ty, které Cloudflare přidělil — dokud je stav
-*Pending Nameserver Update*, doména nikam nevede, ať je v Cloudflare
-nastaveno cokoli. Ověřit se to dá v Cloudflare u domény: musí svítit
-*Active*.
+| Kde | Hodnota |
+|---|---|
+| `wrangler.jsonc` → `NEXT_PUBLIC_URL` | `https://svetjmen.cz` |
+| `wrangler.jsonc` → `NEXT_PUBLIC_ADS_API` | `https://reklama.svetjmen.cz` |
+| `ads-worker/wrangler.toml` → `WEB_URL` | `https://svetjmen.cz` |
+| `nasazeni.yml` → `NEXT_PUBLIC_ADS_API` | `https://reklama.svetjmen.cz` |
 
-Pozor na jednu past, která už jednou shodila oba Workery: jakmile je
-v konfiguraci `routes`, wrangler **vypne adresu na `workers.dev`**, pokud
-se výslovně nenechá zapnutá. Proto tam v obou souborech je `workers_dev`
-(v TOML **nad** blokem `[[routes]]`, jinak se klíč zařadí dovnitř tabulky
-a wrangler konfiguraci odmítne). Dokud doména neběží, jsou adresy
-`*.workers.dev` jediné funkční — vypnout se smějí až potom.
+Tím se web zároveň přestal tvářit jako náhled: `JE_NAHLED` v `lib/config.ts`
+pozná produkci podle adresy, takže se teprve teď vydává mapa webu a robots
+povoluje indexování.
 
-Adresy v konfiguraci (`NEXT_PUBLIC_URL`, `WEB_URL`, `NEXT_PUBLIC_ADS_API`)
-zatím schválně ukazují na `workers.dev`: kanonické odkazy musí vést tam,
-kde web opravdu je. Přepnou se jedním commitem, až bude zóna aktivní.
+Adresy `*.workers.dev` zůstávají funkční jako záloha. Druhá kopie webu
+v indexu z nich nevzniká — kanonické odkazy z nich vedou na `svetjmen.cz`.
+
+Nasazení si doménu ověřuje samo: krok *Kontrola domény* v `nasazeni.yml`
+zkusí `svetjmen.cz`, `www.svetjmen.cz` i `reklama.svetjmen.cz` **před**
+sestavením. Kdyby doména vypadla, nenasadí se nic a poběží dál to, co běželo.
+
+## Past, která už jednou shodila oba Workery
+
+Jakmile je v konfiguraci `routes`, wrangler **vypne adresu na `workers.dev`**,
+pokud se výslovně nenechá zapnutá. Proto je v obou souborech `workers_dev`
+— a v TOML **nad** blokem `[[routes]]`: pod ním by se klíč zařadil dovnitř
+tabulky trasy a wrangler by konfiguraci odmítl. Obojí se stalo 15. 8.
+a web byl kvůli tomu chvíli nedostupný.

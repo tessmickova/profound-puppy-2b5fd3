@@ -29,14 +29,11 @@
   "workers_dev": true,
   "vars": {
     // Veřejná adresa webu — používá ji sitemap, robots a JSON-LD.
-    // Dokud neběží vlastní doména, míří na adresu, kde web opravdu je.
-    // Náhled na workers.dev se sám označí jako neindexovatelný, aby vedle
-    // budoucí produkční domény nevznikla druhá kopie webu.
-    "NEXT_PUBLIC_URL": "https://svetjmen.tereza-holtzerova.workers.dev",
+    // Adresa na workers.dev zůstává funkční jako záloha, ale kanonické
+    // odkazy z ní vedou sem, takže vedle domény nevzniká druhá kopie webu.
+    "NEXT_PUBLIC_URL": "https://svetjmen.cz",
     // Adresa reklamní služby. Prázdná hodnota = reklamy se nevykreslí.
-    // Dokud nemáme vlastní doménu, míří na workers.dev adresu služby; po
-    // překlopení domény sem patří https://reklama.svetjmen.cz.
-    "NEXT_PUBLIC_ADS_API": "https://svetjmen-ads.tereza-holtzerova.workers.dev",
+    "NEXT_PUBLIC_ADS_API": "https://reklama.svetjmen.cz",
     "NEXT_PUBLIC_PROVOZOVATEL": "Vítězslav Miček",
     "NEXT_PUBLIC_ICO": "07347219",
     "NEXT_PUBLIC_SIDLO": "Těšínská 1240/50b, Havířov",

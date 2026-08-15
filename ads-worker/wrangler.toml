@@ -38,7 +38,7 @@ bucket_name = "svetjmen-ads-loga"
 [vars]
 # Kanonická adresa webu. Odsud vedou odkazy na podmínky a soukromí —
 # musí ukazovat tam, kde web opravdu běží.
-WEB_URL = "https://svetjmen.tereza-holtzerova.workers.dev"
+WEB_URL = "https://svetjmen.cz"
 
 # Odkud smí web volat API. Víc domén oddělte čárkou.
 POVOLENE_ORIGINY = "https://svetjmen.cz,https://www.svetjmen.cz,https://svetjmen.tereza-holtzerova.workers.dev,http://localhost:3000"
