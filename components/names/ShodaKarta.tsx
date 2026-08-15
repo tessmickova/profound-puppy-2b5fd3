@@ -18,13 +18,25 @@ export default function ShodaKarta({ shoda, poradi }: { shoda: Shoda; poradi: nu
   const { ukazuje } = usePodrobnosti()
   const j = shoda.jmeno
 
+  // Totéž jméno vede katalog zvlášť pro každou zemi. V nabídce je jednou,
+  // ale ostatní země si zaslouží vlaječku — „Hugo 🇨🇿🇫🇷🇪🇸" říká víc než
+  // třikrát Hugo pod sebou.
+  const dalsiVlajky = (shoda.dalsiZeme ?? [])
+    .map(kod => zemePodleKodu(kod))
+    .filter((z): z is NonNullable<typeof z> => Boolean(z))
+
   return (
     <article className="karta-jmena karta-shoda">
       <div className="shoda-hlava">
         <h3 className="shoda-jmeno">
           <span className="shoda-poradi">{poradi}.</span>
           {j.jmeno}
-          <span className="shoda-vlajka">{zeme?.vlajka}</span>
+          <span
+            className="shoda-vlajka"
+            title={[zeme?.nazev, ...dalsiVlajky.map(z => z.nazev)].filter(Boolean).join(', ')}
+          >
+            {zeme?.vlajka}{dalsiVlajky.map(z => z.vlajka).join('')}
+          </span>
         </h3>
         <div className="shoda-vpravo">
           {ukazuje('skore') && (

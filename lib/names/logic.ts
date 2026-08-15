@@ -247,6 +247,38 @@ export interface Shoda {
   duvody: string[]
   /** štítek „ladí s oběma rodiči / s celou rodinou", když jsou zadaní členové rodiny */
   rodinnyStitek?: { text: string; popis: string } | null
+  /** Další země, kde se totéž jméno vede — pro vlaječky na kartě. */
+  dalsiZeme?: string[]
+}
+
+/**
+ * Jedno jméno = jedna nabídka.
+ *
+ * Katalog vede každé jméno zvlášť pro každou zemi: Hugo je ve Francii,
+ * Španělsku i u nás, Oliver dokonce čtyřikrát. Skóre přitom vychází skoro
+ * stejné (souzvuk s příjmením ani rodinná harmonie se zemí nemění), takže
+ * se ta samá jména seřadí těsně za sebe — a v šestici návrhů pak byla
+ * jen tři jména, každé dvakrát. Po klepnutí na „objevit další" se
+ * nabídka rozšířila a táž jména se ukázala znovu.
+ *
+ * Necháváme nejlépe hodnocený výskyt a ostatní země si zapamatujeme,
+ * ať je karta může ukázat vlaječkami místo opakování.
+ */
+function slucDuplicity(shody: Shoda[]): Shoda[] {
+  const podleJmena = new Map<string, Shoda>()
+  for (const s of shody) {
+    const klic = bezDiakritiky(s.jmeno.jmeno)
+    const drzitel = podleJmena.get(klic)
+    if (!drzitel) {
+      podleJmena.set(klic, { ...s, dalsiZeme: [] })
+      continue
+    }
+    // Pořadí je dané skóre, takže první výskyt je vždycky ten nejlepší.
+    if (!drzitel.dalsiZeme!.includes(s.jmeno.zeme) && s.jmeno.zeme !== drzitel.jmeno.zeme) {
+      drzitel.dalsiZeme!.push(s.jmeno.zeme)
+    }
+  }
+  return [...podleJmena.values()]
 }
 
 const SAMOHLASKY = 'aáeéěiíoóuúůyý'
@@ -355,9 +387,11 @@ export function najdiKSourozenci(jmena: Jmeno[], vstup: VstupSourozenec, limit =
     return { jmeno: j, skore: Math.round(Math.max(0, Math.min(100, skore))), duvody }
   })
 
-  return shody
-    .sort((a, b) => b.skore - a.skore || kolator.compare(a.jmeno.jmeno, b.jmeno.jmeno))
-    .slice(0, limit)
+  // Sloučit až po seřazení (drží se nejlepší výskyt) a před oříznutím —
+  // jinak by limit spotřebovaly duplicity a nabídka by byla kratší.
+  return slucDuplicity(
+    shody.sort((a, b) => b.skore - a.skore || kolator.compare(a.jmeno.jmeno, b.jmeno.jmeno)),
+  ).slice(0, limit)
 }
 
 /** Zjistí, jestli je jedno jméno podobou druhého (Petr → Petra, Josef → Josefína). */
@@ -547,9 +581,11 @@ export function najdiProRodinu(jmena: Jmeno[], clenove: string[], kategorie: Kat
     return { jmeno: j, skore: Math.round(Math.max(0, Math.min(100, skore))), duvody }
   })
 
-  return shody
-    .sort((a, b) => b.skore - a.skore || kolator.compare(a.jmeno.jmeno, b.jmeno.jmeno))
-    .slice(0, limit)
+  // Sloučit až po seřazení (drží se nejlepší výskyt) a před oříznutím —
+  // jinak by limit spotřebovaly duplicity a nabídka by byla kratší.
+  return slucDuplicity(
+    shody.sort((a, b) => b.skore - a.skore || kolator.compare(a.jmeno.jmeno, b.jmeno.jmeno)),
+  ).slice(0, limit)
 }
 
 export function najdiNejlepsiShody(jmena: Jmeno[], vstup: VstupShody, limit = 12): Shoda[] {
@@ -619,9 +655,11 @@ export function najdiNejlepsiShody(jmena: Jmeno[], vstup: VstupShody, limit = 12
     return { jmeno: j, skore: Math.max(0, Math.min(100, skore)), duvody, rodinnyStitek: stitek }
   })
 
-  return shody
-    .sort((a, b) => b.skore - a.skore || kolator.compare(a.jmeno.jmeno, b.jmeno.jmeno))
-    .slice(0, limit)
+  // Sloučit až po seřazení (drží se nejlepší výskyt) a před oříznutím —
+  // jinak by limit spotřebovaly duplicity a nabídka by byla kratší.
+  return slucDuplicity(
+    shody.sort((a, b) => b.skore - a.skore || kolator.compare(a.jmeno.jmeno, b.jmeno.jmeno)),
+  ).slice(0, limit)
 }
 
 // ── rychlá analýza jména pro vysouvací panel ─────────────────────────────────

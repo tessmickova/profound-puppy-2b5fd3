@@ -2975,6 +2975,33 @@ a:hover .ilustrace,
 }
 .rodina-hero-vysledky h2 svg { color: #d97757; }
 
+/* ── Zúžení nabídky ──
+   Malé pilulky nad výsledky. Chovají se stejně jako rychlé filtry
+   v katalogu, jen jich je míň — tady jde o první úpravu, ne o ladění. */
+.rodina-filtry {
+  display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 14px;
+}
+.rodina-filtr {
+  display: inline-flex; align-items: center; gap: 5px;
+  border: 1px solid #e6dcc9; border-radius: 999px; background: #fff;
+  padding: 5px 11px; font-size: 13px; font-weight: 600; color: #6b6156;
+  cursor: pointer; transition: background .15s, border-color .15s, color .15s;
+  /* Terč pod 44 px se na telefonu netrefí; výplň roste jen svisle,
+     aby řádek pilulek nezabral půl obrazovky. */
+  min-height: 32px;
+}
+.rodina-filtr:hover { background: #faf6ef; border-color: #d9cdb6; color: #2b2723; }
+.rodina-filtr.je-aktivni {
+  background: #2b2723; border-color: #2b2723; color: #faf6ef;
+}
+.rodina-filtr.je-zrusit { border-style: dashed; color: #8a7f72; }
+.rodina-filtr.je-zrusit:hover { color: #b4462f; border-color: #b4462f; }
+
+.rodina-hero-prazdno {
+  margin: 0; padding: 18px 16px; border: 1px dashed #e6dcc9; border-radius: 16px;
+  background: #fff; color: #6b6156; font-size: 14px; line-height: 1.55;
+}
+
 /* Šest návrhů ve dvou nebo třech sloupcích — vždy beze zbytku. */
 .rodina-hero-mrizka {
   list-style: none; margin: 0; padding: 0;

@@ -14,7 +14,7 @@ import { JMENA } from '../lib/names/data'
 import {
   doporuc, naucSe, otestuj, popisPreferenci, porovnej, slovemSkore,
 } from '../lib/names/rozhodovani'
-import { NEUTRALNI_SOUZVUK, souzvukSPrijmenim } from '../lib/names/logic'
+import { NEUTRALNI_SOUZVUK, najdiNejlepsiShody, souzvukSPrijmenim } from '../lib/names/logic'
 import { genitiv, hlaskovani, inicialka, osloveni, zkontrolujInicialy } from '../lib/names/cestina'
 
 // ── učení z voleb ─────────────────────────────────────────────────────────
@@ -164,4 +164,39 @@ test('hláskování označí cizí zápis, ale nikoho neodsoudí', () => {
   assert.equal(hlaskovani('Adam').snadne, true)
   assert.equal(hlaskovani('Maxwell').snadne, false)
   assert.ok(hlaskovani('Maxwell').duvod.length > 0)
+})
+
+// Katalog vede totéž jméno zvlášť pro každou zemi: Hugo je ve Francii,
+// Španělsku i u nás, Oliver dokonce čtyřikrát. Skóre přitom vychází skoro
+// stejné, takže se ta samá jména seřadila těsně za sebe — v šestici návrhů
+// pak byla jen tři jména, každé dvakrát, a „objevit další“ je ukázalo znovu.
+test('nabídka neopakuje totéž jméno, ani po rozšíření', () => {
+  const vstup = {
+    pohlavi: 'kluk' as const, prijmeni: 'Miček', mesic: null, styly: [], zeme: [],
+    maminka: 'Tereza', tatinek: 'Vítězslav', sourozenci: ['Vanesa'],
+  }
+  let predchozi: string[] = []
+  for (const limit of [6, 12, 24]) {
+    const jmena = najdiNejlepsiShody(JMENA, vstup, limit).map(s => s.jmeno.jmeno)
+    assert.equal(
+      new Set(jmena).size, jmena.length,
+      `limit ${limit}: opakuje se ${jmena.filter((j, i) => jmena.indexOf(j) !== i).join(', ')}`,
+    )
+    // Rozšíření musí přidávat, ne přeskládat — dřívější jména zůstávají nahoře.
+    assert.deepEqual(jmena.slice(0, predchozi.length), predchozi, `limit ${limit} přeskládal dřívější nabídku`)
+    assert.ok(jmena.length > predchozi.length, `limit ${limit} nepřidal nic nového`)
+    predchozi = jmena
+  }
+})
+
+test('sloučené jméno si pamatuje ostatní země pro vlaječky', () => {
+  const shody = najdiNejlepsiShody(JMENA, {
+    pohlavi: 'kluk', prijmeni: '', mesic: null, styly: [], zeme: [],
+    maminka: '', tatinek: '', sourozenci: [],
+  }, 200)
+  const hugo = shody.find(s => s.jmeno.jmeno === 'Hugo')
+  assert.ok(hugo, 'Hugo v nabídce chybí')
+  // Hugo je v katalogu třikrát (fr, es, cz) — jedna karta, tři vlaječky.
+  const vsechny = new Set([hugo.jmeno.zeme, ...(hugo.dalsiZeme ?? [])])
+  assert.equal(vsechny.size, 3, `Hugo má země ${[...vsechny].join(', ')}`)
 })

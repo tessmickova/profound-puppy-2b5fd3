@@ -18,7 +18,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { ArrowRight, Heart, Sparkles, Star, X } from 'lucide-react'
 import { JMENA } from '@/lib/names/data'
-import { najdiNejlepsiShody } from '@/lib/names/logic'
+import { jeDoznivajici, jeVzacne, jeVzestup, najdiNejlepsiShody } from '@/lib/names/logic'
 import { otevriDetail } from '@/lib/names/detail'
 import { roleInfo, useRodina } from '@/lib/names/rodina'
 import { Vyradit } from './NameCard'
@@ -30,6 +30,30 @@ const RYCHLE_ROLE = ['maminka', 'tatinek', 'dcera', 'syn', 'pes', 'kocka'] as co
 /** Kolik jmen ukážeme napoprvé a o kolik přidá „Objevit další“. */
 const KOLIK = 6
 const NEJVIC = 24
+
+/**
+ * Zúžení nabídky přímo v rodinném výběru.
+ *
+ * Původ (česká / zahraniční) je tu proto, že je to nejčastější první
+ * otázka po „ladí to k nám?“. Zbytek odpovídá na „nechci nic obvyklého“
+ * a „nechci jméno z generace rodičů“. Plná sada filtrů zůstává v katalogu
+ * — sem patří jen to, co člověk potřebuje hned.
+ */
+type IdFiltru = 'ceska' | 'zahranicni' | 'vzacne' | 'vzestup' | 'bez-dozniva'
+
+const FILTRY: { id: IdFiltru; emoji: string; nazev: string; popis: string }[] = [
+  { id: 'ceska',       emoji: '🇨🇿', nazev: 'česká',        popis: 'Jen jména vedená pod Českem' },
+  { id: 'zahranicni',  emoji: '🌍', nazev: 'zahraniční',    popis: 'Jména z ostatních zemí' },
+  { id: 'vzacne',      emoji: '💎', nazev: 'vzácná',        popis: 'Nepotkáte je na každém rohu' },
+  { id: 'vzestup',     emoji: '📈', nazev: 'jde nahoru',    popis: 'Jmen přibývá — poroste s ním' },
+  { id: 'bez-dozniva', emoji: '🕰️', nazev: 'bez jmen generace rodičů', popis: 'Pryč s tím, co měla půlka třídy' },
+]
+
+/** Česká a zahraniční se vylučují — zapnutím jedné druhá zhasne. */
+const PROTIKLADY: Partial<Record<IdFiltru, IdFiltru>> = {
+  ceska: 'zahranicni',
+  zahranicni: 'ceska',
+}
 
 export default function RodinnyStart() {
   const {
@@ -45,7 +69,20 @@ export default function RodinnyStart() {
   const [pridavamRoli, setPridavamRoli] = useState<string | null>(null)
   const [noveJmeno, setNoveJmeno] = useState('')
   const [kolik, setKolik] = useState(KOLIK)
+  const [filtry, setFiltry] = useState<IdFiltru[]>([])
   const vstupJmena = useRef<HTMLInputElement>(null)
+
+  const prepniFiltr = (id: IdFiltru) => {
+    setFiltry(f => {
+      const bezProtikladu = f.filter(x => x !== PROTIKLADY[id])
+      return bezProtikladu.includes(id)
+        ? bezProtikladu.filter(x => x !== id)
+        : [...bezProtikladu, id]
+    })
+    // Zúžení začíná nanovo od šesti — jinak by po zapnutí filtru zůstalo
+    // na stránce jen pár jmen z dřívější, širší dávky.
+    setKolik(KOLIK)
+  }
 
   // Uložený profil dorazí až po připojení k úložišti (server ho nezná).
   useEffect(() => {
@@ -78,7 +115,14 @@ export default function RodinnyStart() {
   const shody = useMemo(() => {
     if (!zadano || !pohlavi) return []
     // Vyřazená jména se znovu nenabízejí — o to při vyřazování jde.
-    const kandidati = vyrazena.length ? JMENA.filter(j => !vyrazena.includes(j.id)) : JMENA
+    let kandidati = vyrazena.length ? JMENA.filter(j => !vyrazena.includes(j.id)) : JMENA
+    // Filtry zužují vstup do hodnocení, ne až hotový výsledek — jinak by
+    // po zapnutí filtru zbyly ze šesti návrhů třeba dva.
+    if (filtry.includes('ceska')) kandidati = kandidati.filter(j => j.zeme === 'cz')
+    if (filtry.includes('zahranicni')) kandidati = kandidati.filter(j => j.zeme !== 'cz')
+    if (filtry.includes('vzacne')) kandidati = kandidati.filter(jeVzacne)
+    if (filtry.includes('vzestup')) kandidati = kandidati.filter(jeVzestup)
+    if (filtry.includes('bez-dozniva')) kandidati = kandidati.filter(j => !jeDoznivajici(j))
     return najdiNejlepsiShody(kandidati, {
       pohlavi,
       prijmeni,
@@ -89,7 +133,7 @@ export default function RodinnyStart() {
       tatinek: rodice[1] ?? '',
       sourozenci,
     }, kolik)
-  }, [zadano, pohlavi, prijmeni, rodice, sourozenci, kolik, vyrazena])
+  }, [zadano, pohlavi, prijmeni, rodice, sourozenci, kolik, vyrazena, filtry])
 
   return (
     <section className="rodina-hero start" aria-label="Najdeme jméno, které ladí k vaší rodině">
@@ -246,12 +290,48 @@ export default function RodinnyStart() {
         </div>
       )}
 
-      {shody.length > 0 && (
+      {zadano && pohlavi && (
         <div className="rodina-hero-vysledky">
           <h2>
             <Sparkles size={15} aria-hidden /> Jména, která k vám ladí
           </h2>
 
+          {/* Bez filtrů se dalo jen listovat dál a dál. Tohle je zkrácený
+              výběr toho, na co se lidé ptají nejčastěji — na plnou sadu
+              vede odkaz do katalogu pod výsledky. */}
+          <div className="rodina-filtry" role="group" aria-label="Zúžit nabídku">
+            {FILTRY.map(f => {
+              const aktivni = filtry.includes(f.id)
+              return (
+                <button
+                  key={f.id}
+                  type="button"
+                  className={`rodina-filtr ${aktivni ? 'je-aktivni' : ''}`}
+                  onClick={() => prepniFiltr(f.id)}
+                  aria-pressed={aktivni}
+                  title={f.popis}
+                >
+                  <span aria-hidden>{f.emoji}</span> {f.nazev}
+                </button>
+              )
+            })}
+            {filtry.length > 0 && (
+              <button
+                type="button"
+                className="rodina-filtr je-zrusit"
+                onClick={() => setFiltry([])}
+              >
+                <X size={13} aria-hidden /> zrušit
+              </button>
+            )}
+          </div>
+
+          {shody.length === 0 ? (
+            <p className="rodina-hero-prazdno">
+              Tomuhle zúžení neodpovídá žádné jméno. Zkuste některý filtr
+              vypnout — nebo si otevřete katalog, kde jich je víc.
+            </p>
+          ) : (
           <ul className="rodina-hero-mrizka">
             {shody.map(s => (
               <li key={s.jmeno.id} className="rodina-navrh">
@@ -298,6 +378,7 @@ export default function RodinnyStart() {
               </li>
             ))}
           </ul>
+          )}
 
           <div className="rodina-hero-dal">
             {shody.length >= kolik && kolik < NEJVIC && (
