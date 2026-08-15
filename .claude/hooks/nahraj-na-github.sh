@@ -17,6 +17,27 @@ vetev=$(git -C "$koren" rev-parse --abbrev-ref HEAD 2>/dev/null)
 # Stav na GitHubu čteme přes ls-remote, ne přes origin/<větev>: naklonovaný
 # repozitář nemusí mít nastavené sledovací větve a porovnání by pak tiše
 # vycházelo jako „všechno je nahráno" — a nenahrálo by se nic.
+
+# Kam vlastně `origin` ukazuje.
+#
+# 15. 8. 2026 se `origin` v pracovní kopii přepsal zpátky na archivní
+# repozitář a tři commity odešly tam. Nikde to nebylo vidět: push hlásil
+# úspěch, jen do jiného repozitáře — a protože z kopie se schválně
+# nenasazuje, na webu se nic neobjevilo a chyba vyšla najevo až u písem.
+# Adresu proto ověřujeme před každým nahráním.
+DOMOVSKY='tessmickova/svetjmen'
+adresa=$(git -C "$koren" remote get-url origin 2>/dev/null || echo '')
+case "$adresa" in
+  *"$DOMOVSKY"*) ;;
+  *)
+    jq -n --arg m "✗ origin ukazuje na '$adresa', ne na $DOMOVSKY — commity by odešly do špatného repozitáře a nikdy se nenasadily.
+Napravíš takto:
+  git -C $koren remote set-url origin https://github.com/$DOMOVSKY" \
+      '{systemMessage:$m,suppressOutput:true}'
+    exit 0
+    ;;
+esac
+
 vzdaleny=$(git -C "$koren" ls-remote origin "refs/heads/$vetev" 2>/dev/null | awk 'NR==1{print $1}')
 if [ -z "$vzdaleny" ]; then
   nenahrane=$(git -C "$koren" rev-list --count HEAD 2>/dev/null || echo 0)
