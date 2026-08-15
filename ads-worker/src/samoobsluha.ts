@@ -394,11 +394,30 @@ export function samoobsluha(env: Prostredi): string {
       zprava.setAttribute('role', 'status');
       zprava.innerHTML = '<strong>Objednávky jsou dočasně pozastavené.</strong> '
         + 'Dokončujeme nastavení plateb. Napište nám a ozveme se, jakmile to půjde — '
-        + '<a href="mailto:${esc(kontakt)}">${esc(kontakt)}</a>.';
+        + '<a href="mailto:${esc(kontakt)}">${esc(kontakt)}</a>'
+        + '<br><br><button type="button" id="zkusit" class="hlavni" style="width:auto">'
+        + 'Projít si to nanečisto →</button>'
+        + '<br><span style="font-size:13px">Projdete celou cestu až po hotový inzerát. '
+        + 'Nic se neplatí, plocha zůstane volná a na webu se nic neukáže.</span>';
       $('tabulka').appendChild(zprava);
+
+      // Nanečisto se plochy odemknou. Objednávka pak odejde s příznakem
+      // zkusebni, takže vznikne ve stavu, který slot nezabírá.
+      // (Zpětné apostrofy sem nepatří — celá stránka je šablonový řetězec.)
+      $('zkusit').addEventListener('click', function () {
+        stav.zkusebni = true;
+        stav.pozastaveno = false;
+        vykresliMapu();
+        zprava.innerHTML = '<strong>Zkušební režim.</strong> Nic se neplatí a nic '
+          + 'se nezveřejní — objednávka skončí ve správě označená jako zkouška.';
+        pripravVyber();
+      });
       return;
     }
 
+    pripravVyber();
+
+    function pripravVyber() {
     stav.ceny = {};
     d.plochy.forEach(function (p) { stav.ceny[p.id] = { ceny: p.ceny, nazev: p.nazev, volno: p.volno }; });
 
@@ -458,6 +477,7 @@ export function samoobsluha(env: Prostredi): string {
       });
       prekresli();
     });
+    }
   }).catch(function () {
     $('tabulka').innerHTML = '<p class="hlaska chyba">Seznam ploch se teď nepodařilo načíst. Zkuste to prosím za chvíli.</p>';
   });
@@ -531,7 +551,8 @@ export function samoobsluha(env: Prostredi): string {
         plocha: stav.plocha, obdobi: stav.obdobi, ikona: stav.ikona,
         firma: $('firma').value, ico: $('ico').value, email: $('email').value,
         znacka: $('znacka').value, nadpis: $('nadpis').value, text: $('text').value,
-        cta: $('cta').value, odkaz: $('odkaz').value, souhlas: $('souhlas').checked
+        cta: $('cta').value, odkaz: $('odkaz').value, souhlas: $('souhlas').checked,
+        zkusebni: stav.zkusebni === true
       })
     }).then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
       .then(function (v) {
@@ -578,6 +599,26 @@ export function samoobsluha(env: Prostredi): string {
           'Uložte si ho — otevřete jím stav kampaně, pokyny k platbě i úpravu textu:<br>' +
           '<code style="word-break:break-all;font-size:15px">' + d.token + '</code></p>' +
           '<p style="font-size:14px"><a href="' + WEB_ADRESA + '/reklama/ucet" target="_blank" rel="noopener">Otevřít účet inzerenta →</a></p>';
+
+        // Zkouška končí tady: žádná platba, žádný variabilní symbol.
+        // Ukážeme, co by zákazník dostal, a rovnou řekneme, že to nikam nejde.
+        if (d.zkusebni) {
+          $('pokyny').innerHTML =
+            '<p class="hlaska ok">Zkouška proběhla celá. Takhle by objednávka vypadala.</p>' +
+            '<div class="shrnuti"><dl>' +
+            '<dt>Plocha</dt><dd>' + d.plocha + '</dd>' +
+            '<dt>Délka</dt><dd>' + d.obdobi + '</dd>' +
+            '<dt>Částka</dt><dd>' + korun(d.cena_kc) + ' bez DPH <em>(neúčtuje se)</em></dd>' +
+            '</dl></div>' +
+            '<div id="logo-stav"></div>' +
+            '<p class="poznamka" style="margin-top:14px"><strong>Nic se nestalo doopravdy.</strong> ' +
+            'Plocha zůstala volná, na webu se nic neukázalo a nikdo nic neplatí. ' +
+            'Ve správě je objednávka označená jako zkušební.</p>' +
+            klicUctu;
+          posliLogo();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          return;
+        }
 
         if (platba.brana === 'comgate' && platba.url) {
           // Brána odpověděla: zákazník zaplatí hned. Klíč mu ukážeme ještě

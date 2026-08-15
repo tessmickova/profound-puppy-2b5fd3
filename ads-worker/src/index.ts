@@ -369,6 +369,8 @@ interface ZalozenaObjednavka {
   vs: string
   /** e-mail inzerenta — brána ho chce, aby zákazníkovi poslala doklad */
   email: string
+  /** Zkušební průchod: nic se neplatí a nikde se nezobrazí. */
+  zkusebni?: boolean
 }
 
 /** Objednávka založená dřív týmž klíčem — pro opakované odeslání formuláře. */
@@ -429,21 +431,35 @@ async function odpovedNaObjednavku(
   o: ZalozenaObjednavka, env: Prostredi, cors: Record<string, string>,
 ) {
   const plocha = plochaPodleId(o.plocha)
+  // U zkoušky nemá smysl chystat platbu ani zakládat transakci v bráně —
+  // zákazník nic neplatí a pokyn k převodu by ho jen popletl.
   return json({
     token: o.token,
-    stav: 'ceka_na_platbu',
+    stav: o.zkusebni ? 'zkusebni' : 'ceka_na_platbu',
+    zkusebni: Boolean(o.zkusebni),
     plocha: plocha?.nazev ?? o.plocha,
     obdobi: OBDOBI_PODLE_ID[o.obdobi as ObdobiId]?.nazev ?? o.obdobi,
     cena_kc: o.cena_kc,
-    platba: await pripravPlatbu(o, env),
+    platba: o.zkusebni ? null : await pripravPlatbu(o, env),
     kontakt: env.PROVOZOVATEL_EMAIL,
   }, {}, cors)
 }
 
 async function vytvorObjednavku(req: Request, env: Prostredi, cors: Record<string, string>) {
+  // Zkušební průchod: celá cesta od výběru plochy po hotový inzerát, ale bez
+  // peněz. Vzniká objednávka ve stavu `zkusebni`, což znamená trojí:
+  //   • unikátní index na slot ji nevidí (pokrývá jen ceka_na_platbu|aktivni),
+  //     takže nezabere plochu skutečnému zákazníkovi,
+  //   • výdej reklam čte jen `aktivni`, takže se nikde nezobrazí,
+  //   • ve správě je vidět zvlášť, aby se nepletla s tržbou.
+  // Nejde tedy o „objednávku zadarmo", ale o nanečisto.
+  const chceZkusebni = (await req.clone().json().catch(() => null) as { zkusebni?: unknown } | null)
+    ?.zkusebni === true
+
   // Bez účtu i brány není kam poslat peníze. Radši objednávku nepřijmeme,
   // než abychom zákazníkovi dali pokyn k platbě, který nikam nevede.
-  if (!lzeZaplatit(env)) {
+  // Zkušební průchod tím omezený není — právě proto existuje.
+  if (!lzeZaplatit(env) && !chceZkusebni) {
     return chyba(
       'Prodej reklamy je dočasně pozastavený — dokončujeme nastavení plateb. '
       + 'Napište nám na uvedený kontakt a ozveme se, jakmile to půjde.',
@@ -545,8 +561,9 @@ async function vytvorObjednavku(req: Request, env: Prostredi, cors: Record<strin
       ).bind(inzerentId, firma, ico || null, email, ted),
       env.DB.prepare(
         `INSERT INTO objednavky (id, inzerent_id, plocha, obdobi, cena_kc, vs, stav, token, idempotence, vytvoreno)
-         VALUES (?1, ?2, ?3, ?4, ?5, ?6, 'ceka_na_platbu', ?7, ?8, ?9)`,
-      ).bind(objednavkaId, inzerentId, plocha.id, obdobi, castka, vs, token, klicIdempotence, ted),
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)`,
+      ).bind(objednavkaId, inzerentId, plocha.id, obdobi, castka, vs,
+        chceZkusebni ? 'zkusebni' : 'ceka_na_platbu', token, klicIdempotence, ted),
       env.DB.prepare(
         `INSERT INTO inzeraty (id, objednavka_id, znacka, nadpis, text, cta, odkaz, ikona)
          VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)`,
@@ -566,7 +583,8 @@ async function vytvorObjednavku(req: Request, env: Prostredi, cors: Record<strin
   }
 
   return odpovedNaObjednavku(
-    { id: objednavkaId, token, plocha: plocha.id, obdobi, cena_kc: castka, vs, email }, env, cors,
+    { id: objednavkaId, token, plocha: plocha.id, obdobi, cena_kc: castka, vs, email,
+      zkusebni: chceZkusebni }, env, cors,
   )
 }
 
@@ -898,7 +916,47 @@ async function prehled(env: Prostredi, url: URL, cors: Record<string, string> = 
     logo_klic: r.logo_klic ? `${url.origin}/logo/${r.logo_klic}` : null,
   }))
 
-  return json({ objednavky }, {}, cors)
+  // Souhrn se počítá v databázi, ne z těch dvou set řádků výš — jinak by
+  // čísla platila jen pro poslední stránku a s přibývajícími objednávkami
+  // by tiše přestala sedět.
+  const souhrn = await env.DB.prepare(
+    `SELECT
+       COUNT(*)                                                        AS objednavek,
+       SUM(CASE WHEN stav = 'aktivni'        THEN 1 ELSE 0 END)        AS aktivnich,
+       SUM(CASE WHEN stav = 'ceka_na_platbu' THEN 1 ELSE 0 END)        AS ceka_na_platbu,
+       SUM(CASE WHEN stav = 'zkusebni'       THEN 1 ELSE 0 END)        AS zkusebnich,
+       SUM(CASE WHEN stav = 'vyprsela'       THEN 1 ELSE 0 END)        AS vyprselych,
+       -- Tržba jen ze skutečně zaplaceného. Zkoušky a nezaplacené
+       -- objednávky do peněz nepatří, i když mají vyplněnou cenu.
+       SUM(CASE WHEN zaplaceno_kc IS NOT NULL THEN zaplaceno_kc ELSE 0 END) AS zaplaceno_kc,
+       SUM(CASE WHEN stav = 'ceka_na_platbu'  THEN cena_kc      ELSE 0 END) AS ceka_kc
+     FROM objednavky`,
+  ).first<Record<string, number | null>>()
+
+  const cekaSchvaleni = await env.DB.prepare(
+    `SELECT COUNT(*) AS pocet FROM inzeraty i
+       JOIN objednavky o ON o.id = i.objednavka_id
+      WHERE i.schvaleno = 0 AND o.stav IN ('aktivni', 'ceka_na_platbu')`,
+  ).first<{ pocet: number }>()
+
+  const obsazeno = await obsazenost(env)
+  const obsazenychPloch = Object.values(obsazeno).filter(n => n > 0).length
+
+  return json({
+    objednavky,
+    souhrn: {
+      objednavek: souhrn?.objednavek ?? 0,
+      aktivnich: souhrn?.aktivnich ?? 0,
+      cekaNaPlatbu: souhrn?.ceka_na_platbu ?? 0,
+      zkusebnich: souhrn?.zkusebnich ?? 0,
+      vyprselych: souhrn?.vyprselych ?? 0,
+      zaplacenoKc: souhrn?.zaplaceno_kc ?? 0,
+      cekaKc: souhrn?.ceka_kc ?? 0,
+      cekaSchvaleni: cekaSchvaleni?.pocet ?? 0,
+      obsazenychPloch,
+      plochCelkem: PLOCHY.length,
+    },
+  }, {}, cors)
 }
 
 // ── platební brána ───────────────────────────────────────────────────────

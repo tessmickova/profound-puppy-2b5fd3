@@ -16,8 +16,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
-  BadgeCheck, Ban, Banknote, Brush, Check, Eye, KeyRound, ListChecks, LogOut,
-  RefreshCw, Scale, ShieldAlert, ToggleLeft, Wrench,
+  BadgeCheck, Ban, Banknote, BarChart3, Brush, Check, Eye, KeyRound, ListChecks,
+  LogOut, RefreshCw, Scale, ShieldAlert, ToggleLeft, Wrench,
 } from 'lucide-react'
 import { ADRESA_REKLAM } from '@/lib/names/reklamniServer'
 import {
@@ -63,7 +63,26 @@ const STAVY_OBJEDNAVKY: Record<string, string> = {
   aktivni: 'aktivní',
   vyprsela: 'vypršelá',
   zrusena: 'zrušená',
+  // Zkušební průchod bez placení. Plochu nedrží a na webu se neukáže —
+  // je tu jen proto, aby šlo projít celou cestu zákazníka nanečisto.
+  zkusebni: 'zkušební',
 }
+
+/** Souhrn nad objednávkami — počítá ho reklamní služba přímo v databázi. */
+interface Souhrn {
+  objednavek: number
+  aktivnich: number
+  cekaNaPlatbu: number
+  zkusebnich: number
+  vyprselych: number
+  zaplacenoKc: number
+  cekaKc: number
+  cekaSchvaleni: number
+  obsazenychPloch: number
+  plochCelkem: number
+}
+
+const korun = (n: number) => n.toLocaleString('cs-CZ') + ' Kč'
 
 /** Objednávka, u které je vůbec co schvalovat — kreativa existuje a žije. */
 const maZivouKreativu = (o: Objednavka) =>
@@ -135,6 +154,7 @@ export default function Admin() {
   const [prihlasen, setPrihlasen] = useState(false)
   const [hlaska, setHlaska] = useState<string | null>(null)
   const [objednavky, setObjednavky] = useState<Objednavka[] | null>(null)
+  const [souhrn, setSouhrn] = useState<Souhrn | null>(null)
   const [prepinace, setPrepinace] = useState<Prepinace>(VYCHOZI_PREPINACE)
   const [pracuje, setPracuje] = useState(false)
   /** Rozepsané důvody zamítnutí podle id objednávky. */
@@ -152,10 +172,11 @@ export default function Admin() {
 
   const nactiData = useCallback(async (t: string) => {
     const [prehled, nastaveni] = await Promise.all([
-      zavolej('/api/admin/prehled', {}, t) as Promise<{ objednavky: Objednavka[] }>,
+      zavolej('/api/admin/prehled', {}, t) as Promise<{ objednavky: Objednavka[]; souhrn: Souhrn }>,
       fetch(`${ADRESA_REKLAM}/api/nastaveni`).then(r => r.json()) as Promise<{ nastaveni: Prepinace }>,
     ])
     setObjednavky(prehled.objednavky)
+    setSouhrn(prehled.souhrn ?? null)
     setPrepinace({ ...VYCHOZI_PREPINACE, ...nastaveni.nastaveni })
   }, [zavolej])
 
@@ -349,6 +370,50 @@ export default function Admin() {
                 <LogOut size={13} aria-hidden /> Odhlásit
               </button>
             </div>
+
+            {/* Čísla jako první věc na stránce. Dřív správa ukazovala jen
+                seznam objednávek — kolik je obsazeno, kolik peněz dorazilo
+                a co čeká, se muselo sčítat očima. */}
+            {souhrn && (
+              <>
+                <h3><BarChart3 size={15} aria-hidden /> Jak na tom jsme</h3>
+                <ul className="admin-cisla">
+                  <li>
+                    <span className="admin-cislo">{souhrn.obsazenychPloch}<span className="admin-ze">/{souhrn.plochCelkem}</span></span>
+                    <span className="admin-popisek">obsazených ploch</span>
+                    <span className="admin-pruh" aria-hidden>
+                      <span style={{ width: `${Math.round((souhrn.obsazenychPloch / Math.max(1, souhrn.plochCelkem)) * 100)}%` }} />
+                    </span>
+                  </li>
+                  <li>
+                    <span className="admin-cislo">{korun(souhrn.zaplacenoKc)}</span>
+                    <span className="admin-popisek">skutečně zaplaceno</span>
+                  </li>
+                  <li className={souhrn.cekaKc > 0 ? 'je-ceka' : ''}>
+                    <span className="admin-cislo">{korun(souhrn.cekaKc)}</span>
+                    <span className="admin-popisek">
+                      čeká na platbu {souhrn.cekaNaPlatbu > 0 && <>({souhrn.cekaNaPlatbu})</>}
+                    </span>
+                  </li>
+                  <li className={souhrn.cekaSchvaleni > 0 ? 'je-ceka' : ''}>
+                    <span className="admin-cislo">{souhrn.cekaSchvaleni}</span>
+                    <span className="admin-popisek">čeká na vaše schválení</span>
+                  </li>
+                  <li>
+                    <span className="admin-cislo">{souhrn.aktivnich}</span>
+                    <span className="admin-popisek">běžících kampaní</span>
+                  </li>
+                  <li>
+                    <span className="admin-cislo">{souhrn.zkusebnich}</span>
+                    <span className="admin-popisek">zkušebních (neplatí se)</span>
+                  </li>
+                </ul>
+                <p className="admin-pozn">
+                  Zaplaceno je jen to, co opravdu dorazilo — zkušební průchody
+                  ani nezaplacené objednávky se do tržby nepočítají.
+                </p>
+              </>
+            )}
 
             <h3><ToggleLeft size={15} aria-hidden /> Přepínače webu</h3>
             <ul className="admin-prepinace">
