@@ -8,7 +8,7 @@
 // Pravidlo obsahu: žádné uklidňující fráze. Když něco není hotové nebo
 // bezpečné, píše se to sem červeně a s návodem, co s tím.
 
-export const AUDIT_REVIZE = '2026-08-13'
+export const AUDIT_REVIZE = '2026-08-15'
 
 export type StavPolozky = 'podchyceno' | 'ceka-na-vas' | 'trva'
 
@@ -29,6 +29,18 @@ export const STAV_INFO: Record<StavPolozky, { stitek: string; barva: string }> =
 // ── bezpečnost ────────────────────────────────────────────────────────────
 
 export const BEZPECNOST: PolozkaAuditu[] = [
+  {
+    stav: 'trva',
+    nazev: 'Web má dva repozitáře — a to už jednou stálo pět dní práce',
+    popis: 'Svět jmen je v tessmickova/profound-puppy-2b5fd3 (větev '
+      + 'claude/animal-children-names-by-country-c014s6 — odsud se nasazuje živý web) '
+      + 'i v tessmickova/svetjmen (starší základ). 14. 8. se kvůli tomu nasadil starý '
+      + 'kód a přepsal živou verzi; zachránil to rollback. Podrobně v docs/INCIDENT-2026-08-14.md.',
+    akce: 'Rozhodnout, který repozitář je ten pravý, a druhý archivovat '
+      + '(GitHub → Settings → Archive repository). Do té doby před každým ručním '
+      + 'nasazením porovnat: npx wrangler deployments list vs. git log -1 --format=%ci — '
+      + 'živá verze novější než commit znamená zastavit.',
+  },
   {
     stav: 'trva',
     nazev: 'Cloudflare API token a GitHub token byly vloženy do chatu',
