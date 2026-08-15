@@ -61,7 +61,7 @@ kvůli tomu, aby se dal postup zopakovat u další domény.)
    Email Routing (přeposílání na existující schránku) zdarma.
 
 6. **Zkontrolovat**: `npm run kontrola:seo -- https://svetjmen.cz` projde
-   všech 279 adres a ověří i kanonické odkazy.
+   všech 296 adres a ověří i kanonické odkazy.
 
 ## Hotovo (15. 8.)
 

@@ -84,7 +84,7 @@ Neomezujeme ji. `Crawl-delay` v `robots.txt` není a nebude:
 
 - Google ho ignoruje
 - web je staticky předgenerovaný na Cloudflare, takže procházení nic nestojí
-- 218 adres není zátěž pro nikoho
+- 296 adres není zátěž pro nikoho
 
 Kdyby některý robot začal dělat problémy, řeší se to na úrovni Cloudflare
 (rate limiting podle User-Agentu), ne v `robots.txt` — ten je jen doporučení
@@ -92,7 +92,38 @@ a robot, který dělá problémy, ho stejně nectí.
 
 ---
 
-## 5. Kdy tenhle soubor měnit
+## 5. Cloudflare do robotů mluvit nesmí
+
+Cloudflare umí robota řešit sám — **AI Crawl Control** (dřív AI Audit)
+s volbou *Managed robots.txt*, a k tomu přepínače *Block AI bots* / *Block
+AI Scrapers and Crawlers*. Když jsou zapnuté, Cloudflare buď podstrčí
+vlastní `robots.txt`, nebo roboty zablokuje ještě dřív, než dojdou
+k Workeru — a náš soubor pak neplatí, ať v něm stojí cokoli.
+
+**Pro tenhle web to musí být vypnuté.** Cloudflare ve výchozím nastavení
+roboty jazykových modelů **blokuje**, kdežto my je podle oddílu 1 pouštíme
+dovnitř schválně — celá strategie citovatelnosti stojí na tom, že se web
+dostane do odpovědí asistentů. Zapnutá ochrana v Cloudflare by ji tiše
+zrušila a nikde by to nebylo vidět: v repozitáři by dál stálo „povoleno".
+
+Kde to je: Cloudflare → doména `svetjmen.cz` → **AI Crawl Control**
+(v starším rozhraní Security → Bots). Vypnout *Managed robots.txt*
+i blokování AI robotů. *Bot Fight Mode* nechat vypnutý taky — hází
+výzvy i legitimním vyhledávacím robotům.
+
+Ověření, že platí náš soubor a ne cizí:
+
+```bash
+curl -s https://svetjmen.cz/robots.txt | head -20
+```
+
+Musí začínat `User-Agent: *` a `Allow: /` a obsahovat jmenovitý seznam
+robotů z oddílu 1. Když tam přibyly řádky, které v `app/robots.ts` nejsou
+(typicky blok zakazující `GPTBot` a spol.), přidává je Cloudflare.
+
+---
+
+## 6. Kdy tenhle soubor měnit
 
 - **Přibude nový AI robot** → doplnit do `AI_ROBOTI` v `app/robots.ts`
   a do tabulky výš. Zatím je politika „pouštíme všechny, kdo se představí".
