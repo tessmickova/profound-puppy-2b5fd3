@@ -7,9 +7,10 @@
     "deploy": "wrangler deploy -c wrangler.toml",
     "db:schema": "wrangler d1 execute svetjmen-ads --remote -c wrangler.toml --file=./schema.sql",
     "db:schema:local": "wrangler d1 execute svetjmen-ads --local -c wrangler.toml --file=./schema.sql",
-    "db:migrace-003": "wrangler d1 execute svetjmen-ads --remote -c wrangler.toml --file=./migrace/003-nastaveni.sql",
-    "db:migrace-003:local": "wrangler d1 execute svetjmen-ads --local -c wrangler.toml --file=./migrace/003-nastaveni.sql",
-    "typecheck": "tsc --noEmit"
+    "db:migrace": "sh ./skripty-migrace.sh --remote",
+    "db:migrace:local": "sh ./skripty-migrace.sh --local",
+    "typecheck": "tsc --noEmit",
+    "test": "npx tsx --test testy/*.test.ts"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20260801.1",

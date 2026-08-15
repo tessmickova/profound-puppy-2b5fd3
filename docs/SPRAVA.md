@@ -19,7 +19,7 @@ doporučení). Tenhle soubor popisuje jen to, co se dělá mimo web.
 
    ```bash
    cd ads-worker
-   npm run db:migrace-003
+   npm run db:migrace
    npm run deploy
    ```
 

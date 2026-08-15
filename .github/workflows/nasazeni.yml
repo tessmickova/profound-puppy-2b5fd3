@@ -102,11 +102,30 @@ jobs:
           # přesměrování `.wrangler/deploy/config.json` (OpenNext) a wrangler
           # by ho odsud našel dřív — místo služby by podruhé nasadil web.
           #
+          # Migrace jdou PŘED nasazením: nový kód se ptá na sloupce, které
+          # bez nich v databázi nejsou, a dotazy by padaly. Pouštíme všechny
+          # v pořadí podle názvu — každá je psaná tak, aby opakované spuštění
+          # nevadilo, takže není potřeba nikde evidovat, co už proběhlo.
+          #
           # Migrace potřebuje na tokenu oprávnění „D1: Edit". Když chybí,
-          # nasazení nezastavíme — služba bez tabulky jede s výchozím
-          # „vše zapnuto" a migraci jde pustit ručně: npm run db:migrace-003
-          npx wrangler d1 execute svetjmen-ads --remote -c wrangler.toml --file=./migrace/003-nastaveni.sql \
-            || echo "::warning::Migrace D1 se nepovedla — tokenu nejspíš chybí oprávnění D1 Edit. Spusťte v ads-worker ručně: npm run db:migrace-003"
+          # nasazení zastavíme — nasadit kód bez jeho migrace je horší než
+          # nenasadit nic. Ručně: cd ads-worker && npm run db:migrace
+          for soubor in $(ls migrace/*.sql | sort); do
+            echo "── migrace $soubor"
+            if vystup=$(npx wrangler d1 execute svetjmen-ads --remote -c wrangler.toml --file="$soubor" 2>&1); then
+              continue
+            fi
+            # Starší migrace mají `ALTER TABLE ADD COLUMN`, které se podruhé
+            # neprovede. Že sloupec už existuje, je přesně to, čeho chceme
+            # dosáhnout — na rozdíl od skutečné chyby to nasazení nezastaví.
+            if echo "$vystup" | grep -qiE "duplicate column name|already exists"; then
+              echo "   už bylo provedeno dřív, pokračuji"
+              continue
+            fi
+            echo "$vystup"
+            echo "::error::Migrace $soubor selhala. Nasazení reklamní služby zastaveno — kód bez své migrace by padal na chybějící sloupce."
+            exit 1
+          done
           npx wrangler deploy -c wrangler.toml
           # Ověření, že se opravdu nasadila služba, ne omylem web:
           sleep 5

@@ -54,8 +54,8 @@ webu** (reklamy, panel „Můj výběr", analýza výběru). Přepínače sedí
 v tabulce `nastaveni` — na existující databázi ji založí migrace:
 
 ```bash
-npm run db:migrace-003          # ostrá databáze
-npm run db:migrace-003:local    # lokální vývoj
+npm run db:migrace          # ostrá databáze (pustí všechny v pořadí)
+npm run db:migrace:local    # lokální vývoj
 ```
 
 Endpointy: veřejné `GET /api/nastaveni` (web, cache 60 s); s tokenem
