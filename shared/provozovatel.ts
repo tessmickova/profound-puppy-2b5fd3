@@ -40,8 +40,8 @@ export const PROVOZOVATEL_UDAJE: Provozovatel = {
   dic: '',
   platceDph: false,
   sidlo: 'Těšínská 1240/50b, Havířov',
-  email: 'info@jmenaprodeti.cz',
-  emailReklama: 'reklama@jmenaprodeti.cz',
+  email: 'info@svetjmen.cz',
+  emailReklama: 'reklama@svetjmen.cz',
   // Podnikatelský účet zatím není založený. Dokud tu je zástupná hodnota,
   // služba nesmí přijímat objednávky reklamy — zákazník by dostal pokyn
   // poslat peníze na neexistující účet.

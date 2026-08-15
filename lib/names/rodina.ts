@@ -41,10 +41,14 @@ export const roleInfo = (id: string) =>
 
 const KLIC = 'svet-jmen-rodina'
 const KLIC_PRIJMENI = 'svet-jmen-prijmeni'
+const KLIC_POHLAVI = 'svet-jmen-pohlavi'
 
-interface Stav { clenove: ClenRodiny[]; prijmeni: string }
+/** Koho pojmenováváme. `null` = ještě nevíme, ukazujeme obojí. */
+export type PohlaviDitete = 'holka' | 'kluk' | null
 
-const PRAZDNY: Stav = { clenove: [], prijmeni: '' }
+interface Stav { clenove: ClenRodiny[]; prijmeni: string; pohlavi: PohlaviDitete }
+
+const PRAZDNY: Stav = { clenove: [], prijmeni: '', pohlavi: null }
 
 let cache: Stav = PRAZDNY
 let nacteno = false
@@ -53,8 +57,13 @@ const posluchaci = new Set<() => void>()
 function nacti() {
   let clenove: unknown = []
   let prijmeni = ''
+  let pohlavi: PohlaviDitete = null
   try { clenove = JSON.parse(localStorage.getItem(KLIC) ?? '[]') } catch { clenove = [] }
   try { prijmeni = localStorage.getItem(KLIC_PRIJMENI) ?? '' } catch { prijmeni = '' }
+  try {
+    const ulozene = localStorage.getItem(KLIC_POHLAVI)
+    pohlavi = ulozene === 'holka' || ulozene === 'kluk' ? ulozene : null
+  } catch { pohlavi = null }
   // Data z úložiště nebereme na slovo — poškozený záznam nesmí položit web.
   const cisti = Array.isArray(clenove)
     ? clenove.filter((c): c is ClenRodiny =>
@@ -63,7 +72,7 @@ function nacti() {
       && typeof (c as ClenRodiny).jmeno === 'string'
       && typeof (c as ClenRodiny).role === 'string')
     : []
-  cache = { clenove: cisti, prijmeni: typeof prijmeni === 'string' ? prijmeni : '' }
+  cache = { clenove: cisti, prijmeni: typeof prijmeni === 'string' ? prijmeni : '', pohlavi }
   nacteno = true
 }
 
@@ -71,6 +80,8 @@ function uloz() {
   try {
     localStorage.setItem(KLIC, JSON.stringify(cache.clenove))
     localStorage.setItem(KLIC_PRIJMENI, cache.prijmeni)
+    if (cache.pohlavi) localStorage.setItem(KLIC_POHLAVI, cache.pohlavi)
+    else localStorage.removeItem(KLIC_POHLAVI)
   } catch {
     // Soukromý režim nebo plné úložiště — profil pak platí jen pro tuhle návštěvu.
   }
@@ -114,6 +125,17 @@ export function odeberClena(id: string) {
   uloz()
 }
 
+/**
+ * Koho pojmenováváme. Platí pro celý web, ne jen pro místo, kde se to
+ * zvolilo: kdo hledá jméno pro chlapečka, nechce o dva odstavce níž
+ * číst seznam holčičích jmen.
+ */
+export function nastavPohlavi(pohlavi: PohlaviDitete) {
+  zajistiNacteno()
+  cache = { ...cache, pohlavi }
+  uloz()
+}
+
 export function nastavPrijmeni(prijmeni: string) {
   zajistiNacteno()
   cache = { ...cache, prijmeni: prijmeni.trimStart() }
@@ -149,6 +171,7 @@ export function useRodina() {
   return {
     clenove: stav.clenove,
     prijmeni: stav.prijmeni,
+    pohlavi: stav.pohlavi,
     pocet: stav.clenove.length,
     /** jména rodičů a sourozenců — vstup pro hledání ladícího jména */
     rodice: jmenaRoli(ROLE_RODICE),
@@ -156,6 +179,7 @@ export function useRodina() {
     pridej: pridejClena,
     odeber: odeberClena,
     nastavPrijmeni,
+    nastavPohlavi,
     nastavPodleRole,
   }
 }

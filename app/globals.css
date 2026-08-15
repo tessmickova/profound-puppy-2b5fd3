@@ -4054,9 +4054,39 @@ a:hover .ilustrace,
   .start-clen { animation: none; }
 }
 
+/* Proužek s tím, co se právě filtruje — a jak to zrušit. */
+.pruh-vyberu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 0 0 14px;
+  border: 1px solid #ecdfd0;
+  border-radius: 14px;
+  background: #f6ece2;
+  padding: 9px 14px;
+  font-size: 13px;
+  color: #6b6156;
+}
+.pruh-vyberu-cast { display: inline-flex; align-items: center; gap: 6px; }
+.pruh-vyberu button {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #b3552f;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  cursor: pointer;
+}
+.pruh-vyberu button:hover { color: #2b2723; }
+
 /* Špička výběru vykreslená serverem (hloubkový odkaz bez JavaScriptu).
-   Jakmile se zapne filtr, nahradí ji jeho vlastní mřížka. */
+   Jakmile se filtr rozběhne, zmizí — dva seznamy nad sebou, z nichž jeden
+   filtr neposlouchá, vypadají jako rozbitý web. */
 .ssr-spicka { margin-bottom: 22px; }
+html.katalog-zije .ssr-spicka { display: none; }
 
 /* ══════════════════════════════════════════════════════════════════════════════
    ŽIVÁ VRSTVA — plovoucí pozadí, odhalování při rolování, čísla webu

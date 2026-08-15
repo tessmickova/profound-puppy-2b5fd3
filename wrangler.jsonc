@@ -23,7 +23,7 @@
     "NEXT_PUBLIC_URL": "https://svetjmen.tereza-holtzerova.workers.dev",
     // Adresa reklamní služby. Prázdná hodnota = reklamy se nevykreslí.
     // Dokud nemáme vlastní doménu, míří na workers.dev adresu služby; po
-    // překlopení domény sem patří https://reklama.jmenaprodeti.cz.
+    // překlopení domény sem patří https://reklama.svetjmen.cz.
     "NEXT_PUBLIC_ADS_API": "https://svetjmen-ads.tereza-holtzerova.workers.dev",
     "NEXT_PUBLIC_PROVOZOVATEL": "Vítězslav Miček",
     "NEXT_PUBLIC_ICO": "07347219",
@@ -31,8 +31,8 @@
     "NEXT_PUBLIC_DIC": "",
     "NEXT_PUBLIC_PLATCE_DPH": "0",
     "NEXT_PUBLIC_UCET": "VYPLNIT/0000",
-    "NEXT_PUBLIC_KONTAKT": "info@jmenaprodeti.cz",
-    "NEXT_PUBLIC_KONTAKT_REKLAMA": "reklama@jmenaprodeti.cz"
+    "NEXT_PUBLIC_KONTAKT": "info@svetjmen.cz",
+    "NEXT_PUBLIC_KONTAKT_REKLAMA": "reklama@svetjmen.cz"
   }
   // Tajemství (Supabase, NASA, Telegram, WhatsApp, CRON_SECRET — všechno pro
   // AuroraDog) se nastavují přes `wrangler secret put`, nikdy sem.

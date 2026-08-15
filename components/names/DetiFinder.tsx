@@ -98,6 +98,15 @@ export default function DetiFinder() {
     return f && f !== 'kratka' ? [f] : []
   })
 
+  // Serverový výpis nad filtrem je náhrada pro vyhledávače a pro chvíli,
+  // než se stránka rozběhne. Jakmile filtr žije, musí zmizet — jinak nad
+  // vyfiltrovanými výsledky visí druhý, nefiltrovaný seznam a působí to,
+  // že filtr nefunguje.
+  useEffect(() => {
+    document.documentElement.classList.add('katalog-zije')
+    return () => document.documentElement.classList.remove('katalog-zije')
+  }, [])
+
   // Adresa se může změnit i bez nového načtení stránky (klik v patičce,
   // tlačítko zpět). Bez tohohle by filtr zůstal viset na tom, s čím se
   // stránka poprvé otevřela.
@@ -137,6 +146,9 @@ export default function DetiFinder() {
     if (rychle.includes('vzacne')) kandidati = kandidati.filter(jeVzacne)
     if (rychle.includes('stalice')) kandidati = kandidati.filter(jeStalice)
     if (rychle.includes('svetove')) kandidati = kandidati.filter(znejeSvetove)
+    // Původ: „česká" = jméno vedené pod Českem, „zahraniční" = zbytek světa.
+    if (rychle.includes('ceska')) kandidati = kandidati.filter(j => j.zeme === 'cz')
+    if (rychle.includes('zahranicni')) kandidati = kandidati.filter(j => j.zeme !== 'cz')
     // „Bez jmen generace rodičů" je jediný filtr, který něco odebírá —
     // odpovídá na „nechci jméno, co měla půlka mojí třídy".
     if (rychle.includes('bez-dozniva')) kandidati = kandidati.filter(j => !jeDoznivajici(j))
@@ -162,13 +174,20 @@ export default function DetiFinder() {
   const [limitShody, setLimitShody] = useState(DAVKA)
   const [limitSourozenci, setLimitSourozenci] = useState(DAVKA)
 
+  // Vyřazená jména mizí ze VŠECH režimů, nejen z procházení. Blacklist,
+  // který platí jen na jedné záložce, není blacklist.
+  const bezVyrazenych = useMemo(
+    () => (vyrazena.length ? detska.filter(j => !vyrazena.includes(j.id)) : detska),
+    [detska, vyrazena],
+  )
+
   const vsechnyShody = useMemo(
-    () => najdiNejlepsiShody(detska, { pohlavi, prijmeni, mesic, styly: stylyShody, zeme: zemeShody, maminka, tatinek, sourozenec }, Infinity),
-    [detska, pohlavi, prijmeni, mesic, stylyShody, zemeShody, maminka, tatinek, sourozenec],
+    () => najdiNejlepsiShody(bezVyrazenych, { pohlavi, prijmeni, mesic, styly: stylyShody, zeme: zemeShody, maminka, tatinek, sourozenec }, Infinity),
+    [bezVyrazenych, pohlavi, prijmeni, mesic, stylyShody, zemeShody, maminka, tatinek, sourozenec],
   )
   const vsichniSourozenci = useMemo(
-    () => najdiKSourozenci(detska, { pohlavi, sourozenec, prijmeni }, Infinity),
-    [detska, pohlavi, sourozenec, prijmeni],
+    () => najdiKSourozenci(bezVyrazenych, { pohlavi, sourozenec, prijmeni }, Infinity),
+    [bezVyrazenych, pohlavi, sourozenec, prijmeni],
   )
 
   // Změna zadání vrací seznam na začátek — jinak by po úpravě příjmení
@@ -288,6 +307,8 @@ export default function DetiFinder() {
                 <Chip aktivni={rychle.includes('vrchol')} onClick={() => setRychle(prepni(rychle, 'vrchol'))} title="Nejčastější jména dnešních miminek"><Baby size={12} /> teď nejčastější</Chip>
                 <Chip aktivni={rychle.includes('svetove')} onClick={() => setRychle(prepni(rychle, 'svetove'))} title="Jména, která znějí světově — často i s cizí podobou zápisu"><Globe size={12} /> zní světově</Chip>
                 <Chip aktivni={rychle.includes('vzacne')} onClick={() => setRychle(prepni(rychle, 'vzacne'))} title="Vzácná bez ohledu na dobu"><Gem size={12} /> vzácná</Chip>
+                <Chip aktivni={rychle.includes('ceska')} onClick={() => setRychle(prepni(rychle.filter(r => r !== 'zahranicni'), 'ceska'))} title="Jen jména používaná v Česku"><span aria-hidden>🇨🇿</span> česká</Chip>
+                <Chip aktivni={rychle.includes('zahranicni')} onClick={() => setRychle(prepni(rychle.filter(r => r !== 'ceska'), 'zahranicni'))} title="Jména z ostatních zemí"><span aria-hidden>🌍</span> zahraniční</Chip>
                 <Chip aktivni={rychle.includes('stalice')} onClick={() => setRychle(prepni(rychle, 'stalice'))} title="Dávají se v každé generaci"><Anchor size={12} /> stálice</Chip>
                 <Chip aktivni={rychle.includes('bez-dozniva')} onClick={() => setRychle(prepni(rychle, 'bez-dozniva'))} title="Skryje jména generace dnešních rodičů"><CalendarOff size={12} /> bez jmen generace rodičů</Chip>
                 <Chip aktivni={rychle.includes('unisex')} onClick={() => setRychle(prepni(rychle, 'unisex'))}><Circle size={12} /> unisex</Chip>

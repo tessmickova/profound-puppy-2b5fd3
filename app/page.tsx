@@ -7,6 +7,7 @@ import Shell from '@/components/names/Shell'
 import Rozvrzeni from '@/components/names/Rozvrzeni'
 import PasyJmen from '@/components/names/PasyJmen'
 import RodinnyStart from '@/components/names/RodinnyStart'
+import PruhVyberu from '@/components/names/PruhVyberu'
 import SekceJmen from '@/components/names/SekceJmen'
 import StatPruh from '@/components/names/StatPruh'
 import UvodZalozky from '@/components/names/UvodZalozky'
@@ -79,10 +80,11 @@ const odkaz = (id: string) => {
 }
 
 export default function Domov() {
-  // Každý box ukáže šest jmen a dalších až osmnáct má připravených
-  // pro vlastní „Objevit další jména" — rozbaluje se každá kategorie zvlášť.
+  // Každý box ukáže šest jmen, zbytek má připravený pro „Objevit další".
+  // Posíláme jich víc, než se zobrazí: v prohlížeči z nich ještě odpadnou
+  // jména druhého pohlaví (podle volby „koho pojmenováváme") a ta vyřazená.
   const detska = (f: (j: (typeof JMENA)[number]) => boolean) =>
-    serad(JMENA.filter(f), 'popularita').slice(0, 24)
+    serad(JMENA.filter(f), 'popularita').slice(0, 60)
 
   // Pravidla sekcí jsou tatáž, jakou použije katalog za odkazem
   // „zobrazit všechna" — jeden seznam v `vyhledy.ts`, žádné dvě pravdy.
@@ -96,8 +98,8 @@ export default function Domov() {
   // Šestá kategorie doplňuje mřížku na sudý počet — boxy stojí ve dvojicích
   // a lichý by nechal vedle sebe prázdné místo.
   const kratka = vyhled('kratka')
-  const topZvirata = serad(JMENA.filter(j => !['kluk', 'holka'].includes(j.kategorie)), 'popularita').slice(0, 24)
-  const volatelna = serad(JMENA.filter(vyhledPodleId('volatelne')!.sedi), 'popularita').slice(0, 24)
+  const topZvirata = serad(JMENA.filter(j => !['kluk', 'holka'].includes(j.kategorie)), 'popularita').slice(0, 40)
+  const volatelna = serad(JMENA.filter(vyhledPodleId('volatelne')!.sedi), 'popularita').slice(0, 40)
   const topDeti = serad(JMENA.filter(j => ['kluk', 'holka'].includes(j.kategorie)), 'popularita').slice(0, 6)
 
   return (
@@ -107,6 +109,8 @@ export default function Domov() {
           deti={(
             <>
               <RodinnyStart />
+
+              <PruhVyberu />
 
               <div className="sekce-mrizka">
               <SekceJmen

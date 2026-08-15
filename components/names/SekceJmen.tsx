@@ -8,6 +8,8 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { unikatniPodleJmena } from '@/lib/names/entita'
+import { useRodina } from '@/lib/names/rodina'
+import { useVyber } from '@/lib/names/vyber'
 import type { Jmeno } from '@/lib/names/types'
 import NameCard from './NameCard'
 import NadpisSekce from './NadpisSekce'
@@ -25,8 +27,18 @@ export default function SekceJmen({
   odkaz: { href: string; text: string }
 }) {
   const [kolik, setKolik] = useState(KOLIK)
+  const { pohlavi } = useRodina()
+  const { vyrazena } = useVyber()
+
+  // Volba „koho pojmenováváme" a vyřazená jména platí pro celou stránku,
+  // ne jen pro box nahoře. Kdo hledá jméno pro chlapečka, nemá o kus níž
+  // číst seznam holčičích jmen — a co jednou vyřadil, nechce vidět znovu.
+  let vybrana = jmena
+  if (druh === 'lide' && pohlavi) vybrana = vybrana.filter(j => j.kategorie === pohlavi)
+  if (vyrazena.length) vybrana = vybrana.filter(j => !vyrazena.includes(j.id))
+
   // Jedno jméno = jedna karta. „Ema" z Česka i z Německa je pořád Ema.
-  const unikatni = unikatniPodleJmena(jmena)
+  const unikatni = unikatniPodleJmena(vybrana)
   return (
     <section className="sekce-sklo odhal">
       <div className="sekce-sklo-hlava">

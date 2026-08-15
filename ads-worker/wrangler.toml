@@ -26,12 +26,12 @@ bucket_name = "svetjmen-ads-loga"
 WEB_URL = "https://svetjmen.tereza-holtzerova.workers.dev"
 
 # Odkud smí web volat API. Víc domén oddělte čárkou.
-POVOLENE_ORIGINY = "https://jmenaprodeti.cz,https://www.jmenaprodeti.cz,https://svetjmen.tereza-holtzerova.workers.dev,http://localhost:3000"
+POVOLENE_ORIGINY = "https://svetjmen.cz,https://www.svetjmen.cz,https://svetjmen.tereza-holtzerova.workers.dev,http://localhost:3000"
 # Bankovní spojení do pokynů k platbě
 BANKOVNI_UCET = "VYPLNIT/0000"
 PROVOZOVATEL = "Vítězslav Miček"
 PROVOZOVATEL_ICO = "07347219"
-PROVOZOVATEL_EMAIL = "reklama@jmenaprodeti.cz"
+PROVOZOVATEL_EMAIL = "reklama@svetjmen.cz"
 # Sídlo a DIČ na fakturu. DIČ nechte prázdné, když provozovatel není plátce.
 PROVOZOVATEL_SIDLO = "Těšínská 1240/50b, Havířov"
 PROVOZOVATEL_DIC = ""

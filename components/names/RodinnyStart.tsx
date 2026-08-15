@@ -21,6 +21,7 @@ import { JMENA } from '@/lib/names/data'
 import { najdiNejlepsiShody } from '@/lib/names/logic'
 import { otevriDetail } from '@/lib/names/detail'
 import { roleInfo, useRodina } from '@/lib/names/rodina'
+import { Vyradit } from './NameCard'
 import { useVyber } from '@/lib/names/vyber'
 
 /** Role v rychlé volbě. Lidé napřed, zvířata za nimi — pořadí podle četnosti. */
@@ -30,11 +31,12 @@ const RYCHLE_ROLE = ['maminka', 'tatinek', 'dcera', 'syn', 'pes', 'kocka'] as co
 const KOLIK = 6
 const NEJVIC = 24
 
-type Pohlavi = 'holka' | 'kluk' | null
-
 export default function RodinnyStart() {
-  const { clenove, prijmeni, rodice, sourozenci, pridej, odeber, nastavPrijmeni } = useRodina()
-  const { prepniOblibene, jeOblibene, prepniHvezdu, jeHvezda } = useVyber()
+  const {
+    clenove, prijmeni, pohlavi, rodice, sourozenci, pridej, odeber,
+    nastavPrijmeni, nastavPohlavi,
+  } = useRodina()
+  const { prepniOblibene, jeOblibene, prepniHvezdu, jeHvezda, vyrazena } = useVyber()
 
   // Krok se odvozuje z dat, ne z historie klikání: kdo se vrátí s uloženou
   // rodinou, nezačíná znovu od příjmení.
@@ -42,7 +44,6 @@ export default function RodinnyStart() {
   const [navrhPrijmeni, setNavrhPrijmeni] = useState('')
   const [pridavamRoli, setPridavamRoli] = useState<string | null>(null)
   const [noveJmeno, setNoveJmeno] = useState('')
-  const [pohlavi, setPohlavi] = useState<Pohlavi>(null)
   const [kolik, setKolik] = useState(KOLIK)
   const vstupJmena = useRef<HTMLInputElement>(null)
 
@@ -76,7 +77,9 @@ export default function RodinnyStart() {
 
   const shody = useMemo(() => {
     if (!zadano || !pohlavi) return []
-    return najdiNejlepsiShody(JMENA, {
+    // Vyřazená jména se znovu nenabízejí — o to při vyřazování jde.
+    const kandidati = vyrazena.length ? JMENA.filter(j => !vyrazena.includes(j.id)) : JMENA
+    return najdiNejlepsiShody(kandidati, {
       pohlavi,
       prijmeni,
       mesic: null,
@@ -86,7 +89,7 @@ export default function RodinnyStart() {
       tatinek: rodice[1] ?? '',
       sourozenci,
     }, kolik)
-  }, [zadano, pohlavi, prijmeni, rodice, sourozenci, kolik])
+  }, [zadano, pohlavi, prijmeni, rodice, sourozenci, kolik, vyrazena])
 
   return (
     <section className="rodina-hero start" aria-label="Najdeme jméno, které ladí k vaší rodině">
@@ -213,7 +216,7 @@ export default function RodinnyStart() {
                 type="button"
                 className={`start-role-tlacitko ${pohlavi === 'holka' ? 'je-vybrany' : ''}`}
                 aria-pressed={pohlavi === 'holka'}
-                onClick={() => { setPohlavi('holka'); setKolik(KOLIK) }}
+                onClick={() => { nastavPohlavi(pohlavi === 'holka' ? null : 'holka'); setKolik(KOLIK) }}
               >
                 <span aria-hidden>👧</span> Holčičku
               </button>
@@ -221,13 +224,18 @@ export default function RodinnyStart() {
                 type="button"
                 className={`start-role-tlacitko ${pohlavi === 'kluk' ? 'je-vybrany' : ''}`}
                 aria-pressed={pohlavi === 'kluk'}
-                onClick={() => { setPohlavi('kluk'); setKolik(KOLIK) }}
+                onClick={() => { nastavPohlavi(pohlavi === 'kluk' ? null : 'kluk'); setKolik(KOLIK) }}
               >
                 <span aria-hidden>👦</span> Chlapečka
               </button>
-              <Link href="/deti" className="start-role-tlacitko je-dalsi">
+              <button
+                type="button"
+                className={`start-role-tlacitko je-dalsi ${pohlavi === null ? 'je-vybrany' : ''}`}
+                aria-pressed={pohlavi === null}
+                onClick={() => nastavPohlavi(null)}
+              >
                 <span aria-hidden>💛</span> Ještě nevíme
-              </Link>
+              </button>
             </div>
           </div>
 
@@ -254,6 +262,7 @@ export default function RodinnyStart() {
                     {s.jmeno.jmeno}
                   </button>
                   <span className="rodina-navrh-akce">
+                    <Vyradit id={s.jmeno.id} jmeno={s.jmeno.jmeno} />
                     <button
                       type="button"
                       className={`hvezdicka ${jeHvezda(s.jmeno.id) ? 'je-aktivni' : ''}`}

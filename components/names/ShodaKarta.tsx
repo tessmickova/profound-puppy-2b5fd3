@@ -11,7 +11,7 @@ import { zemePodleKodu } from '@/lib/names/data'
 import { numerologie } from '@/lib/names/logic'
 import type { Shoda } from '@/lib/names/logic'
 import { usePodrobnosti } from '@/lib/names/podrobnosti'
-import { Srdicko, Stitky } from './NameCard'
+import { Hvezdicka, Srdicko, Stitky, Vyradit } from './NameCard'
 
 export default function ShodaKarta({ shoda, poradi }: { shoda: Shoda; poradi: number }) {
   const zeme = zemePodleKodu(shoda.jmeno.zeme)
@@ -32,7 +32,12 @@ export default function ShodaKarta({ shoda, poradi }: { shoda: Shoda; poradi: nu
               {shoda.skore}<span className="shoda-ze-sta">/100</span>
             </span>
           )}
-          <Srdicko id={j.id} velke />
+          {/* Stejná trojice jako na kartě v katalogu: vyřadit, favorit,
+              oblíbené. Bez křížku se nedalo jméno zamítnout právě tam,
+              kde je vidět nejčastěji — při hledání shody. */}
+          <Vyradit id={j.id} jmeno={j.jmeno} />
+          <Hvezdicka id={j.id} jmeno={j.jmeno} velke />
+          <Srdicko id={j.id} jmeno={j.jmeno} velke />
         </div>
       </div>
 

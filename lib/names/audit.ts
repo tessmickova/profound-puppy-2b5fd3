@@ -163,12 +163,12 @@ export const PRAVO: PolozkaAuditu[] = [
   },
   {
     stav: 'ceka-na-vas',
-    nazev: 'Kontaktní e-mail musí někdo skutečně číst',
-    popis: 'V patičce i v objednávce je info@jmenaprodeti.cz a '
-      + 'reklama@jmenaprodeti.cz. Doména zatím neběží, takže na tyhle adresy '
-      + 'nikdo nedoručí — a kontakt na provozovatele je zákonná povinnost.',
-    akce: 'Buď zaregistrovat doménu a schránky založit, nebo v config.ts '
-      + 'a ads-worker/wrangler.toml dočasně uvést existující e-mail.',
+    nazev: 'Schránky na svetjmen.cz musí začít doručovat',
+    popis: 'V patičce i v objednávce je info@svetjmen.cz a reklama@svetjmen.cz. '
+      + 'Doména se zakládá; dokud schránky nefungují, nikdo se na uvedený '
+      + 'kontakt nedovolá — a kontakt na provozovatele je zákonná povinnost.',
+    akce: 'Po zprovoznění domény založit obě schránky a poslat si zkušební '
+      + 'zprávu. Pak sem stav přepnout na „podchyceno".',
   },
   {
     stav: 'ceka-na-vas',
@@ -281,10 +281,11 @@ export const PROVOZ: PolozkaAuditu[] = [
     stav: 'ceka-na-vas',
     nazev: 'Vlastní doména',
     popis: 'Web běží na workers.dev adrese. Pro důvěryhodnost i prodej '
-      + 'reklamy je vlastní doména (v kódu se už počítá s jmenaprodeti.cz) '
+      + 'reklamy je vlastní doména (zakládá se svetjmen.cz) '
       + 'výrazný krok — a u Cloudflare stojí jen poplatek za registraci.',
-    akce: 'Zaregistrovat doménu, přidat do Cloudflare, přesměrovat Worker '
-      + 'a aktualizovat WEB_URL + POVOLENE_ORIGINY ve wrangler.toml.',
+    akce: 'Po zprovoznění svetjmen.cz ji přidat do Cloudflare, přesměrovat '
+      + 'na ni Worker a přepsat NEXT_PUBLIC_URL ve wrangler.jsonc i WEB_URL '
+      + 'v ads-worker/wrangler.toml (povolené originy už doménu čekají).',
   },
   {
     stav: 'podchyceno',
