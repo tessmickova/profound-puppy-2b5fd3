@@ -176,8 +176,17 @@ prozrazený.
 
 ## Starší nasazení
 
-V repozitáři zůstávají `vercel.json` a `netlify.toml` z dřívějška. Pro
-Cloudflare se nepoužívají; smažte je, až bude přechod hotový.
+`netlify.toml` je pryč — Netlify se na tenhle projekt nepoužívá. Zbyl po
+založení repozitáře (první commit se jmenuje „Initial commit via Netlify")
+a jen mátl: říkal, že se web publikuje ze složky `.next`, což na Cloudflare
+neplatí.
+
+`vercel.json` **zatím zůstává**, protože není jen kosmetický: plánuje
+každých pět minut `/api/cron/check-kp` pro AuroraDog. Ta cesta v repozitáři
+skutečně existuje, ale **na Cloudflare ji nikdo nespouští** — web worker
+žádný cron nemá (na rozdíl od reklamní služby). Buď je tedy AuroraDog
+zároveň nasazený na Vercelu a soubor tam něco řídí, nebo ta kontrola
+neběží nikde. Než se to potvrdí, soubor nemažeme.
 
 ## Proč se změny neobjeví na webu samy
 

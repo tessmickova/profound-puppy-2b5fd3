@@ -3177,7 +3177,22 @@ a:hover .ilustrace,
   border-bottom: 2px solid #efe0cc;
 }
 .rodina-navrh-hlava a:hover { border-color: #d97757; }
-.rodina-navrh-hlava .srdicko { margin-left: auto; }
+/* Pruh akcí: vyřadit · favorit · oblíbené. Stejný všude — v kartě
+   katalogu, v návrhu i na kartě shody. Bez vlastního pravidla se z něj
+   stal řádkový span a křížek (grid) v něm skočil na vlastní řádek nad
+   srdíčko. */
+.rodina-navrh-akce,
+.karta-akce,
+.shoda-vpravo {
+  margin-left: auto;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 2px;
+}
+.shoda-vpravo { gap: 8px; }
+.rodina-navrh-jmeno { min-width: 0; }
 .rodina-navrh-stitek {
   display: inline-block; margin-top: 6px;
   border-radius: 999px; background: #f4ece0; padding: 2px 9px;
@@ -3189,7 +3204,13 @@ a:hover .ilustrace,
 .rodina-navrh-duvody li { font-size: 13px; line-height: 1.45; color: #6b6156; }
 .rodina-navrh-duvody li::before { content: '· '; color: #c4b8a7; }
 
-.rodina-hero-dal { margin: 16px 0 0; }
+.rodina-hero-dal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 18px;
+  margin: 18px 0 0;
+}
 .rodina-hero-dal a {
   display: inline-flex; align-items: center; gap: 6px; min-height: 28px;
   font-size: 14px; font-weight: 600; color: #d97757; text-decoration: none;
@@ -3576,6 +3597,61 @@ a:hover .ilustrace,
   font-size: 18px;
   font-weight: 800;
 }
+
+/* Záložky v panelu: vybraná × vyřazená. Vyřazená nejsou odpad —
+   je to seznam, ke kterému se člověk vrací, když změní názor. */
+.vyber-panel-zalozky {
+  display: flex;
+  gap: 6px;
+  margin: 12px 18px 0;
+}
+.vyber-panel-zalozky button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #e8dfd2;
+  border-radius: 999px;
+  background: #fff;
+  padding: 6px 13px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b6156;
+  cursor: pointer;
+}
+.vyber-panel-zalozky button.je-aktivni {
+  background: #2b2723;
+  border-color: #2b2723;
+  color: #faf6ef;
+}
+.vyber-panel-zalozky button span {
+  display: grid;
+  place-items: center;
+  min-width: 18px;
+  min-height: 18px;
+  border-radius: 999px;
+  background: #f0e8dc;
+  font-size: 11px;
+  font-weight: 700;
+  color: #6b6156;
+}
+.vyber-panel-zalozky button.je-aktivni span { background: rgba(250, 246, 239, .25); color: #faf6ef; }
+
+.vyber-panel-jmeno.je-vyhozene { color: #a2988a; text-decoration: line-through; }
+.vyber-panel-jmeno.je-vyhozene:hover { color: #6b6156; }
+.vyber-panel-vratit {
+  margin-left: auto;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid #e8dfd2;
+  border-radius: 999px;
+  background: #fff;
+  color: #6b6156;
+  cursor: pointer;
+}
+.vyber-panel-vratit:hover { border-color: #4d8b5c; color: #4d8b5c; }
 
 .vyber-panel-napoveda {
   display: flex;

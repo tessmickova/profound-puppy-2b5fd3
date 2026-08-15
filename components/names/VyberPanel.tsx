@@ -13,7 +13,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { BarChart3, Heart, ListChecks, Star, Users, X } from 'lucide-react'
+import { BarChart3, Heart, ListChecks, RotateCcw, Star, Users, X } from 'lucide-react'
 import { JMENA } from '@/lib/names/data'
 import { usePrepinace } from '@/lib/names/nastaveni'
 import { HLASUJICI, useVyber } from '@/lib/names/vyber'
@@ -22,10 +22,13 @@ import { KATEGORIE_INFO } from '@/lib/names/types'
 
 export default function VyberPanel() {
   const [otevren, setOtevren] = useState(false)
+  /** Vybraná jména, nebo ta vyřazená — obojí patří k rozhodování. */
+  const [zalozka, setZalozka] = useState<'vybrana' | 'vyrazena'>('vybrana')
   const obal = useRef<HTMLDivElement>(null)
   const prepinace = usePrepinace()
   const {
-    oblibena, jeHvezda, hlasyPro, prepniHlas, hlasVsech, prepniOblibene,
+    oblibena, vyrazena, jeHvezda, hlasyPro, prepniHlas, hlasVsech,
+    prepniOblibene, prepniVyrazene,
   } = useVyber()
 
   // Zavření klepnutím mimo panel a klávesou Esc.
@@ -53,11 +56,14 @@ export default function VyberPanel() {
   // Vypnuto z adminu — ouško ani panel se nevykreslí.
   if (!prepinace.vyber_panel) return null
 
-  const vybrana = oblibena
+  const podleId = (ids: string[]) => ids
     .map(id => JMENA.find(j => j.id === id))
     .filter((j): j is NonNullable<typeof j> => Boolean(j))
+
+  const vybrana = podleId(oblibena)
     // favorité nahoru — hvězdička znamená „z tohohle vybíráme"
     .sort((a, b) => Number(jeHvezda(b.id)) - Number(jeHvezda(a.id)))
+  const vyhozena = podleId(vyrazena)
 
   return (
     <div ref={obal}>
@@ -81,7 +87,64 @@ export default function VyberPanel() {
               </button>
             </header>
 
-            {vybrana.length === 0 ? (
+            <div className="vyber-panel-zalozky" role="tablist" aria-label="Co ukázat">
+              <button
+                type="button" role="tab"
+                aria-selected={zalozka === 'vybrana'}
+                className={zalozka === 'vybrana' ? 'je-aktivni' : ''}
+                onClick={() => setZalozka('vybrana')}
+              >
+                Vybraná{oblibena.length > 0 && <span>{oblibena.length}</span>}
+              </button>
+              <button
+                type="button" role="tab"
+                aria-selected={zalozka === 'vyrazena'}
+                className={zalozka === 'vyrazena' ? 'je-aktivni' : ''}
+                onClick={() => setZalozka('vyrazena')}
+              >
+                Vyřazená{vyrazena.length > 0 && <span>{vyrazena.length}</span>}
+              </button>
+            </div>
+
+            {zalozka === 'vyrazena' ? (
+              vyhozena.length === 0 ? (
+                <div className="vyber-panel-prazdno">
+                  <RotateCcw size={22} aria-hidden />
+                  <p>
+                    Zatím jste nic nevyřadili. Křížek u jména ho schová ze všech
+                    seznamů — a tady ho kdykoli vrátíte zpátky do hry.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <p className="vyber-panel-napoveda">
+                    <RotateCcw size={13} aria-hidden /> Tahle jména se nikde
+                    nenabízejí. Klepnutím na šipku je vrátíte zpátky.
+                  </p>
+                  <ul className="vyber-panel-seznam">
+                    {vyhozena.map(j => (
+                      <li key={j.id} className="vyber-panel-polozka">
+                        <div className="vyber-panel-radek">
+                          <button type="button" className="vyber-panel-jmeno je-vyhozene" onClick={() => otevriDetail(j.id)}>
+                            {j.jmeno}
+                            <span className="vyber-panel-druh" aria-hidden>{KATEGORIE_INFO[j.kategorie].emoji}</span>
+                          </button>
+                          <button
+                            type="button"
+                            className="vyber-panel-vratit"
+                            onClick={() => prepniVyrazene(j.id)}
+                            aria-label={`Vrátit ${j.jmeno} zpátky mezi nabízená`}
+                            title="Vrátit zpátky"
+                          >
+                            <RotateCcw size={14} aria-hidden />
+                          </button>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )
+            ) : vybrana.length === 0 ? (
               <div className="vyber-panel-prazdno">
                 <Heart size={22} aria-hidden />
                 <p>
