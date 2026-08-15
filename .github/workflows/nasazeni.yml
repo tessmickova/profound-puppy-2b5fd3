@@ -20,6 +20,12 @@
 #      V logu je to vidět jako `Secret source: Actions` a prázdné hodnoty.
 #
 # Token nikdy nepatří do repozitáře ani do zprávy — jen do tajemství.
+#
+# Nasazuje jen domovský repozitář `tessmickova/svetjmen`. Kopie projektu
+# (a vznikly, viz docs/INCIDENT-2026-08-14.md) mají stejný soubor, ale
+# podmínka `github.repository` je zastaví. Dva repozitáře nasazující týž
+# Worker znamenají, že vyhraje ten, který doběhl později — a živý web
+# může přepsat starší kód, aniž by to někdo poznal.
 
 name: Nasazení na Cloudflare
 
@@ -36,8 +42,22 @@ concurrency:
   group: nasazeni-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  DOMOVSKY_REPOZITAR: tessmickova/svetjmen
+
 jobs:
+  # Kopie repozitáře smí kód držet, ale nesmí nasazovat.
+  jiny-repozitar:
+    if: github.repository != 'tessmickova/svetjmen'
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "::notice::Nasazení přeskočeno — tenhle repozitář (${{ github.repository }}) není domovský."
+          echo "Projekt Svět jmen se nasazuje z ${{ env.DOMOVSKY_REPOZITAR }}."
+          echo "Kdyby nasazovaly oba, přepisovaly by si navzájem živý web."
+
   nasadit:
+    if: github.repository == 'tessmickova/svetjmen'
     runs-on: ubuntu-latest
     timeout-minutes: 20
 

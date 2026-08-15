@@ -30,16 +30,17 @@ export const STAV_INFO: Record<StavPolozky, { stitek: string; barva: string }> =
 
 export const BEZPECNOST: PolozkaAuditu[] = [
   {
-    stav: 'trva',
-    nazev: 'Web má dva repozitáře — a to už jednou stálo pět dní práce',
-    popis: 'Svět jmen je v tessmickova/profound-puppy-2b5fd3 (větev '
-      + 'claude/animal-children-names-by-country-c014s6 — odsud se nasazuje živý web) '
-      + 'i v tessmickova/svetjmen (starší základ). 14. 8. se kvůli tomu nasadil starý '
-      + 'kód a přepsal živou verzi; zachránil to rollback. Podrobně v docs/INCIDENT-2026-08-14.md.',
-    akce: 'Rozhodnout, který repozitář je ten pravý, a druhý archivovat '
-      + '(GitHub → Settings → Archive repository). Do té doby před každým ručním '
-      + 'nasazením porovnat: npx wrangler deployments list vs. git log -1 --format=%ci — '
-      + 'živá verze novější než commit znamená zastavit.',
+    stav: 'ceka-na-vas',
+    nazev: 'Domovský repozitář je tessmickova/svetjmen — druhý je potřeba archivovat',
+    popis: 'Svět jmen byl ve dvou repozitářích a 14. 8. se kvůli tomu nasadil starý '
+      + 'kód přes živou verzi (zachránil to rollback). Historie i kód jsou teď '
+      + 'sloučené v tessmickova/svetjmen a jen odtud se nasazuje: workflow má '
+      + 'podmínku na název repozitáře, takže z kopie profound-puppy-2b5fd3 nasazení '
+      + 'neproběhne. Podrobně v docs/REPOZITAR.md a docs/INCIDENT-2026-08-14.md.',
+    akce: 'Ve svetjmen doplnit tajemství CLOUDFLARE_API_TOKEN a CLOUDFLARE_ACCOUNT_ID '
+      + '(Settings → Secrets and variables → záložka Actions), ověřit, že nasazení '
+      + 'proběhlo, a teprve pak profound-puppy-2b5fd3 archivovat '
+      + '(GitHub → Settings → Archive repository).',
   },
   {
     stav: 'trva',

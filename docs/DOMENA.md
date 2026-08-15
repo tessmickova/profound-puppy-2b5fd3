@@ -59,9 +59,26 @@ Workers. `netlify.toml` a `vercel.json` jsou pozůstatky a nic neřídí.
 6. **Zkontrolovat**: `npm run kontrola:seo -- https://svetjmen.cz` projde
    všech 279 adres a ověří i kanonické odkazy.
 
-## Proč to zatím neudělala AI
+## Co je hotovo a co drhne (15. 8.)
 
-Ke Cloudflare nemá tahle relace žádné přihlášení: token existuje jen jako
-tajemství v GitHub Actions, kam agent nevidí, a `wrangler whoami` hlásí
-*not authenticated*. I kdyby token měl, krok 1 stejně musí udělat člověk
-u registrátora — a bez aktivní zóny by se domény připojit nedaly.
+Kroky 3 a 4 jsou udělané: `wrangler.jsonc` i `ads-worker/wrangler.toml` mají
+aktivní bloky `routes` s `custom_domain = true` a nasazení proběhlo bez
+chyby, takže Cloudflare domény k Workerům připojil.
+
+Zůstává krok 1–2: `svetjmen.cz` **stále neodpovídá** (HTTP 000, jméno se
+nepřeloží). Zóna v Cloudflare existuje, ale u registrátora nejsou přepsané
+jmenné servery na ty, které Cloudflare přidělil — dokud je stav
+*Pending Nameserver Update*, doména nikam nevede, ať je v Cloudflare
+nastaveno cokoli. Ověřit se to dá v Cloudflare u domény: musí svítit
+*Active*.
+
+Pozor na jednu past, která už jednou shodila oba Workery: jakmile je
+v konfiguraci `routes`, wrangler **vypne adresu na `workers.dev`**, pokud
+se výslovně nenechá zapnutá. Proto tam v obou souborech je `workers_dev`
+(v TOML **nad** blokem `[[routes]]`, jinak se klíč zařadí dovnitř tabulky
+a wrangler konfiguraci odmítne). Dokud doména neběží, jsou adresy
+`*.workers.dev` jediné funkční — vypnout se smějí až potom.
+
+Adresy v konfiguraci (`NEXT_PUBLIC_URL`, `WEB_URL`, `NEXT_PUBLIC_ADS_API`)
+zatím schválně ukazují na `workers.dev`: kanonické odkazy musí vést tam,
+kde web opravdu je. Přepnou se jedním commitem, až bude zóna aktivní.
