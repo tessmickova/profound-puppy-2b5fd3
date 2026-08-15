@@ -124,10 +124,82 @@ export function samoobsluha(env: Prostredi): string {
   footer { margin-top:40px; font-size:13px; color:var(--tlumene); }
   footer a { color:var(--tlumene); }
   .schovano { display:none; }
+
+  /* ── Hlavička se značkou ──
+     Samoobsluha běží na vlastní subdoméně, takže z ní jinak nebylo jak se
+     vrátit na web. Logo vede na úvodní stránku, stejně jako všude jinde. */
+  .znacka {
+    display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+    padding:0 0 18px; margin-bottom:22px; border-bottom:1px solid var(--linka);
+  }
+  .znacka a.logo {
+    display:inline-flex; align-items:center; gap:7px;
+    font-size:18px; font-weight:800; color:var(--text); text-decoration:none;
+    letter-spacing:-.01em;
+  }
+  .znacka a.logo:hover { color:var(--akcent); }
+  .znacka .tlapka { font-size:19px; }
+  .znacka .odkazy { margin-left:auto; display:flex; gap:14px; font-size:14px; flex-wrap:wrap; }
+  .znacka .odkazy a { color:var(--tlumene); text-decoration:none; }
+  .znacka .odkazy a:hover { color:var(--text); text-decoration:underline; }
+
+  /* ── Interaktivní výběr plochy ──
+     Dřív tu byla tabulka se seznamem ploch, kdežto na webu zmenšený náhled
+     stránky, ve kterém si zákazník klepnul přímo na místo. Byly to dvě
+     obrazovky pro totéž a lišily se jen kvalitou. Zůstal ten lepší způsob
+     a přestěhoval se sem, kde se reklama opravdu kupuje. */
+  .plochy-hlava { display:flex; flex-wrap:wrap; gap:12px; align-items:flex-start; margin-bottom:14px; }
+  .plochy-popis { margin:4px 0 0; max-width:46ch; font-size:13.5px; color:var(--tlumene); }
+  .plochy-strany { margin-left:auto; display:inline-flex; gap:4px; background:var(--papir);
+    border:1px solid var(--linka); border-radius:999px; padding:3px; }
+  .plochy-strany button {
+    border:none; background:none; border-radius:999px; padding:5px 12px;
+    font:inherit; font-size:12.5px; font-weight:600; color:var(--tlumene); cursor:pointer;
+  }
+  .plochy-strany button.je-aktivni { background:var(--text); color:var(--papir); }
+  .plochy-nahled {
+    display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.5fr) minmax(0,1fr);
+    gap:10px; align-items:start; background:var(--papir);
+    border:1px solid var(--linka); border-radius:16px; padding:12px;
+  }
+  .plochy-sloupec { display:grid; gap:8px; align-content:start; }
+  .plochy-dlazdice {
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+    min-height:52px; padding:6px 4px; cursor:pointer;
+    border:1px solid var(--linka); border-radius:11px; background:#fff;
+    font:inherit; color:var(--text); transition:border-color .15s, transform .15s;
+  }
+  .plochy-dlazdice:hover { border-color:var(--akcent); transform:translateY(-1px); }
+  .plochy-dlazdice:focus-visible { outline:2px solid var(--akcent); outline-offset:2px; }
+  .plochy-dlazdice.je-vybrana { border-color:var(--akcent); background:#fdf1ec; box-shadow:0 0 0 1px var(--akcent) inset; }
+  .plochy-dlazdice.je-obsazena { background:#f4f0e8; color:#a2988a; cursor:not-allowed; }
+  .plochy-dlazdice.je-obsazena:hover { border-color:var(--linka); transform:none; }
+  .plochy-cislo { font-size:13px; font-weight:700; }
+  .plochy-stav { font-size:10.5px; }
+  .plochy-telo {
+    display:flex; flex-direction:column; align-items:center; gap:6px;
+    padding:14px 10px; border:1px dashed var(--linka); border-radius:12px; background:#fff;
+  }
+  .plochy-telo-pruh { width:100%; height:7px; border-radius:999px; background:#f3ecdf; }
+  .plochy-telo-pruh.je-kratsi { width:62%; }
+  .plochy-telo-popis { margin:2px 0; font-size:11.5px; color:#a2988a; }
+  @media (max-width:559px) {
+    .plochy-nahled { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+    .plochy-telo { display:none; }
+    .znacka .odkazy { margin-left:0; width:100%; }
+  }
 </style>
 </head>
 <body data-web="${esc(web)}">
 <div class="obal">
+  <header class="znacka">
+    <a class="logo" href="${esc(web)}/"><span class="tlapka" aria-hidden="true">🐾</span> Svět jmen</a>
+    <nav class="odkazy">
+      <a href="${esc(web)}/">Zpět na web</a>
+      <a href="${esc(web)}/podminky">Podmínky</a>
+      <a href="${esc(web)}/reklama/ucet">Účet inzerenta</a>
+    </nav>
+  </header>
   <h1>Reklama, která vypadá jako zbytek webu</h1>
   <p class="podnadpis">
     Žádné blikající bannery. Váš inzerát se zobrazí jako běžná karta Světa jmen —
@@ -138,8 +210,18 @@ export function samoobsluha(env: Prostredi): string {
   <div class="rozvrzeni">
     <div>
       <section class="krok">
-        <div class="hlava-kroku"><span class="cislo">1</span><h2>Vyberte plochu</h2></div>
-        <p>Na každé ploše se střídají nejvýš čtyři inzeráty, každý je vidět půl minuty.</p>
+        <div class="hlava-kroku"><span class="cislo">1</span><h2>Vyberte si své místo</h2></div>
+        <div class="plochy-hlava">
+          <p class="plochy-popis">
+            Web má deset pozic — polovina vlevo, polovina vpravo. Každá se po
+            patnácti sekundách překlopí na druhou stranu, kde je jiná kampaň.
+            Ploch je proto dvacet a každá je samostatně k mání.
+          </p>
+          <div class="plochy-strany" id="strany" role="group" aria-label="Strana pozice">
+            <button type="button" data-strana="a" class="je-aktivni" aria-pressed="true">strana A</button>
+            <button type="button" data-strana="b" aria-pressed="false">strana B</button>
+          </div>
+        </div>
         <div id="tabulka">Načítám volné plochy…</div>
       </section>
 
@@ -243,14 +325,66 @@ export function samoobsluha(env: Prostredi): string {
   function korun(n) { return n.toLocaleString('cs-CZ') + ' Kč'; }
 
   fetch('/api/sloty').then(function (r) { return r.json(); }).then(function (d) {
-    var radky = d.plochy.map(function (p) {
-      var plno = p.volno === 0;
-      return '<tr data-id="' + p.id + '" class="' + (plno ? 'obsazena' : '') + '">' +
-        '<td><strong>' + p.nazev + '</strong><br><span style="color:var(--tlumene);font-size:12px">' + p.stranka + '</span></td>' +
-        '<td class="volno">' + (plno ? 'obsazeno' : p.volno + ' z ' + d.kapacita) + '</td>' +
-        '<td>' + korun(p.ceny.mesic) + ' / měsíc</td></tr>';
-    }).join('');
-    $('tabulka').innerHTML = '<div class="rolovaci"><table><thead><tr><th>Plocha</th><th>Volno</th><th>Od</th></tr></thead><tbody>' + radky + '</tbody></table></div>';
+    // Zmenšený náhled webu: pět pozic vlevo, pět vpravo, uprostřed obsah.
+    // Lichá plocha je strana A pozice, sudá strana B — přepínač nahoře
+    // překlápí obě řady najednou, stejně jako se překlápí naživo.
+    stav.strana = 'a';
+    stav.pozastaveno = Boolean(d.prodejPozastaven);
+    var podleId = {};
+    d.plochy.forEach(function (p) { podleId[p.id] = p; });
+
+    function idPlochy(pozice, strana) {
+      return 'plocha-' + (pozice * 2 - (strana === 'a' ? 1 : 0));
+    }
+
+    function dlazdice(pozice) {
+      var id = idPlochy(pozice, stav.strana);
+      var p = podleId[id];
+      var volna = !p || p.volno > 0;
+      var vybrana = stav.plocha === id;
+      // Pozastavený prodej NENÍ totéž co obsazená plocha. Dlaždice se
+      // zamkne, ale dál poctivě říká, jestli je volná — jinak by mapa
+      // tvrdila, že je vyprodáno, a to není pravda.
+      var zamcena = !volna || stav.pozastaveno;
+      return '<button type="button" class="plochy-dlazdice' +
+        (zamcena ? ' je-obsazena' : '') + (vybrana ? ' je-vybrana' : '') +
+        '" data-id="' + id + '"' + (zamcena ? ' disabled' : '') +
+        ' aria-pressed="' + (vybrana ? 'true' : 'false') + '">' +
+        '<span class="plochy-cislo">' + (p ? p.nazev : id) + '</span>' +
+        '<span class="plochy-stav">' + (volna ? 'volná' : 'obsazená') + '</span>' +
+        '</button>';
+    }
+
+    function vykresliMapu() {
+      var vlevo = '', vpravo = '';
+      for (var i = 1; i <= 5; i++) vlevo += dlazdice(i);
+      for (var j = 6; j <= 10; j++) vpravo += dlazdice(j);
+      $('tabulka').innerHTML =
+        '<div class="plochy-nahled">' +
+          '<div class="plochy-sloupec">' + vlevo + '</div>' +
+          '<div class="plochy-telo" aria-hidden="true">' +
+            '<span class="plochy-telo-pruh"></span>' +
+            '<span class="plochy-telo-pruh je-kratsi"></span>' +
+            '<p class="plochy-telo-popis">obsah webu</p>' +
+            '<span class="plochy-telo-pruh"></span>' +
+            '<span class="plochy-telo-pruh je-kratsi"></span>' +
+          '</div>' +
+          '<div class="plochy-sloupec">' + vpravo + '</div>' +
+        '</div>';
+    }
+    vykresliMapu();
+
+    $('strany').addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-strana]');
+      if (!b) return;
+      stav.strana = b.dataset.strana;
+      Array.prototype.forEach.call($('strany').children, function (x) {
+        var je = x === b;
+        x.classList.toggle('je-aktivni', je);
+        x.setAttribute('aria-pressed', String(je));
+      });
+      vykresliMapu();
+    });
 
     // Než je kam poslat peníze, nemá smysl nechat někoho vyplnit celý
     // formulář a teprve na konci mu říct, že to nejde. Ceník ať vidí.
@@ -262,8 +396,6 @@ export function samoobsluha(env: Prostredi): string {
         + 'Dokončujeme nastavení plateb. Napište nám a ozveme se, jakmile to půjde — '
         + '<a href="mailto:${esc(kontakt)}">${esc(kontakt)}</a>.';
       $('tabulka').appendChild(zprava);
-      var krokPlocha = $('krok-plocha');
-      if (krokPlocha) krokPlocha.querySelectorAll('tr').forEach(function (r) { r.classList.add('obsazena'); });
       return;
     }
 
@@ -273,11 +405,20 @@ export function samoobsluha(env: Prostredi): string {
     // Zákazník přichází z náhledu na webu, kde si plochu i délku už vybral.
     var zAdresy = new URLSearchParams(location.search);
     if (zAdresy.get('plocha') && stav.ceny[zAdresy.get('plocha')]) {
-      var radek = document.querySelector('tr[data-id="' + zAdresy.get('plocha') + '"]');
-      if (radek && !radek.classList.contains('obsazena')) {
-        radek.classList.add('je-vybrana');
-        radek.scrollIntoView({ block: 'nearest' });
-        stav.plocha = zAdresy.get('plocha');
+      var chtenaPlocha = zAdresy.get('plocha');
+      var volnaPlocha = stav.ceny[chtenaPlocha].volno > 0;
+      if (volnaPlocha) {
+        // Přepnout na tu stranu, na které předvolená plocha leží — jinak
+        // by se vybrala, ale nebyla vidět (lichá je A, sudá B).
+        var cisloPlochy = Number(chtenaPlocha.replace('plocha-', ''));
+        stav.strana = cisloPlochy % 2 === 1 ? 'a' : 'b';
+        Array.prototype.forEach.call($('strany').children, function (x) {
+          var je = x.dataset.strana === stav.strana;
+          x.classList.toggle('je-aktivni', je);
+          x.setAttribute('aria-pressed', String(je));
+        });
+        stav.plocha = chtenaPlocha;
+        vykresliMapu();
         $('s-plocha').textContent = stav.ceny[stav.plocha].nazev;
         vykresliObdobi(d.obdobi);
         $('krok-obdobi').hidden = false;
@@ -291,11 +432,10 @@ export function samoobsluha(env: Prostredi): string {
     }
 
     $('tabulka').addEventListener('click', function (e) {
-      var tr = e.target.closest('tr[data-id]');
-      if (!tr || tr.classList.contains('obsazena')) return;
-      Array.prototype.forEach.call(document.querySelectorAll('tr.je-vybrana'), function (x) { x.classList.remove('je-vybrana'); });
-      tr.classList.add('je-vybrana');
-      stav.plocha = tr.dataset.id;
+      var dl = e.target.closest('.plochy-dlazdice[data-id]');
+      if (!dl || dl.classList.contains('je-obsazena')) return;
+      stav.plocha = dl.dataset.id;
+      vykresliMapu();
       $('s-plocha').textContent = stav.ceny[stav.plocha].nazev;
       vykresliObdobi(d.obdobi);
       $('krok-obdobi').hidden = false;

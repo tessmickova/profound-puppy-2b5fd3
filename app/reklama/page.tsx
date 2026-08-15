@@ -2,8 +2,6 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import Shell from '@/components/names/Shell'
 import { ADRESA_REKLAM, PRAVNI } from '@/lib/names/pravni'
-import { Suspense } from 'react'
-import VyberPlochy from '@/components/names/VyberPlochy'
 
 export const metadata: Metadata = {
   title: 'Reklama na Světě jmen — nativní plochy pro firmy',
@@ -13,7 +11,7 @@ export const metadata: Metadata = {
 }
 
 const KROKY = [
-  { c: '1', h: 'Kliknete na místo', t: 'V náhledu níž vidíte přesně tu plochu, kterou kupujete — i to, jestli je volná.' },
+  { c: '1', h: 'Kliknete na místo', t: 'V samoobsluze vidíte zmenšený web se všemi plochami a klepnete přímo na tu, kterou kupujete — i s tím, jestli je volná.' },
   { c: '2', h: 'Naklikáte inzerát', t: 'Značka nebo logo, nadpis, dvě věty, tlačítko a odkaz. Formát je daný, náhled vidíte hned vedle.' },
   { c: '3', h: 'Dostanete účet a zaplatíte', t: 'Rezervací vzniká účet inzerenta — dostanete přístupový klíč. Kampaň spustíme po připsání platby, nejpozději následující pracovní den.' },
   { c: '4', h: 'Na konci sama zhasne', t: 'Nic se neobnovuje automaticky. Plocha se uvolní a nabídne dalšímu — nebo si ji vezmete znovu.' },
@@ -34,14 +32,6 @@ export default function ReklamaStranka() {
         <p className="mt-2 text-lg font-semibold text-[#2b2723]">
           Jedna plocha stojí 5 000 Kč za měsíc. Kupuje se na jeden, dva nebo tři měsíce.
         </p>
-
-        {/* Náhled čte předvolenou plochu z adresy, takže potřebuje Suspense —
-            bez něj by se stránka nedala předgenerovat. */}
-        <div className="mt-8">
-          <Suspense fallback={<div className="plochy-vyber" aria-busy="true">Načítáme volné plochy…</div>}>
-            <VyberPlochy />
-          </Suspense>
-        </div>
 
         <ol className="mt-10 grid gap-3 sm:grid-cols-2">
           {KROKY.map(k => (

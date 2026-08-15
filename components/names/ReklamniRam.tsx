@@ -32,6 +32,21 @@ import {
 import { ADRESA_REKLAM, nactiVsechnyInzeraty } from '@/lib/names/reklamniServer'
 import { usePrepinace } from '@/lib/names/nastaveni'
 
+/**
+ * Kam vede klepnutí na volné místo.
+ *
+ * Dřív to byla stránka `/reklama?plocha=…` na webu, která ukazovala tentýž
+ * výběr ploch jako samoobsluha — dvě obrazovky pro totéž. Zůstala jen
+ * samoobsluha, kde se reklama opravdu kupuje; adresa plochy se předává dál,
+ * aby zákazník nemusel hledat, na které místo zrovna klepl.
+ *
+ * Bez adresy služby (typicky ve vývoji) vede odkaz na prodejní stránku,
+ * ať klik neskončí v prázdnu. Číslo plochy tam k ničemu není — výběr se
+ * dělá až v samoobsluze — proto se nepředává.
+ */
+const odkazNaPlochu = (cislo: number) =>
+  ADRESA_REKLAM ? `${ADRESA_REKLAM}/?plocha=plocha-${cislo}` : '/reklama'
+
 const IKONY: Record<string, LucideIcon> = {
   bone: Bone, dog: Dog, house: House, 'shield-check': ShieldCheck, cat: Cat,
   star: Star, baby: Baby, sparkles: Sparkles, type: Type, users: Users,
@@ -197,6 +212,8 @@ function Pozice({
 function Karta({ plocha, mapa, tvar }: { plocha: string; mapa: Mapa; tvar: 'prední' | 'zadní' }) {
   const cislo = Number(plocha.replace('plocha-', ''))
   const inzerat = mapa[plocha]?.[0]
+  
+
   const Ikona = inzerat ? (IKONY[inzerat.ikona ?? ''] ?? Sparkles) : Sparkles
 
   if (!inzerat) {
@@ -204,8 +221,8 @@ function Karta({ plocha, mapa, tvar }: { plocha: string; mapa: Mapa; tvar: 'pred
     // na rezervaci téhle konkrétní plochy, ne na obecnou stránku o reklamě —
     // zákazník tak nemusí hledat, na které místo zrovna klepl.
     return (
-      <Link
-        href={`/reklama?plocha=plocha-${cislo}`}
+      <a
+        href={odkazNaPlochu(cislo)}
         className={`reklamni-karta je-volna je-${tvar === 'prední' ? 'pred' : 'za'}`}
       >
         <span className="reklamni-znak">reklama</span>
@@ -213,7 +230,7 @@ function Karta({ plocha, mapa, tvar }: { plocha: string; mapa: Mapa; tvar: 'pred
         <span className="reklamni-nadpis">Volné místo pro vaši reklamu</span>
         <span className="reklamni-popis">plocha {cislo} z {PLOCH}</span>
         <span className="reklamni-cta">Rezervovat <span aria-hidden>→</span></span>
-      </Link>
+      </a>
     )
   }
 
@@ -294,12 +311,12 @@ function RadekListy({ plocha, mapa }: { plocha: string; mapa: Mapa }) {
 
   if (!inzerat) {
     return (
-      <Link href={`/reklama?plocha=plocha-${cislo}`} className="reklamni-lista-box je-volna">
+      <a href={odkazNaPlochu(cislo)} className="reklamni-lista-box je-volna">
         <Sparkles size={15} strokeWidth={1.75} aria-hidden />
         <span className="reklamni-lista-znacka">Volné místo</span>
         <span className="reklamni-lista-nadpis">pro vaši reklamu — plocha {cislo} z {PLOCH}</span>
         <span className="reklamni-lista-cta">Rezervovat <span aria-hidden>→</span></span>
-      </Link>
+      </a>
     )
   }
 
