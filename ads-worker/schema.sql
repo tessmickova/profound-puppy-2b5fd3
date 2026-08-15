@@ -25,7 +25,12 @@ CREATE TABLE objednavky (
   idempotence  TEXT,                   -- klíč proti dvojímu odeslání formuláře
   plati_od     TEXT,
   plati_do     TEXT,
-  vytvoreno    TEXT NOT NULL
+  vytvoreno    TEXT NOT NULL,
+  -- platba přes bránu; u převodu na účet zůstávají prázdné
+  transakce_id  TEXT,                  -- id transakce v bráně (ComGate transId)
+  zaplaceno_kc  INTEGER,               -- kolik brána skutečně přijala, v Kč
+  zaplaceno_kdy TEXT,
+  zpusob_platby TEXT                   -- co zákazník použil (CARD_CZ_CSOB_2, BANK_CZ_…)
 );
 
 CREATE TABLE inzeraty (
@@ -37,7 +42,12 @@ CREATE TABLE inzeraty (
   cta            TEXT NOT NULL,
   odkaz          TEXT NOT NULL,
   ikona          TEXT,                 -- klíč ikony, když firma nemá logo
-  logo_klic      TEXT                  -- klíč loga v úložišti, když logo má
+  logo_klic      TEXT,                 -- klíč loga v úložišti, když logo má
+  -- Schválení majitelkou. Zaplacení ≠ zveřejnění: dokud tu není 1, kreativu
+  -- návštěvník neuvidí. Každá úprava textu i loga to sráží zpátky na 0.
+  schvaleno        INTEGER NOT NULL DEFAULT 0,
+  zamitnuto_duvod  TEXT,               -- co je špatně, aby to inzerent viděl
+  schvaleno_kdy    TEXT
 );
 
 CREATE INDEX idx_objednavky_plocha ON objednavky(plocha, stav);
@@ -55,6 +65,15 @@ CREATE UNIQUE INDEX idx_objednavky_idempotence
 CREATE INDEX idx_objednavky_plati_do ON objednavky(plati_do);
 CREATE INDEX idx_objednavky_token ON objednavky(token);
 CREATE INDEX idx_inzeraty_objednavka ON inzeraty(objednavka_id);
+
+-- Jedna transakce brány patří právě jedné objednávce. Notifikaci brána
+-- opakuje, dokud nedostane `code=0`, takže táž platba přijde vícekrát.
+CREATE UNIQUE INDEX idx_objednavky_transakce
+  ON objednavky(transakce_id)
+  WHERE transakce_id IS NOT NULL;
+
+-- Admin se při každém načtení přehledu ptá, co čeká na schválení.
+CREATE INDEX idx_inzeraty_schvaleno ON inzeraty(schvaleno);
 
 -- Strop na počet zápisů z jedné adresy za hodinu. IP neukládáme čitelně,
 -- jen její otisk; starší okna maže denní úklid.

@@ -36,5 +36,25 @@ PROVOZOVATEL_EMAIL = "reklama@jmenaprodeti.cz"
 PROVOZOVATEL_SIDLO = "VYPLNIT — sídlo"
 PROVOZOVATEL_DIC = ""
 
+# ── platební brána ComGate ────────────────────────────────────────────────
+#
+# Brána je nepovinná. Dokud tu není identifikátor obchodníka NEBO chybí
+# tajemství COMGATE_SECRET, služba prodává dál na převod s variabilním
+# symbolem — reklama musí jít prodat i bez smlouvy s bránou.
+#
+# Identifikátor obchodníka z portálu ComGate. Není to tajemství (chodí
+# v každé notifikaci), ale prázdná hodnota bránu vypíná.
+COMGATE_MERCHANT = ""
+# "true" = testovací provoz brány (penězi se nehne). Před ostrým prodejem
+# přepnout na "false" — jinak nikdy nedorazí skutečná platba.
+COMGATE_TEST = "true"
+#
+# V portálu ComGate je ještě potřeba nastavit dvě adresy — v kódu být nemůžou,
+# brána si je drží u sebe:
+#   notifikace: https://<adresa-sluzby>/api/platba/notifikace
+#   návrat:     https://<adresa-sluzby>/api/platba/navrat?refId=…
+
 # Tajemství (nastavit přes `wrangler secret put`, ne sem):
-#   ADMIN_TOKEN — token pro schvalování a správu kampaní
+#   ADMIN_TOKEN     — token pro schvalování a správu kampaní
+#   COMGATE_SECRET  — tajemství platební brány; ověřuje se jím notifikace
+#                     o zaplacení, takže kdo ho zná, umí rozsvítit kampaň

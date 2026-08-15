@@ -36,6 +36,9 @@ interface Stav {
   vs: string
   plati_od: string | null
   plati_do: string | null
+  /** 1 = kreativa je schválená a na webu ji lidé vidí */
+  schvaleno?: number
+  zamitnuto_duvod?: string | null
   platba?: { ucet: string; vs: string; prijemce: string; zprava: string }
   kontakt?: string
   inzerat: Inzerat | null
@@ -46,6 +49,22 @@ const STAVY: Record<string, { text: string; trida: string }> = {
   aktivni: { text: 'Kampaň běží', trida: 'je-bezi' },
   vyprsela: { text: 'Kampaň skončila', trida: 'je-konec' },
   zrusena: { text: 'Zrušeno', trida: 'je-konec' },
+}
+
+/**
+ * Co inzerentovi opravdu říct.
+ *
+ * Zaplacená kampaň ještě není zveřejněná kampaň — kreativu čte majitelka
+ * a teprve pak jde na web. Kdyby tady stálo „Kampaň běží", firma by marně
+ * hledala svůj inzerát a hledala chybu u sebe. Proto stav schválení
+ * přebíjí stav objednávky.
+ */
+function popisStavuKampane(s: Stav): { text: string; trida: string } {
+  const zaklad = STAVY[s.stav] ?? { text: s.stav, trida: '' }
+  if (s.stav !== 'aktivni') return zaklad
+  if (s.schvaleno === 1) return { text: 'Kampaň běží', trida: 'je-bezi' }
+  if (s.zamitnuto_duvod) return { text: 'Kreativa zamítnuta', trida: 'je-ceka' }
+  return { text: 'Zaplaceno, čeká na schválení', trida: 'je-ceka' }
 }
 
 const korun = (c: number) => c.toLocaleString('cs-CZ')
@@ -111,9 +130,19 @@ export default function UcetInzerenta() {
         body: JSON.stringify(formular),
       })
       const d = await o.json() as { chyba?: string }
-      setHlaska(o.ok
-        ? { text: 'Uloženo. Změna se na webu projeví nejpozději do pěti minut.', chyba: false }
-        : { text: d.chyba ?? 'Uložit se to nepovedlo.', chyba: true })
+      if (o.ok) {
+        // Úprava shazuje schválení — slibovat „za pět minut je to venku"
+        // by byla lež. Stav načteme znovu (a až potom napíšeme hlášku,
+        // protože `nacti` starou hlášku maže), ať se rovnou ukáže
+        // „čeká na schválení".
+        await nacti(prihlasen)
+        setHlaska({
+          text: 'Uloženo. Upravenou kreativu ještě projdeme — na webu se objeví po schválení.',
+          chyba: false,
+        })
+      } else {
+        setHlaska({ text: d.chyba ?? 'Uložit se to nepovedlo.', chyba: true })
+      }
     } catch {
       setHlaska({ text: 'Služba se teď neozývá. Zkuste to prosím za chvíli.', chyba: true })
     }
@@ -192,7 +221,7 @@ export default function UcetInzerenta() {
   }
 
   // ── přihlášený inzerent ────────────────────────────────────────────────
-  const popisStavu = STAVY[stav.stav] ?? { text: stav.stav, trida: '' }
+  const popisStavu = popisStavuKampane(stav)
 
   return (
     <section className="ucet">
@@ -211,6 +240,32 @@ export default function UcetInzerenta() {
         {stav.plati_od && <div><dt>Běží od</dt><dd>{stav.plati_od}</dd></div>}
         {stav.plati_do && <div><dt>Běží do</dt><dd>{stav.plati_do}</dd></div>}
       </dl>
+
+      {/* Schvalování na rovinu. Firma potřebuje vědět, jestli čeká na nás,
+          nebo jestli má něco opravit — a co přesně. */}
+      {stav.stav === 'aktivni' && stav.schvaleno !== 1 && (
+        <div className="ucet-platba">
+          <h3>{stav.zamitnuto_duvod ? 'Kreativu jsme zamítli' : 'Kreativa čeká na schválení'}</h3>
+          {stav.zamitnuto_duvod
+            ? (
+              <>
+                <p><strong>Důvod:</strong> {stav.zamitnuto_duvod}</p>
+                <p>
+                  Upravte prosím text níž a uložte ho — kreativa se tím vrátí
+                  ke schválení a po něm se sama objeví na webu. Zaplacené dny
+                  vám tím nepropadají.
+                </p>
+              </>
+            )
+            : (
+              <p>
+                Kampaň máme zaplacenou a plocha je vaše. Než inzerát pustíme
+                na web, projdeme ještě text a odkaz — obvykle do jednoho
+                pracovního dne. Pak se zobrazí sám, nemusíte nic dělat.
+              </p>
+            )}
+        </div>
+      )}
 
       {stav.stav === 'ceka_na_platbu' && stav.platba && (
         <div className="ucet-platba">

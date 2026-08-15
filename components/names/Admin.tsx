@@ -16,8 +16,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
-  BadgeCheck, Banknote, Brush, KeyRound, ListChecks, LogOut, RefreshCw,
-  Scale, ShieldAlert, ToggleLeft, Wrench,
+  BadgeCheck, Ban, Banknote, Brush, Check, Eye, KeyRound, ListChecks, LogOut,
+  RefreshCw, Scale, ShieldAlert, ToggleLeft, Wrench,
 } from 'lucide-react'
 import { ADRESA_REKLAM } from '@/lib/names/reklamniServer'
 import {
@@ -41,8 +41,21 @@ interface Objednavka {
   plati_do: string | null
   firma: string
   email: string
+  /** jak platba dorazila — prázdné u převodu na účet */
+  zpusob_platby: string | null
+  zaplaceno_kc: number | null
+  // ── kreativa, tedy to, co se schvaluje ──
   znacka: string | null
   nadpis: string | null
+  text: string | null
+  cta: string | null
+  odkaz: string | null
+  ikona: string | null
+  /** plná adresa loga, ne klíč v úložišti — dá se rovnou ukázat */
+  logo_klic: string | null
+  /** 1 = návštěvník ji vidí; 0 = čeká na schválení nebo je zamítnutá */
+  schvaleno: number | null
+  zamitnuto_duvod: string | null
 }
 
 const STAVY_OBJEDNAVKY: Record<string, string> = {
@@ -50,6 +63,45 @@ const STAVY_OBJEDNAVKY: Record<string, string> = {
   aktivni: 'aktivní',
   vyprsela: 'vypršelá',
   zrusena: 'zrušená',
+}
+
+/** Objednávka, u které je vůbec co schvalovat — kreativa existuje a žije. */
+const maZivouKreativu = (o: Objednavka) =>
+  !!o.nadpis && (o.stav === 'aktivni' || o.stav === 'ceka_na_platbu')
+
+/**
+ * Náhled kreativy tak, jak ji uvidí návštěvník.
+ *
+ * Schvalovat text z tabulky by znamenalo schvalovat něco jiného, než co
+ * půjde na web. Proto tady stojí celá karta — značka, nadpis, text, tlačítko
+ * i logo — a k tomu cílový odkaz, na který je potřeba se podívat nejvíc:
+ * text bývá v pořádku a odkaz vede jinam.
+ */
+function NahledKreativy({ o }: { o: Objednavka }) {
+  return (
+    <div className="admin-inzerat-nahled">
+      <div className="admin-inzerat-hlava">
+        {o.logo_klic
+          // eslint-disable-next-line @next/next/no-img-element
+          ? <img src={o.logo_klic} alt="" width={20} height={20} />
+          : <span className="admin-inzerat-ikona" aria-hidden>✦</span>}
+        <strong>{o.znacka ?? '—'}</strong>
+        <span className="admin-inzerat-stitek">sponzorováno</span>
+      </div>
+      <p className="admin-inzerat-nadpis">{o.nadpis}</p>
+      <p className="admin-inzerat-text">{o.text}</p>
+      <p className="admin-inzerat-cta">{o.cta} →</p>
+      {o.odkaz && (
+        <p className="admin-inzerat-odkaz">
+          Vede na:{' '}
+          {/* Cizí odkaz otevíráme v novém okně a bez předání šťávy:
+              noopener kvůli přístupu k naší stránce, nofollow proto,
+              že zaplacený odkaz nesmí vypadat jako doporučení. */}
+          <a href={o.odkaz} target="_blank" rel="noopener noreferrer nofollow">{o.odkaz}</a>
+        </p>
+      )}
+    </div>
+  )
 }
 
 function AuditSekce({ nadpis, ikona, polozky }: {
@@ -85,6 +137,8 @@ export default function Admin() {
   const [objednavky, setObjednavky] = useState<Objednavka[] | null>(null)
   const [prepinace, setPrepinace] = useState<Prepinace>(VYCHOZI_PREPINACE)
   const [pracuje, setPracuje] = useState(false)
+  /** Rozepsané důvody zamítnutí podle id objednávky. */
+  const [duvody, setDuvody] = useState<Record<string, string>>({})
 
   const zavolej = useCallback(async (cesta: string, init: RequestInit = {}, t = token) => {
     const odpoved = await fetch(`${ADRESA_REKLAM}${cesta}`, {
@@ -159,6 +213,51 @@ export default function Admin() {
     }
   }
 
+  const schval = async (id: string) => {
+    setPracuje(true)
+    setHlaska(null)
+    try {
+      await zavolej('/api/admin/schvalit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      })
+      setHlaska('Schváleno — inzerát se na webu objeví do pěti minut.')
+      setDuvody(d => { const n = { ...d }; delete n[id]; return n })
+      await nactiData(token)
+    } catch {
+      setHlaska('Schválení se nepovedlo. Zkuste to prosím znovu.')
+    } finally {
+      setPracuje(false)
+    }
+  }
+
+  const zamitni = async (id: string) => {
+    const duvod = (duvody[id] ?? '').trim()
+    // Důvod je povinný: inzerent podle něj text opraví. Bez něj by se jen
+    // rozjelo kolečko e-mailů „a co je na tom špatně".
+    if (duvod.length < 3) {
+      setHlaska('Napište prosím krátký důvod zamítnutí — inzerent ho uvidí.')
+      return
+    }
+    setPracuje(true)
+    setHlaska(null)
+    try {
+      await zavolej('/api/admin/zamitnout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, duvod }),
+      })
+      setHlaska('Zamítnuto. Inzerent uvidí důvod ve svém účtu.')
+      setDuvody(d => { const n = { ...d }; delete n[id]; return n })
+      await nactiData(token)
+    } catch {
+      setHlaska('Zamítnutí se nepovedlo. Zkuste to prosím znovu.')
+    } finally {
+      setPracuje(false)
+    }
+  }
+
   const prepni = async (klic: keyof Prepinace) => {
     const nova = !prepinace[klic]
     setPrepinace(p => ({ ...p, [klic]: nova }))
@@ -189,6 +288,13 @@ export default function Admin() {
 
   const cekajici = useMemo(
     () => (objednavky ?? []).filter(o => o.stav === 'ceka_na_platbu'),
+    [objednavky],
+  )
+
+  // Zaplacení ≠ zveřejnění: dokud kreativa nemá schvaleno = 1, návštěvník
+  // ji nevidí, i když kampaň běží a je zaplacená.
+  const keSchvaleni = useMemo(
+    () => (objednavky ?? []).filter(o => maZivouKreativu(o) && o.schvaleno !== 1),
     [objednavky],
   )
 
@@ -270,6 +376,69 @@ export default function Admin() {
               stránkou po dalším načtení). Vypnutí nic nemaže.
             </p>
 
+            <h3><Eye size={15} aria-hidden /> Čeká na schválení</h3>
+            <p className="admin-pozn">
+              Zaplacená kampaň drží plochu, ale na webu se neukáže, dokud
+              kreativu neschválíte. Přečtěte si text a hlavně{' '}
+              <strong>klikněte na cílový odkaz</strong> — text bývá v pořádku
+              a odkaz vede jinam. Každá pozdější úprava textu nebo loga vrátí
+              inzerát sem.
+            </p>
+
+            {objednavky && keSchvaleni.length === 0 && (
+              <p className="admin-pozn">Nic nečeká — všechny živé kreativy jsou schválené.</p>
+            )}
+
+            {keSchvaleni.length > 0 && (
+              <ul className="admin-inzerat-seznam">
+                {keSchvaleni.map(o => (
+                  <li key={o.id} className="admin-inzerat-polozka">
+                    <div className="admin-inzerat-udaje">
+                      <strong>{o.firma}</strong>
+                      <p>
+                        {o.plocha} · {o.obdobi} · {o.cena_kc} Kč ·{' '}
+                        {STAVY_OBJEDNAVKY[o.stav] ?? o.stav}
+                      </p>
+                      {o.zamitnuto_duvod && (
+                        <p className="admin-inzerat-zamitnuto">
+                          Zamítnuto: {o.zamitnuto_duvod} — čeká, až inzerent text opraví.
+                        </p>
+                      )}
+                    </div>
+
+                    <NahledKreativy o={o} />
+
+                    <div className="admin-inzerat-akce">
+                      <button
+                        type="button"
+                        className="vyber-tlacitko je-hlavni"
+                        onClick={() => schval(o.id)}
+                        disabled={pracuje}
+                      >
+                        <Check size={13} aria-hidden /> Schválit
+                      </button>
+                      <input
+                        type="text"
+                        className="admin-inzerat-duvod"
+                        placeholder="důvod zamítnutí — inzerent ho uvidí"
+                        maxLength={300}
+                        value={duvody[o.id] ?? ''}
+                        onChange={e => setDuvody(d => ({ ...d, [o.id]: e.target.value }))}
+                      />
+                      <button
+                        type="button"
+                        className="vyber-tlacitko"
+                        onClick={() => zamitni(o.id)}
+                        disabled={pracuje}
+                      >
+                        <Ban size={13} aria-hidden /> Zamítnout
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+
             <h3><Banknote size={15} aria-hidden /> Objednávky reklamy</h3>
             {cekajici.length > 0 && (
               <p className="admin-pozn">
@@ -286,7 +455,7 @@ export default function Admin() {
                   <thead>
                     <tr>
                       <th>Firma</th><th>Plocha</th><th>Cena</th><th>VS</th>
-                      <th>Stav</th><th>Platí do</th><th></th>
+                      <th>Stav</th><th>Kreativa</th><th>Platí do</th><th></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -294,9 +463,25 @@ export default function Admin() {
                       <tr key={o.id}>
                         <td><strong>{o.firma}</strong><br /><small>{o.email}</small></td>
                         <td>{o.plocha}<br /><small>{o.obdobi}</small></td>
-                        <td>{o.cena_kc} Kč</td>
+                        <td>
+                          {o.cena_kc} Kč
+                          {/* U platby přes bránu je vidět, čím a kolik přišlo —
+                              u převodu zůstává prázdno. */}
+                          {o.zpusob_platby && <><br /><small>{o.zpusob_platby}</small></>}
+                        </td>
                         <td><code>{o.vs}</code></td>
                         <td>{STAVY_OBJEDNAVKY[o.stav] ?? o.stav}</td>
+                        <td>
+                          {/* I u běžící kampaně musí být na první pohled vidět,
+                              jestli je opravdu venku, nebo jen zaplacená. */}
+                          {!o.nadpis
+                            ? '—'
+                            : o.schvaleno === 1
+                              ? <span className="admin-inzerat-znamka je-schvalena">schválená</span>
+                              : o.zamitnuto_duvod
+                                ? <span className="admin-inzerat-znamka je-zamitnuta" title={o.zamitnuto_duvod}>zamítnutá</span>
+                                : <span className="admin-inzerat-znamka je-ceka">čeká na schválení</span>}
+                        </td>
                         <td>{o.plati_do ?? '—'}</td>
                         <td>
                           {o.stav === 'ceka_na_platbu' && (

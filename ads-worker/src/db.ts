@@ -18,6 +18,15 @@ export interface Prostredi {
   /** kanonická adresa webu — odsud berou právní odkazy svůj původ */
   WEB_URL?: string
   ADMIN_TOKEN?: string
+  /**
+   * Identifikátor obchodníka u ComGate. Prázdné = brána se nepoužívá
+   * a služba prodává dál na převod s variabilním symbolem.
+   */
+  COMGATE_MERCHANT?: string
+  /** 'true' = testovací provoz brány, penězi se nehne. */
+  COMGATE_TEST?: string
+  /** Tajemství brány. Nastavuje se přes `wrangler secret put`, ne do vars. */
+  COMGATE_SECRET?: string
 }
 
 export interface RadekInzeratu {
@@ -43,6 +52,11 @@ export interface RadekObjednavky {
   plati_od: string | null
   plati_do: string | null
   vytvoreno: string
+  /** id transakce v platební bráně; u převodu zůstává prázdné */
+  transakce_id: string | null
+  zaplaceno_kc: number | null
+  zaplaceno_kdy: string | null
+  zpusob_platby: string | null
 }
 
 /** Náhodný identifikátor. Krátký, ale dost dlouhý na to, aby se neuhodl. */
@@ -63,7 +77,14 @@ export function novyVs(): string {
   return String(100_000_000 + (b % 899_999_999))
 }
 
-/** Kreativy, které se právě mají zobrazit na dané ploše. */
+/**
+ * Kreativy, které se právě mají zobrazit na dané ploše.
+ *
+ * `i.schvaleno = 1` je tady to nejdůležitější slovo v celé službě. Tenhle
+ * dotaz (a jeho dvojče `inzeratyVsech`) je jediné místo, které rozhoduje,
+ * co návštěvník uvidí — kdyby podmínka vypadla, schvalování v adminu by bylo
+ * jen dekorace a zaplacená kreativa by se vystavila sama.
+ */
 export async function inzeratyProPlochu(env: Prostredi, plocha: string) {
   const dnes = dnesISO()
   const def = plochaPodleId(plocha)
@@ -74,6 +95,7 @@ export async function inzeratyProPlochu(env: Prostredi, plocha: string) {
        JOIN objednavky o ON o.id = i.objednavka_id
       WHERE o.plocha = ?1
         AND o.stav = 'aktivni'
+        AND i.schvaleno = 1
         AND (o.plati_od IS NULL OR o.plati_od <= ?2)
         AND (o.plati_do IS NULL OR o.plati_do >= ?2)
       ORDER BY o.vytvoreno
@@ -82,7 +104,13 @@ export async function inzeratyProPlochu(env: Prostredi, plocha: string) {
   return results ?? []
 }
 
-/** Kreativy všech ploch najednou — web se ptá jedním dotazem. */
+/**
+ * Kreativy všech ploch najednou — web se ptá jedním dotazem.
+ *
+ * Podmínka `i.schvaleno = 1` musí být i tady: kdyby zůstala jen u dotazu na
+ * jednu plochu, neschválená kreativa by prosákla hromadným dotazem, kterým
+ * si web bere reklamy ve skutečnosti.
+ */
 export async function inzeratyVsech(env: Prostredi): Promise<Record<string, RadekInzeratu[]>> {
   const dnes = dnesISO()
   const { results } = await env.DB.prepare(
@@ -90,6 +118,7 @@ export async function inzeratyVsech(env: Prostredi): Promise<Record<string, Rade
        FROM inzeraty i
        JOIN objednavky o ON o.id = i.objednavka_id
       WHERE o.stav = 'aktivni'
+        AND i.schvaleno = 1
         AND (o.plati_od IS NULL OR o.plati_od <= ?1)
         AND (o.plati_do IS NULL OR o.plati_do >= ?1)
       ORDER BY o.plocha, o.vytvoreno`,

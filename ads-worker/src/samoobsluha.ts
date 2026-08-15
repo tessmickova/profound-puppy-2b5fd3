@@ -9,6 +9,15 @@ import type { Prostredi } from './db'
 const esc = (s: string) =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 
+/**
+ * Klíč, pod kterým si samoobsluha nechá token objednávky v prohlížeči.
+ *
+ * Před odchodem do brány zákazník opustí stránku a token by mu zmizel
+ * z očí. Návratová stránka běží na téže adrese, takže si ho odtud přečte
+ * a ukáže znovu — do URL ho dávat nechceme, ta se leckde zapisuje.
+ */
+const ULOZISTE_TOKENU = 'svetjmen-ads-token'
+
 export function samoobsluha(env: Prostredi): string {
   // Adresa webu je v nastavení služby. Odkazy na podmínky a soukromí musí
   // mířit tam, kde web skutečně běží — na náhledu i v produkci.
@@ -228,6 +237,7 @@ export function samoobsluha(env: Prostredi): string {
   var stav = { plocha:null, obdobi:null, ikona:'sparkles', ceny:null, logo:null };
   // Adresa webu ze serveru — odkaz na účet musí vést tam, kde web běží.
   var WEB_ADRESA = document.body.dataset.web || '';
+  var ULOZISTE_TOKENU = '${ULOZISTE_TOKENU}';
   var $ = function (id) { return document.getElementById(id); };
 
   function korun(n) { return n.toLocaleString('cs-CZ') + ' Kč'; }
@@ -375,44 +385,217 @@ export function samoobsluha(env: Prostredi): string {
           return;
         }
         var d = v.d;
+        var platba = d.platba || {};
         $('krok-firma').hidden = true;
         $('krok-obdobi').hidden = true;
         $('krok-inzerat').hidden = true;
         $('krok-hotovo').classList.remove('schovano');
+
+        // Token si necháme v prohlížeči. Po odchodu do brány zmizí stránka
+        // i s ním a zákazník by se ke svému účtu nedostal.
+        try { localStorage.setItem(ULOZISTE_TOKENU, d.token); } catch (e) { /* soukromý režim */ }
+
         // Logo jde nahoru jako holé tělo požadavku — službě stačí typ souboru.
-        if (stav.logo) {
-          fetch('/api/objednavka/' + d.token + '/logo', {
+        // Vrací slib, protože při platbě kartou musí doletět dřív, než
+        // zákazníka pošleme do brány; přesměrování by ho utnulo v půli.
+        function posliLogo() {
+          if (!stav.logo) return Promise.resolve();
+          return fetch('/api/objednavka/' + d.token + '/logo', {
             method: 'POST',
             headers: { 'Content-Type': stav.logo.type },
             body: stav.logo,
           }).then(function (r) {
-            $('logo-stav').innerHTML = r.ok
-              ? '<p class="hlaska ok">Logo je nahrané, na kartě se ukáže místo ikony.</p>'
-              : '<p class="hlaska chyba">Logo se nepodařilo nahrát. Zkuste ho prosím poslat znovu na adrese níž.</p>';
+            var el = $('logo-stav');
+            if (el) {
+              el.innerHTML = r.ok
+                ? '<p class="hlaska ok">Logo je nahrané, na kartě se ukáže místo ikony.</p>'
+                : '<p class="hlaska chyba">Logo se nepodařilo nahrát. Zkuste ho prosím poslat znovu na adrese níž.</p>';
+            }
           }).catch(function () {
-            $('logo-stav').innerHTML = '<p class="hlaska chyba">Logo se nepodařilo nahrát. Zkuste ho prosím poslat znovu na adrese níž.</p>';
+            var el = $('logo-stav');
+            if (el) el.innerHTML = '<p class="hlaska chyba">Logo se nepodařilo nahrát. Zkuste ho prosím poslat znovu na adrese níž.</p>';
           });
         }
+
+        var klicUctu =
+          '<p style="font-size:14px;margin-top:14px"><strong>Tohle je klíč k vašemu účtu inzerenta.</strong> ' +
+          'Uložte si ho — otevřete jím stav kampaně, pokyny k platbě i úpravu textu:<br>' +
+          '<code style="word-break:break-all;font-size:15px">' + d.token + '</code></p>' +
+          '<p style="font-size:14px"><a href="' + WEB_ADRESA + '/reklama/ucet" target="_blank" rel="noopener">Otevřít účet inzerenta →</a></p>';
+
+        if (platba.brana === 'comgate' && platba.url) {
+          // Brána odpověděla: zákazník zaplatí hned. Klíč mu ukážeme ještě
+          // před odchodem a necháme i ruční odkaz, kdyby přesměrování
+          // neproběhlo (blokovač, pomalá síť).
+          $('pokyny').innerHTML =
+            '<p class="hlaska ok">Máme ji. Za okamžik vás přesměrujeme na platební bránu.</p>' +
+            '<div class="shrnuti"><dl>' +
+            '<dt>Plocha</dt><dd>' + d.plocha + '</dd>' +
+            '<dt>Délka</dt><dd>' + d.obdobi + '</dd>' +
+            '<dt>Částka</dt><dd>' + korun(d.cena_kc) + ' bez DPH</dd>' +
+            '</dl></div>' +
+            '<div id="logo-stav"></div>' +
+            klicUctu +
+            '<p style="font-size:14px"><a id="do-brany" href="' + platba.url + '">Přejít k platbě →</a></p>';
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          posliLogo().then(function () { location.href = platba.url; });
+          return;
+        }
+
+        // Bez brány (nebo když neodpověděla) platí to, co vždycky:
+        // převod s variabilním symbolem.
         $('pokyny').innerHTML =
           '<p class="hlaska ok">Máme ji. Kampaň spustíme, jakmile dorazí platba — obvykle do druhého pracovního dne.</p>' +
           '<div class="shrnuti"><dl>' +
           '<dt>Plocha</dt><dd>' + d.plocha + '</dd>' +
           '<dt>Délka</dt><dd>' + d.obdobi + '</dd>' +
           '<dt>Částka</dt><dd>' + korun(d.cena_kc) + ' bez DPH</dd>' +
-          '<dt>Účet</dt><dd>' + d.platba.ucet + '</dd>' +
-          '<dt>Variabilní symbol</dt><dd>' + d.platba.vs + '</dd>' +
+          '<dt>Účet</dt><dd>' + platba.ucet + '</dd>' +
+          '<dt>Variabilní symbol</dt><dd>' + platba.vs + '</dd>' +
           '</dl></div>' +
           '<div id="logo-stav"></div>' +
-          '<p style="font-size:14px;margin-top:14px"><strong>Tohle je klíč k vašemu účtu inzerenta.</strong> ' +
-          'Uložte si ho — otevřete jím stav kampaně, pokyny k platbě i úpravu textu:<br>' +
-          '<code style="word-break:break-all;font-size:15px">' + d.token + '</code></p>' +
-          '<p style="font-size:14px"><a href="' + WEB_ADRESA + '/reklama/ucet" target="_blank" rel="noopener">Otevřít účet inzerenta →</a></p>';
+          klicUctu +
+          '<p style="font-size:13px;color:var(--tlumene)">Kreativu ještě projdeme — na webu se objeví po schválení.</p>';
+        posliLogo();
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }).catch(function () {
         $('hlaska').innerHTML = '<p class="hlaska chyba">Spojení se nepodařilo navázat. Zkuste to prosím znovu.</p>';
         $('odeslat').disabled = false;
       });
   });
+})();
+</script>
+</body>
+</html>`
+}
+
+// ── návrat z platební brány ──────────────────────────────────────────────
+
+/** Co návratová stránka o objednávce ví. Sestavuje to `index.ts` z databáze. */
+export interface StavNavratu {
+  refId: string
+  /** našli jsme k `refId` objednávku? */
+  nalezena: boolean
+  /** objednávka je zaplacená a slot běží */
+  zaplaceno: boolean
+  /** pořád čeká na platbu — brána nám ještě nic nepotvrdila */
+  ceka: boolean
+  /** kreativu už majitelka schválila */
+  schvaleno: boolean
+  plocha: string
+  cena_kc: number
+  vs: string
+}
+
+/**
+ * Stránka, na kterou se zákazník vrací z brány.
+ *
+ * Nic neaktivuje a nic nemění — jen převypráví stav, který v databázi
+ * najde. O zaplacení rozhoduje notifikace z brány, a ta může dorazit
+ * o vteřinu později než zákazník; proto stránka nikdy netvrdí „nezaplatili
+ * jste", jen „ještě to k nám nedoputovalo".
+ */
+export function strankaNavratu(env: Prostredi, stav: StavNavratu): string {
+  const web = (env.WEB_URL ?? '').trim().replace(/\/$/, '')
+    || (env.POVOLENE_ORIGINY ?? '').split(',')[0]?.trim()
+    || ''
+  const kontakt = env.PROVOZOVATEL_EMAIL ?? ''
+
+  let druh: 'ok' | 'ceka' | 'chyba'
+  let nadpis: string
+  let veta: string
+
+  if (!stav.nalezena) {
+    druh = 'chyba'
+    nadpis = 'Tuhle objednávku neznáme'
+    veta = 'Adresa nejspíš není úplná. Zkuste otevřít účet inzerenta svým klíčem — '
+      + 'stav kampaně je vidět tam.'
+  } else if (stav.zaplaceno) {
+    druh = 'ok'
+    nadpis = 'Zaplaceno, děkujeme'
+    // Zaplacení není zveřejnění — říct to tady je poctivější než nechat
+    // zákazníka půl dne hledat svůj inzerát na webu.
+    veta = stav.schvaleno
+      ? 'Kampaň běží a inzerát je na webu vidět.'
+      : 'Kampaň máme zaplacenou. Než ji spustíme, projdeme ještě text a odkaz — '
+        + 'obvykle do jednoho pracovního dne. Pak se inzerát objeví na webu sám.'
+  } else if (stav.ceka) {
+    druh = 'ceka'
+    nadpis = 'Platbu zatím nemáme'
+    veta = 'Může to být jen chvilka zpoždění — potvrzení z brány chodí zvlášť. '
+      + 'Zkuste za minutu obnovit stránku. Když platba neproběhla, dá se poslat '
+      + 'i běžným převodem na variabilní symbol ' + stav.vs + '.'
+  } else {
+    druh = 'chyba'
+    nadpis = 'Kampaň už neběží'
+    veta = 'Objednávka byla zrušená nebo jí skončila platnost. Napište nám a najdeme, co s tím.'
+  }
+
+  return `<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>${esc(nadpis)} — reklama na Světě jmen</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23d97757'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --papir:#faf6ef; --karta:#fff; --linka:#e8dfd2; --text:#2b2723;
+    --tlumene:#8a7f71; --akcent:#d97757;
+  }
+  * { box-sizing:border-box; }
+  body {
+    margin:0; background:var(--papir); color:var(--text);
+    font:16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .obal { max-width:620px; margin:0 auto; padding:48px 20px 64px; }
+  h1 { font-size:clamp(24px,4vw,32px); line-height:1.2; margin:0 0 10px; letter-spacing:-.02em; }
+  .karta { background:var(--karta); border:1px solid var(--linka); border-radius:20px; padding:22px; }
+  .hlaska { border-radius:14px; padding:12px 14px; font-size:14px; margin:0 0 16px; }
+  .hlaska.ok { background:#eef6ee; color:#2f6b39; }
+  .hlaska.ceka { background:#fdf3e3; color:#8a5d16; }
+  .hlaska.chyba { background:#fdecea; color:#8f2f28; }
+  dl { display:grid; grid-template-columns:auto 1fr; gap:4px 12px; margin:0 0 16px; font-size:14px; }
+  dt { color:var(--tlumene); }
+  dd { margin:0; font-weight:600; }
+  code { word-break:break-all; background:#f6ece2; border-radius:6px; padding:2px 6px; font-size:14px; }
+  a { color:var(--akcent); }
+  footer { margin-top:28px; font-size:13px; color:var(--tlumene); }
+  .schovano { display:none; }
+</style>
+</head>
+<body>
+<div class="obal">
+  <h1>${esc(nadpis)}</h1>
+  <div class="karta">
+    <p class="hlaska ${druh}">${esc(veta)}</p>
+    ${stav.nalezena ? `<dl>
+      <dt>Plocha</dt><dd>${esc(stav.plocha)}</dd>
+      <dt>Částka</dt><dd>${stav.cena_kc.toLocaleString('cs-CZ')} Kč bez DPH</dd>
+      <dt>Variabilní symbol</dt><dd>${esc(stav.vs)}</dd>
+    </dl>` : ''}
+    <div id="klic" class="schovano">
+      <p style="font-size:14px"><strong>Klíč k vašemu účtu inzerenta:</strong><br>
+        <code id="klic-hodnota"></code></p>
+    </div>
+    <p style="font-size:14px"><a href="${esc(web)}/reklama/ucet">Otevřít účet inzerenta →</a></p>
+  </div>
+  <footer>
+    <p>Něco nesedí? Napište na <a href="mailto:${esc(kontakt)}">${esc(kontakt)}</a>.</p>
+  </footer>
+</div>
+<script>
+(function () {
+  // Klíč jsme si schovali do prohlížeče ještě před odchodem do brány —
+  // v adrese být nesmí, ta se zapisuje do historie i do logů.
+  try {
+    var k = localStorage.getItem('${ULOZISTE_TOKENU}');
+    if (k) {
+      document.getElementById('klic-hodnota').textContent = k;
+      document.getElementById('klic').classList.remove('schovano');
+    }
+  } catch (e) { /* soukromý režim */ }
 })();
 </script>
 </body>

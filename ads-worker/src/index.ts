@@ -13,7 +13,16 @@
 //   GET  /api/objednavka/:token     stav objednávky
 //   POST /api/objednavka/:token/logo  nahrání loga
 //   GET  /logo/:klic                logo inzerenta
-//   POST /api/admin/…               potvrzení platby a přehled (jen s tokenem)
+//   POST /api/platba/notifikace     server-to-server zpráva z platební brány
+//   GET  /api/platba/navrat         stránka pro zákazníka po návratu z brány
+//   POST /api/admin/…               potvrzení platby, schvalování a přehled
+//
+// Dvě pravidla, která se v tomhle souboru snadno poruší a která drží celou
+// službu pohromadě:
+//   1. Zaplacení ≠ zveřejnění. Aktivace jen říká „je zaplaceno"; o tom, co
+//      návštěvník uvidí, rozhoduje výhradně `schvaleno = 1` v `db.ts`.
+//   2. O platbě rozhoduje notifikace z brány, ne návrat zákazníka. Návratová
+//      stránka jenom čte stav — zákazník se totiž vracet nemusí.
 
 import {
   dnesISO, inzeratyProPlochu, inzeratyVsech, novyId, novyVs, objednavkaPodleTokenu,
@@ -25,7 +34,11 @@ import {
   IKONY, KAPACITA, MEZE, OBDOBI, OBDOBI_PODLE_ID, PLOCHY, cena, jeObdobi,
   kapacitaPlochy, plochaPodleId, type ObdobiId,
 } from './plochy'
-import { samoobsluha } from './samoobsluha'
+import {
+  odpovedProBranu, overNotifikaci, rozeberNotifikaci, stejneTajemstvi, vytvorPlatbu,
+  type NastaveniBrany,
+} from './comgate'
+import { samoobsluha, strankaNavratu, type StavNavratu } from './samoobsluha'
 
 const MAX_LOGO = 200 * 1024
 const POVOLENE_TYPY_LOGA = ['image/png', 'image/jpeg', 'image/webp']
@@ -225,15 +238,26 @@ async function otisk(vstup: string): Promise<string> {
 }
 
 function jeAdmin(req: Request, env: Prostredi): boolean {
-  const ocekavano = env.ADMIN_TOKEN
-  if (!ocekavano) return false
   const hlavicka = req.headers.get('Authorization') ?? ''
   const dany = hlavicka.replace(/^Bearer\s+/i, '')
-  if (dany.length !== ocekavano.length) return false
   // Porovnání v konstantním čase, ať se token nedá uhodnout po znacích.
-  let rozdil = 0
-  for (let i = 0; i < dany.length; i++) rozdil |= dany.charCodeAt(i) ^ ocekavano.charCodeAt(i)
-  return rozdil === 0
+  // Stejná funkce hlídá i tajemství platební brány — jedno tajemství,
+  // jedno porovnání, žádná druhá kopie, která by se dala pokazit.
+  return stejneTajemstvi(dany, env.ADMIN_TOKEN ?? '')
+}
+
+/**
+ * Nastavení platební brány, nebo null.
+ *
+ * Bez obchodníka a tajemství se brána prostě nepoužije a služba prodává dál
+ * na převod s variabilním symbolem. Reklamní služba musí umět fungovat i
+ * tehdy, když majitelka smlouvu s bránou (ještě) nemá.
+ */
+function branaComgate(env: Prostredi): NastaveniBrany | null {
+  const merchant = (env.COMGATE_MERCHANT ?? '').trim()
+  const secret = (env.COMGATE_SECRET ?? '').trim()
+  if (!merchant || !secret) return null
+  return { merchant, secret, test: (env.COMGATE_TEST ?? '').trim().toLowerCase() === 'true' }
 }
 
 // ── čtení pro web ────────────────────────────────────────────────────────
@@ -307,22 +331,71 @@ async function dejSloty(env: Prostredi, cors: Record<string, string>) {
 // ── objednávka ───────────────────────────────────────────────────────────
 
 interface ZalozenaObjednavka {
+  id: string
   token: string
   plocha: string
   obdobi: string
   cena_kc: number
   vs: string
+  /** e-mail inzerenta — brána ho chce, aby zákazníkovi poslala doklad */
+  email: string
 }
 
 /** Objednávka založená dřív týmž klíčem — pro opakované odeslání formuláře. */
 async function najdiPodleIdempotence(env: Prostredi, klic: string) {
   return env.DB.prepare(
-    'SELECT token, plocha, obdobi, cena_kc, vs FROM objednavky WHERE idempotence = ?1',
+    `SELECT o.id, o.token, o.plocha, o.obdobi, o.cena_kc, o.vs, n.email
+       FROM objednavky o
+       JOIN inzerenti n ON n.id = o.inzerent_id
+      WHERE o.idempotence = ?1`,
   ).bind(klic).first<ZalozenaObjednavka>()
 }
 
+/** Pokyny k převodu — to, co služba uměla vždycky a co funguje bez brány. */
+function pokynyKPrevodu(o: ZalozenaObjednavka, env: Prostredi) {
+  return {
+    ucet: env.BANKOVNI_UCET,
+    vs: o.vs,
+    prijemce: env.PROVOZOVATEL,
+    zprava: `Reklama ${o.plocha}`,
+  }
+}
+
+/**
+ * Jak zákazník zaplatí.
+ *
+ * Se zapnutou bránou vrátíme odkaz do ní, jinak (a taky když brána mlčí nebo
+ * odmítne) bankovní převod s variabilním symbolem. Výpadek ComGate nesmí
+ * shodit prodej — objednávka je v tu chvíli už uložená a slot drží.
+ */
+async function pripravPlatbu(o: ZalozenaObjednavka, env: Prostredi) {
+  const brana = branaComgate(env)
+  if (!brana) return pokynyKPrevodu(o, env)
+
+  // `label` vidí zákazník u platby a brána ho drží krátký — proto číslo
+  // plochy, ne její celé id.
+  const cislo = plochaPodleId(o.plocha)?.cislo
+  const popis = cislo ? `Reklama ${cislo}` : 'Reklama'
+
+  try {
+    const vysledek = await vytvorPlatbu(brana, {
+      // Ceník je v korunách, brána počítá v haléřích.
+      cenaHaleru: o.cena_kc * 100,
+      label: popis,
+      refId: o.id,
+      email: o.email,
+    })
+    if (vysledek.ok) return { brana: 'comgate' as const, url: vysledek.redirect }
+    // Do logu jde kód a hláška brány — tajemství ani tělo požadavku nikdy.
+    console.error('comgate: platbu se nepodařilo založit', vysledek.kod, vysledek.zprava)
+  } catch (e) {
+    console.error('comgate: brána neodpověděla', e instanceof Error ? e.message : '')
+  }
+  return pokynyKPrevodu(o, env)
+}
+
 /** Odpověď na založenou objednávku. Stejná poprvé i při opakování. */
-function odpovedNaObjednavku(
+async function odpovedNaObjednavku(
   o: ZalozenaObjednavka, env: Prostredi, cors: Record<string, string>,
 ) {
   const plocha = plochaPodleId(o.plocha)
@@ -332,12 +405,7 @@ function odpovedNaObjednavku(
     plocha: plocha?.nazev ?? o.plocha,
     obdobi: OBDOBI_PODLE_ID[o.obdobi as ObdobiId]?.nazev ?? o.obdobi,
     cena_kc: o.cena_kc,
-    platba: {
-      ucet: env.BANKOVNI_UCET,
-      vs: o.vs,
-      prijemce: env.PROVOZOVATEL,
-      zprava: `Reklama ${o.plocha}`,
-    },
+    platba: await pripravPlatbu(o, env),
     kontakt: env.PROVOZOVATEL_EMAIL,
   }, {}, cors)
 }
@@ -443,7 +511,7 @@ async function vytvorObjednavku(req: Request, env: Prostredi, cors: Record<strin
   }
 
   return odpovedNaObjednavku(
-    { token, plocha: plocha.id, obdobi, cena_kc: castka, vs }, env, cors,
+    { id: objednavkaId, token, plocha: plocha.id, obdobi, cena_kc: castka, vs, email }, env, cors,
   )
 }
 
@@ -452,7 +520,11 @@ async function dejObjednavku(token: string, env: Prostredi, url: URL, cors: Reco
   if (!o) return chyba('Objednávku neznáme.', 404, cors)
 
   const i = await env.DB.prepare('SELECT * FROM inzeraty WHERE objednavka_id = ?1')
-    .bind(o.id).first<{ znacka: string; nadpis: string; text: string; cta: string; odkaz: string; ikona: string | null; logo_klic: string | null }>()
+    .bind(o.id).first<{
+      znacka: string; nadpis: string; text: string; cta: string; odkaz: string
+      ikona: string | null; logo_klic: string | null
+      schvaleno: number; zamitnuto_duvod: string | null
+    }>()
 
   return json({
     stav: o.stav,
@@ -462,6 +534,13 @@ async function dejObjednavku(token: string, env: Prostredi, url: URL, cors: Reco
     vs: o.vs,
     plati_od: o.plati_od,
     plati_do: o.plati_do,
+    // Stav schválení patří inzerentovi na oči. Bez něj by účet tvrdil
+    // „kampaň běží", zatímco na webu není nic vidět — a firma by marně
+    // hledala chybu u sebe.
+    schvaleno: i?.schvaleno ?? 0,
+    zamitnuto_duvod: i?.zamitnuto_duvod ?? null,
+    // Pokyny k převodu vydáváme vždycky: platí i tehdy, když se platba
+    // v bráně nepovedla a zákazník chce doplatit jinak.
     platba: {
       ucet: env.BANKOVNI_UCET,
       vs: o.vs,
@@ -511,11 +590,15 @@ async function nahrajLogo(req: Request, token: string, env: Prostredi, cors: Rec
 
   const stare = await env.DB.prepare('SELECT logo_klic FROM inzeraty WHERE objednavka_id = ?1')
     .bind(o.id).first<{ logo_klic: string | null }>()
-  await env.DB.prepare('UPDATE inzeraty SET logo_klic = ?1 WHERE objednavka_id = ?2')
-    .bind(klic, o.id).run()
+  // Nové logo shodí schválení stejně jako změna textu — jinak by stačilo
+  // nechat si schválit nevinnou kreativu a pak pod ni podstrčit jiný obrázek.
+  await env.DB.prepare(
+    `UPDATE inzeraty SET logo_klic = ?1, schvaleno = 0, zamitnuto_duvod = NULL, schvaleno_kdy = NULL
+      WHERE objednavka_id = ?2`,
+  ).bind(klic, o.id).run()
   if (stare?.logo_klic) await env.LOGA.delete(stare.logo_klic)
 
-  return json({ logo: klic }, {}, cors)
+  return json({ logo: klic, schvaleno: 0 }, {}, cors)
 }
 
 async function dejLogo(klic: string, env: Prostredi) {
@@ -537,8 +620,13 @@ async function dejLogo(klic: string, env: Prostredi) {
  * Podmínky slibují, že text i odkaz jde během kampaně změnit; plocha ani
  * délka se měnit nedají — to by se obcházel ceník. Prochází stejnou
  * validací jako objednávka, protože vstup je stejně nedůvěryhodný.
+ *
+ * Každá změna textu shodí schválení zpátky na nulu. Bez toho by schvalování
+ * nemělo cenu: firma by si nechala schválit slušný inzerát a hned nato do
+ * něj napsala cokoli. Exportované schválně — testy si ho volají přímo,
+ * aby tohle pravidlo hlídal stroj, ne dobrá paměť.
  */
-async function upravInzerat(
+export async function upravInzerat(
   req: Request, token: string, env: Prostredi, cors: Record<string, string>,
 ) {
   const o = await objednavkaPodleTokenu(env, token)
@@ -574,11 +662,14 @@ async function upravInzerat(
   if (!odkazOk(odkaz)) return chyba('Odkaz musí být běžná adresa začínající http:// nebo https://', 400, cors)
 
   await env.DB.prepare(
-    `UPDATE inzeraty SET znacka = ?1, nadpis = ?2, text = ?3, cta = ?4, odkaz = ?5
+    `UPDATE inzeraty SET znacka = ?1, nadpis = ?2, text = ?3, cta = ?4, odkaz = ?5,
+            schvaleno = 0, zamitnuto_duvod = NULL, schvaleno_kdy = NULL
       WHERE objednavka_id = ?6`,
   ).bind(znacka, nadpis, popis, cta, odkaz, o.id).run()
 
-  return json({ ulozeno: true }, {}, cors)
+  // `schvaleno: 0` v odpovědi není ozdoba — účet inzerenta z něj hned pozná,
+  // že upravená kreativa čeká na nové schválení, a neslibuje, že běží.
+  return json({ ulozeno: true, schvaleno: 0 }, {}, cors)
 }
 
 // ── přepínače webu ───────────────────────────────────────────────────────
@@ -623,6 +714,41 @@ async function zapisNastaveni(req: Request, env: Prostredi, cors: Record<string,
   return json({ ulozeno: true, klic, hodnota: telo.hodnota }, {}, cors)
 }
 
+// ── aktivace ─────────────────────────────────────────────────────────────
+
+/**
+ * Rozsvítí zaplacenou kampaň.
+ *
+ * Volá ji admin (potvrzení převodu z výpisu) i notifikace z platební brány.
+ * Je proto jedna jediná — dvě skoro stejné by se časem rozešly a jedna cesta
+ * k penězům by začala dělat něco jiného než druhá.
+ *
+ * POZOR: `stav = 'aktivni'` znamená jenom „je zaplaceno a slot běží".
+ * Kreativu návštěvník uvidí až tehdy, když ji majitelka schválí — o zobrazení
+ * rozhoduje výhradně `i.schvaleno = 1` v dotazech v `db.ts`. Peníze kampaň
+ * nespouštějí, jen ji zaplatí.
+ *
+ * Podmínka `stav = 'ceka_na_platbu'` v UPDATE dělá z aktivace idempotentní
+ * krok: opakovaná notifikace o téže platbě (a brána je opakuje, dokud
+ * nedostane `code=0`) už nic nepřepíše a nic neposune.
+ */
+async function aktivujObjednavku(
+  env: Prostredi,
+  objednavka: { id: string; obdobi: string },
+  od: string,
+  zdroj: string,
+): Promise<{ plati_od: string; plati_do: string; aktivovano: boolean }> {
+  const do_ = platiDo(od, objednavka.obdobi as ObdobiId)
+  const { meta } = await env.DB.prepare(
+    `UPDATE objednavky SET stav = 'aktivni', plati_od = ?1, plati_do = ?2
+      WHERE id = ?3 AND stav = 'ceka_na_platbu'`,
+  ).bind(od, do_, objednavka.id).run()
+  const zmen = meta?.changes ?? 0
+  // Do logu jde jen to, co pomůže dohledat platbu — nikdy nic z tajemství.
+  console.log(`aktivace ${objednavka.id}: zdroj ${zdroj}, zmen ${zmen}`)
+  return { plati_od: od, plati_do: do_, aktivovano: zmen > 0 }
+}
+
 // ── správa ───────────────────────────────────────────────────────────────
 
 async function potvrdPlatbu(req: Request, env: Prostredi, cors: Record<string, string> = {}) {
@@ -637,24 +763,215 @@ async function potvrdPlatbu(req: Request, env: Prostredi, cors: Record<string, s
   if (!o) return chyba('K tomuhle symbolu nečeká žádná objednávka.', 404, cors)
 
   const od = text(telo.od, 10) || dnesISO()
-  const do_ = platiDo(od, o.obdobi as ObdobiId)
-  await env.DB.prepare("UPDATE objednavky SET stav = 'aktivni', plati_od = ?1, plati_do = ?2 WHERE id = ?3")
-    .bind(od, do_, o.id).run()
+  const vysledek = await aktivujObjednavku(env, o, od, 'admin-prevod')
 
-  return json({ stav: 'aktivni', plati_od: od, plati_do: do_ }, {}, cors)
+  return json({
+    stav: 'aktivni',
+    plati_od: vysledek.plati_od,
+    plati_do: vysledek.plati_do,
+  }, {}, cors)
 }
 
-async function prehled(env: Prostredi, cors: Record<string, string> = {}) {
+/**
+ * Schválení kreativy. Tohle je ta chvíle, kdy se inzerát opravdu zveřejní —
+ * do té doby je zaplacená kampaň jen rezervovaný slot.
+ */
+async function schvalKreativu(req: Request, env: Prostredi, cors: Record<string, string> = {}) {
+  let telo: { id?: unknown }
+  try { telo = await req.json() } catch { return chyba('Nečitelná data.', 400, cors) }
+
+  const id = text(telo.id, 40)
+  if (!id) return chyba('Chybí id objednávky.', 400, cors)
+
+  const { meta } = await env.DB.prepare(
+    `UPDATE inzeraty SET schvaleno = 1, zamitnuto_duvod = NULL, schvaleno_kdy = ?1
+      WHERE objednavka_id = ?2`,
+  ).bind(new Date().toISOString(), id).run()
+  if (!(meta?.changes ?? 0)) return chyba('K téhle objednávce žádná kreativa není.', 404, cors)
+
+  return json({ schvaleno: 1 }, {}, cors)
+}
+
+/**
+ * Zamítnutí kreativy i s důvodem.
+ *
+ * Důvod je povinný schválně: inzerent ho uvidí ve svém účtu a má podle čeho
+ * text opravit. „Zamítnuto bez vysvětlení" by znamenalo jen kolečko e-mailů.
+ */
+async function zamitniKreativu(req: Request, env: Prostredi, cors: Record<string, string> = {}) {
+  let telo: { id?: unknown; duvod?: unknown }
+  try { telo = await req.json() } catch { return chyba('Nečitelná data.', 400, cors) }
+
+  const id = text(telo.id, 40)
+  if (!id) return chyba('Chybí id objednávky.', 400, cors)
+  const duvod = text(telo.duvod, 300)
+  if (duvod.length < 3) return chyba('Napište prosím důvod zamítnutí.', 400, cors)
+
+  const { meta } = await env.DB.prepare(
+    `UPDATE inzeraty SET schvaleno = 0, zamitnuto_duvod = ?1, schvaleno_kdy = NULL
+      WHERE objednavka_id = ?2`,
+  ).bind(duvod, id).run()
+  if (!(meta?.changes ?? 0)) return chyba('K téhle objednávce žádná kreativa není.', 404, cors)
+
+  return json({ schvaleno: 0, zamitnuto_duvod: duvod }, {}, cors)
+}
+
+/**
+ * Přehled pro majitelku.
+ *
+ * Vrací i celý obsah kreativy — bez textu, tlačítka, odkazu a loga by se
+ * nedalo schvalovat: majitelka musí vidět přesně to, co uvidí návštěvník.
+ */
+async function prehled(env: Prostredi, url: URL, cors: Record<string, string> = {}) {
   const { results } = await env.DB.prepare(
     `SELECT o.id, o.plocha, o.obdobi, o.cena_kc, o.vs, o.stav, o.plati_od, o.plati_do,
-            n.firma, n.email, i.znacka, i.nadpis
+            o.transakce_id, o.zaplaceno_kc, o.zaplaceno_kdy, o.zpusob_platby,
+            n.firma, n.email,
+            i.znacka, i.nadpis, i.text, i.cta, i.odkaz, i.ikona, i.logo_klic,
+            i.schvaleno, i.zamitnuto_duvod
        FROM objednavky o
        JOIN inzerenti n ON n.id = o.inzerent_id
        LEFT JOIN inzeraty i ON i.objednavka_id = o.id
       ORDER BY o.vytvoreno DESC
       LIMIT 200`,
-  ).all()
-  return json({ objednavky: results ?? [] }, {}, cors)
+  ).all<Record<string, unknown> & { logo_klic: string | null }>()
+
+  // Klíč loga sám o sobě adminu k ničemu není — potřebuje adresu, na kterou
+  // se dá ukázat v náhledu.
+  const objednavky = (results ?? []).map(r => ({
+    ...r,
+    logo_klic: r.logo_klic ? `${url.origin}/logo/${r.logo_klic}` : null,
+  }))
+
+  return json({ objednavky }, {}, cors)
+}
+
+// ── platební brána ───────────────────────────────────────────────────────
+
+/** Co si o objednávce potřebuje přečíst zpracování platby. */
+interface ObjednavkaProPlatbu {
+  id: string
+  obdobi: string
+  cena_kc: number
+  stav: string
+  transakce_id: string | null
+  plocha: string
+  vs: string
+}
+
+/**
+ * Notifikace z brány (server → server).
+ *
+ * Tohle je jediná autorita v otázce „bylo zaplaceno". Zákazník se z brány
+ * vracet nemusí — může zavřít okno hned po zaplacení — takže spoléhat na
+ * návratovou stránku by znamenalo občas nespustit zaplacenou kampaň.
+ *
+ * Routa je schválně bez admin tokenu: volá ji cizí server, který náš token
+ * nezná. Místo něj se ověřuje `secret` brány (v konstantním čase), že `refId`
+ * je naše objednávka a že sedí částka. Bez těch tří kontrol by kampaň
+ * rozsvítil kdokoli, kdo trefí adresu.
+ *
+ * Odpovídáme vždycky `code=0&message=OK`, i když zprávu odmítneme — cokoli
+ * jiného pro bránu znamená „nedoručeno" a notifikaci opakuje donekonečna.
+ * Důvod odmítnutí zůstává v logu, kde ho majitelka najde.
+ */
+async function prijmiNotifikaci(req: Request, env: Prostredi): Promise<Response> {
+  const brana = branaComgate(env)
+  if (!brana) {
+    console.error('comgate: přišla notifikace, ale brána není nastavená')
+    return odpovedProBranu()
+  }
+
+  try {
+    const surove = await req.text()
+    if (surove.length > MAX_TELO) {
+      console.error('comgate: notifikace je podezřele velká, zahazujeme')
+      return odpovedProBranu()
+    }
+    const zprava = rozeberNotifikaci(surove)
+    const refId = text(zprava.refId, 40)
+
+    const o = refId
+      ? await env.DB.prepare(
+        `SELECT id, obdobi, cena_kc, stav, transakce_id, plocha, vs
+           FROM objednavky WHERE id = ?1`,
+      ).bind(refId).first<ObjednavkaProPlatbu>()
+      : null
+
+    const vysledek = overNotifikaci(zprava, brana, o)
+    if (!vysledek.ok) {
+      // V logu je jen důvod a refId — žádné tajemství, žádné celé tělo.
+      console.error(`comgate: notifikace odmítnuta (${vysledek.duvod}), refId ${refId}`)
+      return odpovedProBranu()
+    }
+    if (!vysledek.aktivovat || !o) {
+      console.log(`comgate: notifikace bez akce (${vysledek.duvod}), refId ${refId}`)
+      return odpovedProBranu()
+    }
+
+    // Platbu zapíšeme dřív, než kampaň rozsvítíme. Kdyby druhý krok selhal,
+    // je lepší mít zaznamenané peníze u nespuštěné kampaně než běžící
+    // kampaň, o které nevíme, kdo a čím ji zaplatil.
+    const ted = new Date().toISOString()
+    await env.DB.prepare(
+      `UPDATE objednavky
+          SET transakce_id = ?1, zaplaceno_kc = ?2, zaplaceno_kdy = ?3, zpusob_platby = ?4
+        WHERE id = ?5`,
+    ).bind(
+      zprava.transId,
+      Math.round(Number(zprava.price) / 100),
+      ted,
+      text(zprava.method, 40) || 'comgate',
+      o.id,
+    ).run()
+
+    await aktivujObjednavku(env, o, dnesISO(), 'comgate-notifikace')
+    return odpovedProBranu()
+  } catch (e) {
+    // I na vlastní chybě odpovídáme `code=0`. Opakování by nám poslalo tutéž
+    // zprávu znovu do stejné chyby; místo toho zůstane stopa v logu a platba
+    // se dá potvrdit ručně podle variabilního symbolu.
+    console.error('comgate: notifikaci se nepodařilo zpracovat', e instanceof Error ? e.message : '')
+    return odpovedProBranu()
+  }
+}
+
+/**
+ * Stránka, na kterou se zákazník vrací z brány.
+ *
+ * NESMÍ nic aktivovat. Návrat je jen informace pro člověka — kdyby o platbě
+ * rozhodoval, stačilo by adresu s cizím `refId` otevřít v prohlížeči a kampaň
+ * by se spustila bez zaplacení. O penězích rozhoduje výhradně notifikace.
+ */
+async function strankaPoNavratu(url: URL, env: Prostredi): Promise<Response> {
+  const refId = text(url.searchParams.get('refId'), 40)
+  const o = refId
+    ? await env.DB.prepare(
+      `SELECT id, obdobi, cena_kc, stav, transakce_id, plocha, vs
+         FROM objednavky WHERE id = ?1`,
+    ).bind(refId).first<ObjednavkaProPlatbu>()
+    : null
+
+  const i = o
+    ? await env.DB.prepare('SELECT schvaleno FROM inzeraty WHERE objednavka_id = ?1')
+      .bind(o.id).first<{ schvaleno: number }>()
+    : null
+
+  const stav: StavNavratu = {
+    refId,
+    nalezena: !!o,
+    zaplaceno: !!o && o.stav === 'aktivni',
+    ceka: !!o && o.stav === 'ceka_na_platbu',
+    schvaleno: (i?.schvaleno ?? 0) === 1,
+    plocha: o ? (plochaPodleId(o.plocha)?.nazev ?? o.plocha) : '',
+    cena_kc: o?.cena_kc ?? 0,
+    vs: o?.vs ?? '',
+  }
+
+  return new Response(strankaNavratu(env, stav), {
+    // Stav se mění zvenčí (notifikací), takže stránku nikde neschováváme.
+    headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' },
+  })
 }
 
 // ── router ───────────────────────────────────────────────────────────────
@@ -705,12 +1022,23 @@ async function obsluz(req: Request, env: Prostredi): Promise<Response> {
       const souborLoga = cesta.match(/^\/logo\/([a-z0-9-]+\.(?:png|jpg|webp))$/)
       if (req.method === 'GET' && souborLoga) return dejLogo(souborLoga[1], env)
 
+      // Platební brána. Notifikace chodí bez admin tokenu — ověřuje se
+      // tajemstvím brány uvnitř; návrat zákazníka jen čte stav.
+      if (req.method === 'POST' && cesta === '/api/platba/notifikace') {
+        return prijmiNotifikaci(req, env)
+      }
+      if (req.method === 'GET' && cesta === '/api/platba/navrat') {
+        return strankaPoNavratu(url, env)
+      }
+
       if (cesta.startsWith('/api/admin/')) {
         // Admin volá i stránka /admin na webu — potřebuje CORS jako ostatní.
         if (!jeAdmin(req, env)) return chyba('Nemáte oprávnění.', 401, cors)
         if (req.method === 'GET' && cesta === '/api/admin/overeni') return json({ ok: true }, {}, cors)
         if (req.method === 'POST' && cesta === '/api/admin/potvrdit') return potvrdPlatbu(req, env, cors)
-        if (req.method === 'GET' && cesta === '/api/admin/prehled') return prehled(env, cors)
+        if (req.method === 'POST' && cesta === '/api/admin/schvalit') return schvalKreativu(req, env, cors)
+        if (req.method === 'POST' && cesta === '/api/admin/zamitnout') return zamitniKreativu(req, env, cors)
+        if (req.method === 'GET' && cesta === '/api/admin/prehled') return prehled(env, url, cors)
         if (req.method === 'POST' && cesta === '/api/admin/nastaveni') return zapisNastaveni(req, env, cors)
         if (req.method === 'POST' && cesta === '/api/admin/uklid') {
           const prosle = await zhasniProsle(env)

@@ -4310,4 +4310,88 @@ html.odhal-aktivni .sekce-mrizka .odhal:nth-child(2n).je-videt { transition-dela
 .konec-seznamu p { margin: 0; font-size: 13px; color: #8a7f71; }
 .konec-seznamu-akce { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
 
+/* Schvalování kreativ v adminu.
+   Náhled schválně vypadá jako karta reklamy na webu — majitelka schvaluje
+   to, co uvidí návštěvník, ne řádek v tabulce. */
+.admin-inzerat-seznam {
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 14px;
+}
+.admin-inzerat-polozka {
+  display: grid;
+  gap: 10px;
+  border: 1px solid #e8dfd2;
+  border-radius: 16px;
+  padding: 14px;
+  background: #fffdfa;
+}
+.admin-inzerat-udaje strong { font-size: 13.5px; }
+.admin-inzerat-udaje p { margin: 2px 0 0; font-size: 12.5px; color: #8a7f71; }
+.admin-inzerat-zamitnuto { color: #b3403a !important; }
+
+.admin-inzerat-nahled {
+  border: 1px solid #e8dfd2;
+  border-radius: 14px;
+  padding: 12px 14px;
+  background: #fff;
+}
+.admin-inzerat-hlava {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+  font-size: 12px;
+  color: #8a7f71;
+}
+.admin-inzerat-hlava img { width: 20px; height: 20px; object-fit: contain; border-radius: 4px; }
+.admin-inzerat-ikona { color: #d97757; }
+.admin-inzerat-stitek {
+  margin-left: auto;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: #b0a595;
+}
+.admin-inzerat-nadpis { margin: 0 0 4px; font-size: 15px; font-weight: 700; line-height: 1.3; }
+.admin-inzerat-text { margin: 0 0 8px; font-size: 13px; line-height: 1.5; color: #6b6156; }
+.admin-inzerat-cta { margin: 0; font-size: 13px; font-weight: 700; color: #c4633f; }
+.admin-inzerat-odkaz {
+  margin: 10px 0 0;
+  padding-top: 8px;
+  border-top: 1px dashed #e8dfd2;
+  font-size: 12px;
+  color: #8a7f71;
+}
+/* Odkaz smí být dlouhý — zalomí se, ať je celý vidět a dá se zkontrolovat. */
+.admin-inzerat-odkaz a { color: #2b2723; word-break: break-all; }
+
+.admin-inzerat-akce { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.admin-inzerat-duvod {
+  flex: 1 1 220px;
+  min-width: 0;
+  font: inherit;
+  font-size: 13px;
+  padding: 7px 11px;
+  border: 1px solid #e8dfd2;
+  border-radius: 999px;
+  background: #faf6ef;
+  color: #2b2723;
+}
+.admin-inzerat-duvod:focus { outline: none; border-color: #2b2723; }
+
+.admin-inzerat-znamka {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.admin-inzerat-znamka.je-schvalena { background: #eef6ee; color: #2f6b39; }
+.admin-inzerat-znamka.je-ceka { background: #fdf3e3; color: #8a5d16; }
+.admin-inzerat-znamka.je-zamitnuta { background: #fdecea; color: #8f2f28; }
+
 }
