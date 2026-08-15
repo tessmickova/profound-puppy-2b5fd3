@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useEffect, useRef } from 'react'
 import { Baby, Heart, House, PawPrint, Users } from 'lucide-react'
 import { useOblibene } from '@/lib/names/oblibene'
 import { useRodina } from '@/lib/names/rodina'
@@ -23,6 +24,22 @@ const POLOZKY = [
 
 export default function Shell({ children }: { children: React.ReactNode }) {
   const cesta = usePathname()
+  const hlavicka = useRef<HTMLElement>(null)
+
+  // Skutečnou výšku přišpendlené hlavičky ví jen prohlížeč: liší se podle
+  // šířky okna i podle toho, jestli se text zalomil. Panel „Můj výběr“ pod
+  // ni musí přesně zapadnout, takže ji změříme a předáme do CSS.
+  useEffect(() => {
+    const prvek = hlavicka.current
+    if (!prvek) return
+    const zmer = () => {
+      document.documentElement.style.setProperty('--vyska-hlavicky', `${Math.round(prvek.getBoundingClientRect().height)}px`)
+    }
+    zmer()
+    const pozorovatel = new ResizeObserver(zmer)
+    pozorovatel.observe(prvek)
+    return () => pozorovatel.disconnect()
+  }, [])
   const { pocet } = useOblibene()
   const { pocet: pocetRodiny } = useRodina()
 
@@ -38,7 +55,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
       <Odhalovani />
       {/* Reklama: postranní sloupce na širokém okně, jinak lišta nahoře. */}
       <ReklamniRam />
-      <header className="hlavicka sticky top-0 z-40 border-b border-[#e8dfd2] bg-[#faf6ef]/92 backdrop-blur-sm">
+      <header ref={hlavicka} className="hlavicka sticky top-0 z-40 border-b border-[#e8dfd2] bg-[#faf6ef]/92 backdrop-blur-sm">
         <div className="mx-auto flex max-w-6xl items-center gap-2 px-3 py-2.5 sm:px-4">
           <Link href="/" className="flex shrink-0 items-center gap-1.5 [font-family:var(--font-nadpis)] text-base font-extrabold tracking-tight sm:text-lg">
             <PawPrint size={20} className="text-[#d97757]" aria-hidden />
@@ -105,8 +122,8 @@ export default function Shell({ children }: { children: React.ReactNode }) {
 
       <Paticka />
 
-      {/* Levý panel s výběrem je PŘED detailem: když se z něj otevře
-          jméno, detail se vykreslí později v DOM, a je tedy navrchu. */}
+      {/* Panel s výběrem je PŘED detailem: když se z něj otevře jméno,
+          detail se vykreslí později v DOM, a je tedy navrchu. */}
       <VyberPanel />
       <DetailPanel />
 

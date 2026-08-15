@@ -2312,7 +2312,15 @@ body:has(.svetjmen-shell) { background-color: #faf6ef; }
 }
 .karta-odkaz:focus-visible { outline: 2px solid #d97757; outline-offset: 2px; }
 .karta-jmena > :not(.karta-odkaz) { position: relative; z-index: 2; pointer-events: none; }
-.karta-jmena .srdicko { pointer-events: auto; }
+/* Ovládací tlačítka musí myš dostat zpátky — jmenovitě vypsané srdíčko
+   znamenalo, že hvězdička i křížek byly mrtvé a klik propadl na kartu
+   pod nimi (otevřel se detail místo označení favorita). Proto celý pruh
+   akcí, ne jednotlivé třídy. */
+.karta-jmena .karta-akce,
+.karta-jmena .karta-akce > *,
+.karta-jmena .srdicko,
+.karta-jmena .hvezdicka,
+.karta-jmena .vyradit { pointer-events: auto; }
 .sr-only {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
@@ -3460,10 +3468,18 @@ a:hover .ilustrace,
    MŮJ VÝBĚR — levý vysouvací panel se všemi vybranými jmény
    ══════════════════════════════════════════════════════════════════════════════ */
 
-/* Ouško na levém kraji. Text je svislý, aby ouško zabralo pár pixelů. */
+/* Ouško i panel se zastaví tam, kde začínají reklamy.
+   `--vyber-kraj` je přesně blok, který zabírá reklamní sloupec vpravo:
+   okraj okna + šířka sloupce + vzduch mezi reklamou a obsahem. Když
+   sloupce nejsou (užší okno), jsou všechny tři nula a panel jde ke kraji. */
+:root {
+  --vyber-kraj: calc(var(--reklamni-okraj) + var(--reklamni-sloupec) + var(--reklamni-mezera));
+}
+
+/* Ouško na pravém kraji obsahu. Text je svislý, ať zabere pár pixelů. */
 .vyber-panel-ucho {
   position: fixed;
-  left: 0;
+  right: var(--vyber-kraj);
   top: 50%;
   z-index: 60;
   transform: translateY(-50%);
@@ -3473,8 +3489,8 @@ a:hover .ilustrace,
   writing-mode: vertical-rl;
   padding: 13px 7px;
   border: 1px solid #e8dfd2;
-  border-left: none;
-  border-radius: 0 14px 14px 0;
+  border-right: none;
+  border-radius: 14px 0 0 14px;
   background: #fff;
   color: #6b6156;
   font: inherit;
@@ -3482,10 +3498,10 @@ a:hover .ilustrace,
   font-weight: 600;
   letter-spacing: .02em;
   cursor: pointer;
-  box-shadow: 4px 0 16px rgba(43, 39, 35, .08);
+  box-shadow: -4px 0 16px rgba(43, 39, 35, .08);
   transition: color .15s, box-shadow .15s;
 }
-.vyber-panel-ucho:hover { color: #2b2723; box-shadow: 4px 0 20px rgba(43, 39, 35, .14); }
+.vyber-panel-ucho:hover { color: #2b2723; box-shadow: -4px 0 20px rgba(43, 39, 35, .14); }
 .vyber-panel-ucho.je-skryte { display: none; }
 .vyber-panel-ucho svg { transform: rotate(90deg); }
 .vyber-panel-pocet {
@@ -3503,18 +3519,25 @@ a:hover .ilustrace,
 
 .vyber-panel {
   position: fixed;
-  inset: 0 auto 0 0;
-  z-index: 71;
+  /* Začíná pod hlavičkou: ta je přišpendlená a musí zůstat použitelná —
+     hledání i navigace jsou přesně to, co člověk s otevřeným výběrem
+     potřebuje. Panel se tedy vysouvá do obsahu, ne přes celé okno. */
+  top: var(--vyska-hlavicky, 61px);
+  bottom: 0;
+  right: var(--vyber-kraj);
+  z-index: 61;
   display: flex;
   flex-direction: column;
-  width: min(400px, 100%);
+  /* Nikdy širší, než kolik zbývá vedle reklam — jinak by je panel přerostl. */
+  width: min(380px, calc(100vw - var(--vyber-kraj) * 2 - 16px));
   background: #faf6ef;
+  border-left: 1px solid #e8dfd2;
   border-right: 1px solid #e8dfd2;
-  box-shadow: 14px 0 44px rgba(43, 39, 35, .18);
-  animation: panel-vysun-vlevo .26s cubic-bezier(.22, .68, .36, 1) both;
+  box-shadow: -14px 0 44px rgba(43, 39, 35, .16);
+  animation: panel-vysun-vpravo .26s cubic-bezier(.22, .68, .36, 1) both;
 }
-@keyframes panel-vysun-vlevo {
-  from { transform: translateX(-100%) }
+@keyframes panel-vysun-vpravo {
+  from { transform: translateX(100%) }
   to { transform: none }
 }
 
@@ -3654,7 +3677,11 @@ a:hover .ilustrace,
 
 @media (max-width: 639px) {
   /* Spodní lišta má vlastní místo — ouško se posune nad ni. */
-  .vyber-panel-ucho { top: auto; bottom: 122px; transform: none; }
+  .vyber-panel-ucho { top: auto; bottom: 108px; transform: none; }
+  :root { --vyska-hlavicky: 50px; }
+  /* Na telefonu není kam ustupovat: panel zabere šířku okna, ale nechá
+     spodní lištu volnou, aby se dalo odejít jinam. */
+  .vyber-panel { width: 100%; bottom: 56px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .vyber-panel { animation: none; }

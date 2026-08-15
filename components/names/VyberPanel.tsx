@@ -1,16 +1,17 @@
 'use client'
 
-// Levý panel: všechna vybraná jména na jedné hromádce.
+// Panel „Můj výběr": všechna vybraná jména na jedné hromádce.
 //
-// Pravý panel ukazuje detail jednoho jména; levý drží celý užší výběr,
-// ať je po ruce z kterékoli stránky. U každého jména je vidět, jestli je
+// Vysouvá se zprava do obsahu — ne přes celé okno. Reklamní sloupce
+// zůstávají vidět, protože se za ně platí; panel se proto zastaví přesně
+// tam, kde reklamy začínají. U každého jména je vidět, jestli je
 // srdíčkové nebo hvězdičkové, a barevné pastilky říkají, kdo z rodiny ho
 // chce: maminka červená, tatínek modrá, dcera růžová, syn světle modrá.
 //
 // Je to schválně extra jednoduché — klepnout na pastilku, hotovo. Podrobný
 // rozbor patří na stránku analýzy, ne do panelu.
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { BarChart3, Heart, ListChecks, Star, Users, X } from 'lucide-react'
 import { JMENA } from '@/lib/names/data'
@@ -21,10 +22,33 @@ import { KATEGORIE_INFO } from '@/lib/names/types'
 
 export default function VyberPanel() {
   const [otevren, setOtevren] = useState(false)
+  const obal = useRef<HTMLDivElement>(null)
   const prepinace = usePrepinace()
   const {
     oblibena, jeHvezda, hlasyPro, prepniHlas, hlasVsech, prepniOblibene,
   } = useVyber()
+
+  // Zavření klepnutím mimo panel a klávesou Esc.
+  //
+  // Dřív tuhle práci dělal ztmavovací závěs přes celé okno. Jenže ten
+  // zároveň schoval reklamní sloupce — a ty musí být vidět pořád, protože
+  // se za ně platí. Panel proto žádný závěs nemá a hlídá si to sám.
+  useEffect(() => {
+    if (!otevren) return
+    const mimo = (e: MouseEvent) => {
+      const cil = e.target as Node
+      if (!obal.current?.contains(cil)) setOtevren(false)
+    }
+    const klavesa = (e: KeyboardEvent) => { if (e.key === 'Escape') setOtevren(false) }
+    // `mousedown` až v další smyčce, ať zavření nechytí týž klik, který panel otevřel.
+    const id = window.setTimeout(() => document.addEventListener('mousedown', mimo), 0)
+    document.addEventListener('keydown', klavesa)
+    return () => {
+      window.clearTimeout(id)
+      document.removeEventListener('mousedown', mimo)
+      document.removeEventListener('keydown', klavesa)
+    }
+  }, [otevren])
 
   // Vypnuto z adminu — ouško ani panel se nevykreslí.
   if (!prepinace.vyber_panel) return null
@@ -36,7 +60,7 @@ export default function VyberPanel() {
     .sort((a, b) => Number(jeHvezda(b.id)) - Number(jeHvezda(a.id)))
 
   return (
-    <>
+    <div ref={obal}>
       <button
         type="button"
         className={`vyber-panel-ucho ${otevren ? 'je-skryte' : ''}`}
@@ -49,9 +73,7 @@ export default function VyberPanel() {
       </button>
 
       {otevren && (
-        <>
-          <div className="detail-zaves" onClick={() => setOtevren(false)} aria-hidden />
-          <aside className="vyber-panel" role="dialog" aria-modal="true" aria-label="Můj výběr jmen">
+        <aside className="vyber-panel" role="dialog" aria-label="Můj výběr jmen">
             <header className="vyber-panel-hlava">
               <h2><ListChecks size={17} aria-hidden /> Můj výběr</h2>
               <button onClick={() => setOtevren(false)} className="detail-zavrit" aria-label="Zavřít výběr">
@@ -139,9 +161,8 @@ export default function VyberPanel() {
                 </div>
               </>
             )}
-          </aside>
-        </>
+        </aside>
       )}
-    </>
+    </div>
   )
 }
