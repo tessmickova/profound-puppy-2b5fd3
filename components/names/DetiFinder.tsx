@@ -5,10 +5,10 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { ArrowDownAZ, Baby, BookOpen, Calendar, CalendarOff, Circle, Dices, Flame, Gem, Globe, Heart, Palette, RotateCcw, Ruler, Search, SlidersHorizontal, Sparkles, TrendingUp, Type, Users, X, Zap } from 'lucide-react'
+import { Anchor, ArrowDownAZ, Baby, BookOpen, Calendar, CalendarOff, Circle, Dices, Flame, Gem, Globe, Heart, Palette, RotateCcw, Ruler, Search, SlidersHorizontal, Sparkles, TrendingUp, Type, Users, X, Zap } from 'lucide-react'
 import { JMENA, jeMezinarodni, ZEME } from '@/lib/names/data'
 import {
-  filtruj, jeDoznivajici, jeHit, jeNavrat, jeVrchol, jeVzacne, jeVzestup, kolator, monogram, najdiKSourozenci,
+  filtruj, jeDoznivajici, jeHit, jeNavrat, jeStalice, jeVrchol, jeVzacne, jeVzestup, kolator, monogram, najdiKSourozenci,
   najdiNejlepsiShody, PRAZDNY_FILTR, RAZENI_MOZNOSTI, serad,
   ZNAMENI_MESICE,
 } from '@/lib/names/logic'
@@ -75,13 +75,42 @@ export default function DetiFinder() {
   const params = useSearchParams()
   const [rezim, setRezim] = useState<'prochazet' | 'shoda' | 'sourozenec'>('prochazet')
 
-  const [filtr, setFiltr] = useState<Filtr>(() => ({
-    ...PRAZDNY_FILTR,
-    kategorie: params.get('kategorie') === 'holka' ? ['holka'] : params.get('kategorie') === 'kluk' ? ['kluk'] : [],
-    zeme: params.get('zeme') ? [params.get('zeme')!] : [],
-  }))
+  const zAdresy = (p: URLSearchParams) => ({
+    kategorie: (p.get('kategorie') === 'holka' ? ['holka'] : p.get('kategorie') === 'kluk' ? ['kluk'] : []) as Kategorie[],
+    zeme: p.get('zeme') ? [p.get('zeme')!] : [],
+    // `?filtr=` nese pojmenovaný výběr z úvodní stránky (viz `vyhledy.ts`).
+    // „Krátká a zvučná“ není chip, ale mez na slabiky — proto zvlášť.
+    filtr: p.get('filtr') ?? '',
+  })
+
+  const [filtr, setFiltr] = useState<Filtr>(() => {
+    const z = zAdresy(params)
+    return {
+      ...PRAZDNY_FILTR,
+      kategorie: z.kategorie,
+      zeme: z.zeme,
+      maxSlabiky: z.filtr === 'kratka' ? 2 : null,
+    }
+  })
   const [razeni, setRazeni] = useState<Razeni>('popularita')
-  const [rychle, setRychle] = useState<string[]>([])
+  const [rychle, setRychle] = useState<string[]>(() => {
+    const f = zAdresy(params).filtr
+    return f && f !== 'kratka' ? [f] : []
+  })
+
+  // Adresa se může změnit i bez nového načtení stránky (klik v patičce,
+  // tlačítko zpět). Bez tohohle by filtr zůstal viset na tom, s čím se
+  // stránka poprvé otevřela.
+  useEffect(() => {
+    const z = zAdresy(params)
+    setFiltr(f => ({
+      ...f,
+      kategorie: z.kategorie,
+      zeme: z.zeme.length ? z.zeme : f.zeme,
+      maxSlabiky: z.filtr === 'kratka' ? 2 : f.maxSlabiky,
+    }))
+    setRychle(z.filtr && z.filtr !== 'kratka' ? [z.filtr] : [])
+  }, [params])
   const [nahodne, setNahodne] = useState<string | null>(null)
   const [panelOtevren, setPanelOtevren] = useState(false)
   const { oblibena, vyrazena } = useVyber()
@@ -106,6 +135,7 @@ export default function DetiFinder() {
     if (rychle.includes('navrat')) kandidati = kandidati.filter(jeNavrat)
     if (rychle.includes('vrchol')) kandidati = kandidati.filter(jeVrchol)
     if (rychle.includes('vzacne')) kandidati = kandidati.filter(jeVzacne)
+    if (rychle.includes('stalice')) kandidati = kandidati.filter(jeStalice)
     if (rychle.includes('svetove')) kandidati = kandidati.filter(znejeSvetove)
     // „Bez jmen generace rodičů" je jediný filtr, který něco odebírá —
     // odpovídá na „nechci jméno, co měla půlka mojí třídy".
@@ -258,6 +288,7 @@ export default function DetiFinder() {
                 <Chip aktivni={rychle.includes('vrchol')} onClick={() => setRychle(prepni(rychle, 'vrchol'))} title="Nejčastější jména dnešních miminek"><Baby size={12} /> teď nejčastější</Chip>
                 <Chip aktivni={rychle.includes('svetove')} onClick={() => setRychle(prepni(rychle, 'svetove'))} title="Jména, která znějí světově — často i s cizí podobou zápisu"><Globe size={12} /> zní světově</Chip>
                 <Chip aktivni={rychle.includes('vzacne')} onClick={() => setRychle(prepni(rychle, 'vzacne'))} title="Vzácná bez ohledu na dobu"><Gem size={12} /> vzácná</Chip>
+                <Chip aktivni={rychle.includes('stalice')} onClick={() => setRychle(prepni(rychle, 'stalice'))} title="Dávají se v každé generaci"><Anchor size={12} /> stálice</Chip>
                 <Chip aktivni={rychle.includes('bez-dozniva')} onClick={() => setRychle(prepni(rychle, 'bez-dozniva'))} title="Skryje jména generace dnešních rodičů"><CalendarOff size={12} /> bez jmen generace rodičů</Chip>
                 <Chip aktivni={rychle.includes('unisex')} onClick={() => setRychle(prepni(rychle, 'unisex'))}><Circle size={12} /> unisex</Chip>
                 <Chip aktivni={rychle.includes('mezinarodni')} onClick={() => setRychle(prepni(rychle, 'mezinarodni'))}><Globe size={12} /> mezinárodní</Chip>

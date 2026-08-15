@@ -6,17 +6,17 @@ import {
 import Shell from '@/components/names/Shell'
 import Rozvrzeni from '@/components/names/Rozvrzeni'
 import PasyJmen from '@/components/names/PasyJmen'
-import RodinaHero from '@/components/names/RodinaHero'
+import RodinnyStart from '@/components/names/RodinnyStart'
 import SekceJmen from '@/components/names/SekceJmen'
 import StatPruh from '@/components/names/StatPruh'
 import UvodZalozky from '@/components/names/UvodZalozky'
 import { JMENA, ZEME } from '@/lib/names/data'
-import { dobreSeVola, jeNavrat, jeStalice, jeVrchol, jeVzestup, serad } from '@/lib/names/logic'
+import { serad } from '@/lib/names/logic'
 import { VYHLED } from '@/lib/names/vlny'
-import { znejeSvetove } from '@/lib/names/zapis'
 import { KATEGORIE_INFO } from '@/lib/names/types'
 import type { Kategorie } from '@/lib/names/types'
 import { CASTE_DOTAZY, jsonLdDotazy, jsonLdSeznam, WEB } from '@/lib/names/seo'
+import { odkazVyhledu, vyhledPodleId } from '@/lib/names/vyhledy'
 
 // Úvodní stránka není katalog, ale rozcestník podle situace. První otázka
 // jsou dvě velké záložky — miminko, nebo zvíře — a všechno pod nimi se
@@ -72,22 +72,32 @@ const CESTY = [
   },
 ]
 
+/** Odkaz na katalog s otevřeným výběrem — sekce a filtr mluví stejným jazykem. */
+const odkaz = (id: string) => {
+  const v = vyhledPodleId(id)
+  return v ? odkazVyhledu(v) : '/deti'
+}
+
 export default function Domov() {
   // Každý box ukáže šest jmen a dalších až osmnáct má připravených
   // pro vlastní „Objevit další jména" — rozbaluje se každá kategorie zvlášť.
   const detska = (f: (j: (typeof JMENA)[number]) => boolean) =>
     serad(JMENA.filter(f), 'popularita').slice(0, 24)
 
-  const moderniVzestup = detska(jeVzestup)
-  const svetova = detska(znejeSvetove)
-  const navraty = detska(jeNavrat)
-  const nejcastejsi = detska(jeVrchol)
-  const stalice = detska(jeStalice)
+  // Pravidla sekcí jsou tatáž, jakou použije katalog za odkazem
+  // „zobrazit všechna" — jeden seznam v `vyhledy.ts`, žádné dvě pravdy.
+  const vyhled = (id: string) => detska(vyhledPodleId(id)!.sedi)
+
+  const moderniVzestup = vyhled('vzestup')
+  const svetova = vyhled('svetove')
+  const navraty = vyhled('navrat')
+  const nejcastejsi = vyhled('vrchol')
+  const stalice = vyhled('stalice')
   // Šestá kategorie doplňuje mřížku na sudý počet — boxy stojí ve dvojicích
   // a lichý by nechal vedle sebe prázdné místo.
-  const kratka = detska(j => j.zeme === 'cz' && j.slabiky <= 2)
+  const kratka = vyhled('kratka')
   const topZvirata = serad(JMENA.filter(j => !['kluk', 'holka'].includes(j.kategorie)), 'popularita').slice(0, 24)
-  const volatelna = serad(JMENA.filter(dobreSeVola), 'popularita').slice(0, 24)
+  const volatelna = serad(JMENA.filter(vyhledPodleId('volatelne')!.sedi), 'popularita').slice(0, 24)
   const topDeti = serad(JMENA.filter(j => ['kluk', 'holka'].includes(j.kategorie)), 'popularita').slice(0, 6)
 
   return (
@@ -96,44 +106,44 @@ export default function Domov() {
         <UvodZalozky
           deti={(
             <>
-              <RodinaHero />
+              <RodinnyStart />
 
               <div className="sekce-mrizka">
               <SekceJmen
                 druh="lide"
                 nadpis="Modernější jména na vzestupu"
                 jmena={moderniVzestup}
-                odkaz={{ href: '/deti', text: 'zobrazit všechna' }}
+                odkaz={{ href: odkaz('vzestup'), text: 'zobrazit všechna' }}
               />
               <SekceJmen
                 druh="lide"
                 nadpis="Jména, která znějí světově"
                 jmena={svetova}
-                odkaz={{ href: '/deti', text: 'zobrazit všechna' }}
+                odkaz={{ href: odkaz('svetove'), text: 'zobrazit všechna' }}
               />
               <SekceJmen
                 druh="lide"
                 nadpis="Babiččina jména, která se vracejí"
                 jmena={navraty}
-                odkaz={{ href: '/deti', text: 'zobrazit všechna' }}
+                odkaz={{ href: odkaz('navrat'), text: 'zobrazit všechna' }}
               />
               <SekceJmen
                 druh="lide"
                 nadpis="Nejčastější jména dnešních miminek"
                 jmena={nejcastejsi}
-                odkaz={{ href: '/deti', text: 'všechna dětská jména' }}
+                odkaz={{ href: odkaz('vrchol'), text: 'zobrazit všechna' }}
               />
               <SekceJmen
                 druh="lide"
                 nadpis="Stálice, které nezestárnou"
                 jmena={stalice}
-                odkaz={{ href: '/deti', text: 'objevit další' }}
+                odkaz={{ href: odkaz('stalice'), text: 'zobrazit všechna' }}
               />
               <SekceJmen
                 druh="lide"
                 nadpis="Krátká a zvučná jména"
                 jmena={kratka}
-                odkaz={{ href: '/deti', text: 'zobrazit všechna' }}
+                odkaz={{ href: odkaz('kratka'), text: 'zobrazit všechna' }}
               />
               </div>
 
@@ -186,7 +196,7 @@ export default function Domov() {
                 druh="zvirata"
                 nadpis="Dobře se volají"
                 jmena={volatelna}
-                odkaz={{ href: '/zvirata', text: 'zobrazit všechna' }}
+                odkaz={{ href: odkaz('volatelne'), text: 'zobrazit všechna' }}
               />
               </div>
 

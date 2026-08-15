@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation'
 import Shell from '@/components/names/Shell'
 import NameCard from '@/components/names/NameCard'
 import { JMENA } from '@/lib/names/data'
-import { ENTITY_SE_STRANKOU } from '@/lib/names/entita'
+import { ENTITY_SE_STRANKOU, unikatniPodleJmena } from '@/lib/names/entita'
 import { serad, velke } from '@/lib/names/logic'
 import { slugJmena } from '@/lib/names/slug'
 import { jsonLdDrobky, jsonLdSeznam, WEB } from '@/lib/names/seo'
@@ -61,11 +61,14 @@ export default async function KategorieStranka({ params }: { params: Promise<{ s
   const info = KATEGORIE_INFO[kat]
   const jeDite = kat === 'kluk' || kat === 'holka'
   const vsechna = JMENA.filter(j => j.kategorie === kat)
-  const nejoblibenejsi = serad(vsechna, 'popularita').slice(0, NA_STRANCE)
+  // Katalog ukazuje jména, ne záznamy. Sofia používaná v Itálii, Španělsku
+  // i na Slovensku je jedno jméno s třemi vlaječkami — ne tři karty.
+  const unikatni = unikatniPodleJmena(serad(vsechna, 'popularita'))
+  const nejoblibenejsi = unikatni.slice(0, NA_STRANCE)
   const maDetail = new Set(ENTITY_SE_STRANKOU.map(e => e.slug))
 
-  const nejkratsi = serad(vsechna, 'nejkratsi').slice(0, 8)
-  const abecedne = serad(vsechna, 'abecedne').slice(0, 8)
+  const nejkratsi = unikatniPodleJmena(serad(vsechna, 'nejkratsi')).slice(0, 8)
+  const abecedne = unikatniPodleJmena(serad(vsechna, 'abecedne')).slice(0, 8)
 
   return (
     <Shell>
@@ -78,7 +81,7 @@ export default async function KategorieStranka({ params }: { params: Promise<{ s
         jsonLdSeznam(
           `Jména pro ${info.proKoho}`,
           `${WEB.url}/jmena/${info.slug}`,
-          nejoblibenejsi.slice(0, 20).map(j => ({ jmeno: j.jmeno, vyznam: j.vyznam })),
+          nejoblibenejsi.slice(0, 20).map(u => ({ jmeno: u.jmeno.jmeno, vyznam: u.jmeno.vyznam })),
         ),
       ) }} />
 
@@ -111,8 +114,14 @@ export default async function KategorieStranka({ params }: { params: Promise<{ s
           <Link href="/metodika">jak vybíráme a hodnotíme</Link>.
         </p>
         <div className="mrizka nastup">
-          {nejoblibenejsi.map((j, i) => (
-            <NameCard key={j.id} jmeno={j} poradi={i + 1} odkaz={maDetail.has(slugJmena(j.jmeno))} />
+          {nejoblibenejsi.map((u, i) => (
+            <NameCard
+              key={u.jmeno.id}
+              jmeno={u.jmeno}
+              zemeNavic={u.zeme}
+              poradi={i + 1}
+              odkaz={maDetail.has(slugJmena(u.jmeno.jmeno))}
+            />
           ))}
         </div>
       </section>
@@ -120,14 +129,14 @@ export default async function KategorieStranka({ params }: { params: Promise<{ s
       <section aria-labelledby="kratka">
         <h2 id="kratka">Krátká jména</h2>
         <ul className="kategorie-radek">
-          {nejkratsi.map(j => <li key={j.id}>{j.jmeno}</li>)}
+          {nejkratsi.map(u => <li key={u.jmeno.id}>{u.jmeno.jmeno}</li>)}
         </ul>
       </section>
 
       <section aria-labelledby="abecedne">
         <h2 id="abecedne">Od začátku abecedy</h2>
         <ul className="kategorie-radek">
-          {abecedne.map(j => <li key={j.id}>{j.jmeno}</li>)}
+          {abecedne.map(u => <li key={u.jmeno.id}>{u.jmeno.jmeno}</li>)}
         </ul>
       </section>
 

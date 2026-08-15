@@ -15,7 +15,11 @@ interface Stat {
 }
 
 function Pocitadlo({ cil, spustit }: { cil: number; spustit: boolean }) {
-  const [hodnota, setHodnota] = useState(0)
+  // Výchozí hodnota je CÍL, ne nula. Server i první vykreslení tak ukážou
+  // skutečné číslo — crawler, pomalý JavaScript ani chyba hydratace nesmí
+  // z webu udělat „0 jmen v katalogu“. Animace se rozjede až v prohlížeči:
+  // teprve `spustit` shodí číslo na začátek a nechá ho doběhnout zpátky.
+  const [hodnota, setHodnota] = useState(cil)
 
   useEffect(() => {
     if (!spustit) return
@@ -38,7 +42,16 @@ function Pocitadlo({ cil, spustit }: { cil: number; spustit: boolean }) {
     return () => { bezi = false }
   }, [spustit, cil])
 
-  return <>{hodnota.toLocaleString('cs-CZ')}</>
+  return <>{oddelTisice(hodnota)}</>
+}
+
+/**
+ * Tisíce oddělené pevnou mezerou. Vlastní funkce schválně: `toLocaleString`
+ * se může na serveru a v prohlížeči lišit (jiná data ICU) a rozdíl jediného
+ * znaku by rozbil hydrataci právě u čísla, které má být první, co je vidět.
+ */
+function oddelTisice(cislo: number): string {
+  return String(cislo).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
 }
 
 export default function StatPruh({ staty }: { staty: Stat[] }) {

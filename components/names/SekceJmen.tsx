@@ -7,6 +7,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { unikatniPodleJmena } from '@/lib/names/entita'
 import type { Jmeno } from '@/lib/names/types'
 import NameCard from './NameCard'
 import NadpisSekce from './NadpisSekce'
@@ -24,6 +25,8 @@ export default function SekceJmen({
   odkaz: { href: string; text: string }
 }) {
   const [kolik, setKolik] = useState(KOLIK)
+  // Jedno jméno = jedna karta. „Ema" z Česka i z Německa je pořád Ema.
+  const unikatni = unikatniPodleJmena(jmena)
   return (
     <section className="sekce-sklo odhal">
       <div className="sekce-sklo-hlava">
@@ -33,9 +36,11 @@ export default function SekceJmen({
         </Link>
       </div>
       <div className="nastup mrizka-jmen mrizka-kompakt">
-        {jmena.slice(0, kolik).map((j, i) => <NameCard key={j.id} jmeno={j} poradi={i + 1} />)}
+        {unikatni.slice(0, kolik).map((u, i) => (
+          <NameCard key={u.jmeno.id} jmeno={u.jmeno} zemeNavic={u.zeme} poradi={i + 1} />
+        ))}
       </div>
-      {kolik < jmena.length && (
+      {kolik < unikatni.length && (
         <div className="sekce-dalsi">
           <button type="button" className="vyber-tlacitko" onClick={() => setKolik(k => k + KOLIK)}>
             Objevit další jména

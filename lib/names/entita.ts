@@ -110,6 +110,26 @@ export const entitaPodleSlugu = (slug: string): Entita | undefined => {
 export const VSECHNY_ENTITY: Entita[] = [...ENTITY.values()]
 
 /** Země, kde se jméno používá, s celými údaji. */
+/**
+ * Výpis bez duplicit: „Alice“ používaná v pěti zemích je jedna karta
+ * s pěti vlaječkami, ne pět stejných karet pod sebou.
+ *
+ * Pořadí vstupu se zachovává — reprezentantem je první výskyt, takže
+ * v seznamu řazeném podle oblíbenosti zůstane ten nejsilnější. Vrácené
+ * `zeme` drží všechny země, kde se jméno používá, v pořadí výskytu.
+ */
+export function unikatniPodleJmena(jmena: Jmeno[]): { jmeno: Jmeno; zeme: string[] }[] {
+  const mapa = new Map<string, { jmeno: Jmeno; zeme: string[] }>()
+  for (const j of jmena) {
+    const klic = slugJmena(j.jmeno)
+    if (!klic) continue
+    const stavajici = mapa.get(klic)
+    if (!stavajici) mapa.set(klic, { jmeno: j, zeme: [j.zeme] })
+    else if (!stavajici.zeme.includes(j.zeme)) stavajici.zeme.push(j.zeme)
+  }
+  return [...mapa.values()]
+}
+
 export const zemeEntity = (e: Entita) =>
   e.zeme.map(k => ZEME.find(z => z.kod === k)).filter(Boolean) as typeof ZEME
 

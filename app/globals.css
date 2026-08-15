@@ -3872,6 +3872,166 @@ a:hover .ilustrace,
 .sekce-dalsi .vyber-tlacitko { font-size: 12.5px; padding: 7px 14px; }
 
 /* ══════════════════════════════════════════════════════════════════════════════
+   RODINNÝ START — jedna otázka po druhé, rodina se skládá před očima
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.start-kroky {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: #c4b8a7;
+}
+.start-kroky li { display: inline-flex; align-items: center; gap: 6px; }
+.start-kroky li::before {
+  content: '';
+  width: 7px; height: 7px;
+  border-radius: 999px;
+  background: currentColor;
+}
+.start-kroky li + li::after { content: none; }
+.start-kroky li.je-tady { color: #d97757; }
+.start-kroky li.je-hotovy { color: #a2988a; }
+
+.start-krok { display: grid; gap: 4px; }
+.start h1 {
+  margin: 0;
+  font-family: var(--font-nadpis), system-ui, sans-serif;
+  font-size: 34px; font-weight: 800; line-height: 1.12; letter-spacing: -.015em;
+}
+.start h1 span {
+  background: linear-gradient(115deg, #d97757 0%, #c05a3e 55%, #b3403a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.start-otazka {
+  display: block;
+  margin: 16px 0 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #2b2723;
+}
+.start-radek {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+.start-vstup {
+  flex: 1 1 220px;
+  min-width: 0;
+  border: 1px solid #e0d5c5;
+  border-radius: 14px;
+  background: #fff;
+  padding: 11px 14px;
+  font: inherit;
+  font-size: 15px;
+}
+.start-vstup:focus { outline: none; border-color: #d97757; box-shadow: 0 0 0 3px rgba(217, 119, 87, .14); }
+.start-preskocit {
+  justify-self: start;
+  margin-top: 10px;
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-size: 12.5px;
+  color: #8a7f71;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  cursor: pointer;
+}
+.start-preskocit:hover { color: #2b2723; }
+
+/* Přidaní členové — kartičky, ne řádky formuláře. Za každé jméno
+   okamžitá odměna: rodina roste před očima. */
+.start-clenove {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.start-clen {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #e8dfd2;
+  border-radius: 999px;
+  background: #fff;
+  padding: 5px 6px 5px 11px;
+  font-size: 14px;
+  animation: clen-nastup .22s cubic-bezier(.22, .68, .36, 1) both;
+}
+@keyframes clen-nastup {
+  from { opacity: 0; transform: scale(.9) translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+.start-clen strong { font-weight: 700; }
+.start-clen small { font-size: 11.5px; color: #8a7f71; }
+.start-clen button {
+  display: grid; place-items: center;
+  width: 20px; height: 20px;
+  border: none; border-radius: 999px; background: none;
+  color: #a2988a; cursor: pointer;
+}
+.start-clen button:hover { background: #f3ecdf; color: #b3403a; }
+
+.start-role {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.start-role-tlacitko {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #e0d5c5;
+  border-radius: 999px;
+  background: #fff;
+  padding: 9px 15px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2b2723;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color .15s, background .15s, transform .15s;
+}
+.start-role-tlacitko:hover { border-color: #d97757; background: #fdf3ef; transform: translateY(-2px); }
+.start-role-tlacitko.je-dalsi { border-style: dashed; color: #6b6156; }
+.start-role-tlacitko.je-vybrany {
+  border-color: #d97757;
+  background: linear-gradient(120deg, #d97757, #c05a3e);
+  color: #fff;
+}
+.start-pohlavi { margin-top: 20px; border-top: 1px solid #f0e8dc; padding-top: 14px; }
+
+@media (max-width: 559px) {
+  .start h1 { font-size: 26px; }
+  .start-role-tlacitko { padding: 8px 13px; font-size: 13.5px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .start-role-tlacitko:hover { transform: none; }
+  .start-clen { animation: none; }
+}
+
+/* Špička výběru vykreslená serverem (hloubkový odkaz bez JavaScriptu).
+   Jakmile se zapne filtr, nahradí ji jeho vlastní mřížka. */
+.ssr-spicka { margin-bottom: 22px; }
+
+/* ══════════════════════════════════════════════════════════════════════════════
    ŽIVÁ VRSTVA — plovoucí pozadí, odhalování při rolování, čísla webu
    ══════════════════════════════════════════════════════════════════════════════ */
 

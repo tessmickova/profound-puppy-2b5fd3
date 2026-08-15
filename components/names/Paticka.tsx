@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { ZEME } from '@/lib/names/data'
 import { KATEGORIE_INFO } from '@/lib/names/types'
 import type { Kategorie } from '@/lib/names/types'
-import { PRAVNI } from '@/lib/names/pravni'
+import { PRAVNI, UDAJE_PROVOZOVATELE_DOPLNENY } from '@/lib/names/pravni'
 
 // Patička slouží lidem, ne vyhledávači.
 //
@@ -101,13 +101,16 @@ export default function Paticka() {
           <p>
             Svět jmen — katalog jmen pro děti i zvířata. Zdarma, bez registrace.
           </p>
-          <p>
-            {PRAVNI.provozovatel}
-            {PRAVNI.ico ? `, IČO ${PRAVNI.ico}` : ''} ·{' '}
-            <a href={`mailto:${PRAVNI.email}`} className="hover:text-[#2b2723] hover:underline">
-              {PRAVNI.email}
-            </a>
-          </p>
+          {/* Dokud jsou údaje zástupné, radši nic než „VYPLNIT s.r.o.“. */}
+          {UDAJE_PROVOZOVATELE_DOPLNENY && (
+            <p>
+              {PRAVNI.provozovatel}
+              {PRAVNI.ico ? `, IČO ${PRAVNI.ico}` : ''} ·{' '}
+              <a href={`mailto:${PRAVNI.email}`} className="hover:text-[#2b2723] hover:underline">
+                {PRAVNI.email}
+              </a>
+            </p>
+          )}
         </div>
       </div>
     </footer>
