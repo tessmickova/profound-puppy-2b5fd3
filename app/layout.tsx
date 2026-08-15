@@ -1,28 +1,7 @@
 import type { Metadata, Viewport } from 'next'
-import { Baloo_2, Nunito } from 'next/font/google'
 import { Toaster } from 'react-hot-toast'
 import { jsonLdProvozovatel, jsonLdWeb, WEB } from '@/lib/names/seo'
 import './globals.css'
-
-// Nadpisy: Baloo 2 — zaoblené konce tahů působí vlídně (jde o jména dětí
-// a zvířat), ale kresba zůstává moderní a v tučném řezu čitelná. Syne měla
-// tvrdé geometrické tvary a hlavně se načítala jen s podmnožinou `latin`,
-// takže česká diakritika padala do náhradního písma a nadpisy se rozjížděly.
-const nadpis = Baloo_2({
-  subsets: ['latin', 'latin-ext'],
-  variable: '--font-nadpis',
-  weight: ['500', '600', '700', '800'],
-  display: 'swap',
-})
-
-// Text: Nunito — zaoblený groteskový bezpatkový font, dobře se čte v malých
-// velikostech a ladí s nadpisy, aniž by se s nimi pral.
-const text = Nunito({
-  subsets: ['latin', 'latin-ext'],
-  variable: '--font-text',
-  weight: ['400', '600', '700'],
-  display: 'swap',
-})
 
 export const metadata: Metadata = {
   metadataBase: new URL(WEB.url),
@@ -53,7 +32,15 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="cs" suppressHydrationWarning>
-      <body className={`${nadpis.variable} ${text.variable}`}>
+      <head>
+        {/* Bez tohohle by prohlížeč o písmech věděl až po stažení a rozboru
+            CSS — nadpisy by na okamžik problikly systémovým písmem. Předem
+            se stahují jen základní `latin` řezy; `latin-ext` s háčky si
+            prohlížeč dotáhne sám, když ho stránka potřebuje. */}
+        <link rel="preload" href="/pisma/baloo2-latin.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        <link rel="preload" href="/pisma/nunito-latin.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+      </head>
+      <body>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWeb()) }}

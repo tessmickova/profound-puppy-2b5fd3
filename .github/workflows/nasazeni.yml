@@ -89,22 +89,45 @@ jobs:
       # Ověřuje se odsud, protože vývojové prostředí AI má vlastní
       # egress proxy, která cizí domény nepouští — 000 odtamtud neznamená
       # „doména neběží", ale „odsud se to nedá změřit".
+      # Přesměrování se SLEDUJÍ (`-L`) a vyžaduje se konečná 200.
+      #
+      # Dřív tu stálo `case "$kod" in 2*|3*)`, tedy i samotné přesměrování
+      # platilo za úspěch. Jenže smyčka přesměrování (typicky špatný režim
+      # SSL/TLS v Cloudflare) vrací pořád 301 — kontrola by prošla, kdežto
+      # prohlížeč hlásí ERR_TOO_MANY_REDIRECTS. Přesně ten případ by se
+      # takhle schoval.
       - name: Kontrola domény
         run: |
           spatne=""
-          for adresa in https://svetjmen.cz https://www.svetjmen.cz https://reklama.svetjmen.cz/api/nastaveni; do
-            kod=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$adresa" || echo 000)
-            echo "$kod  $adresa"
-            case "$kod" in 2*|3*) ;; *) spatne="$spatne $adresa($kod)" ;; esac
-          done
+          zkontroluj() {
+            adresa="$1"; ceka="$2"
+            vysledek=$(curl -sL --max-time 25 -o /tmp/telo -w '%{http_code} %{num_redirects} %{url_effective}' "$adresa" || echo "000 0 -")
+            kod=$(echo "$vysledek" | awk '{print $1}')
+            skoku=$(echo "$vysledek" | awk '{print $2}')
+            konec=$(echo "$vysledek" | awk '{print $3}')
+            printf '%s  skoků:%s  %s → %s\n' "$kod" "$skoku" "$adresa" "$konec"
+            if [ "$kod" != "200" ]; then
+              spatne="$spatne $adresa(kód $kod)"; return
+            fi
+            if [ "$skoku" -gt 3 ]; then
+              spatne="$spatne $adresa($skoku přesměrování)"; return
+            fi
+            if ! grep -q "$ceka" /tmp/telo; then
+              spatne="$spatne $adresa(chybí očekávaný obsah)"
+            fi
+          }
+          zkontroluj https://svetjmen.cz 'Svět jmen'
+          zkontroluj https://www.svetjmen.cz 'Svět jmen'
+          zkontroluj https://reklama.svetjmen.cz/api/nastaveni 'nastaveni'
           if [ -n "$spatne" ]; then
-            echo "::error::Doména neodpovídá:$spatne — nasazení zastaveno."
-            echo "Kód 000 = jméno se nepřeložilo: zóna svetjmen.cz nejspíš není v Cloudflare *Active*"
-            echo "(jmenné servery u registrátora), nebo Worker nemá připojenou vlastní doménu."
+            echo "::error::Doména neodpovídá správně:$spatne — nasazení zastaveno."
+            echo "Kód 000 = jméno se nepřeložilo: zóna svetjmen.cz nejspíš není v Cloudflare *Active*."
+            echo "Mnoho přesměrování = špatný režim SSL/TLS v Cloudflare (musí být Full, ne Flexible)."
+            echo "Chybí obsah = doména vede jinam, než si myslíme."
             echo "Postup: docs/DOMENA.md"
             exit 1
           fi
-          echo "Doména odpovídá, pokračuji."
+          echo "Doména odpovídá a vrací náš obsah, pokračuji."
 
       - uses: actions/checkout@v5
 
