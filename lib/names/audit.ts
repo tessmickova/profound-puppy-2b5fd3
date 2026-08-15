@@ -279,13 +279,22 @@ export const PROVOZ: PolozkaAuditu[] = [
   },
   {
     stav: 'ceka-na-vas',
-    nazev: 'Vlastní doména',
-    popis: 'Web běží na workers.dev adrese. Pro důvěryhodnost i prodej '
-      + 'reklamy je vlastní doména (zakládá se svetjmen.cz) '
-      + 'výrazný krok — a u Cloudflare stojí jen poplatek za registraci.',
-    akce: 'Po zprovoznění svetjmen.cz ji přidat do Cloudflare, přesměrovat '
-      + 'na ni Worker a přepsat NEXT_PUBLIC_URL ve wrangler.jsonc i WEB_URL '
-      + 'v ads-worker/wrangler.toml (povolené originy už doménu čekají).',
+    nazev: 'Doména svetjmen.cz čeká na delegování',
+    popis: 'Doména zatím nemá jmenné servery a v DNS není nic, takže ji nejde '
+      + 'připojit. Konfigurace je připravená: až bude zóna v Cloudflare aktivní, '
+      + 'stačí odkomentovat routes ve wrangler.jsonc a ads-worker/wrangler.toml '
+      + 'a nasadit — wrangler doménu připojí a DNS záznamy si založí sám.',
+    akce: 'U registrátora přepsat jmenné servery na ty z Cloudflare, počkat na '
+      + 'stav Active, pak dát vědět. Celý postup i s mapou adres: docs/DOMENA.md.',
+  },
+  {
+    stav: 'podchyceno',
+    nazev: 'Rotace reklam se zapne až po vyprodání prvního kola',
+    popis: 'Než se obsadí všech 10 ploch prvního kola, nic se nepřeklápí — '
+      + 'zaplacená reklama je vidět nepřetržitě místo toho, aby se střídala '
+      + 's prázdným místem. Druhá strana pozice se do té doby vůbec neprodává '
+      + '(služba objednávku odmítne) a v podmínkách je to napsané, aby to '
+      + 'inzerenta nezaskočilo.',
   },
   {
     stav: 'podchyceno',

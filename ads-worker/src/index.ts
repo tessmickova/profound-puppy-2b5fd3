@@ -31,8 +31,8 @@ import {
   type Prostredi,
 } from './db'
 import {
-  IKONY, KAPACITA, MEZE, OBDOBI, OBDOBI_PODLE_ID, PLOCHY, cena, jeObdobi,
-  kapacitaPlochy, plochaPodleId, type ObdobiId,
+  IKONY, KAPACITA, MEZE, OBDOBI, OBDOBI_PODLE_ID, PLOCHY, PLOCHY_PRVNI_KOLO,
+  cena, jeObdobi, jePrvniKolo, kapacitaPlochy, plochaPodleId, type ObdobiId,
 } from './plochy'
 import {
   odpovedProBranu, overNotifikaci, rozeberNotifikaci, stejneTajemstvi, vytvorPlatbu,
@@ -324,9 +324,18 @@ async function dejVsechnyReklamy(url: URL, env: Prostredi, cors: Record<string, 
   }, cors)
 }
 
+/** Je první kolo ploch vyprodané? Teprve pak se otevírá druhé. */
+function prvniKoloVyprodane(obsazeno: Record<string, number>): boolean {
+  return PLOCHY_PRVNI_KOLO.every(p => (obsazeno[p.id] ?? 0) >= kapacitaPlochy(p))
+}
+
 async function dejSloty(env: Prostredi, cors: Record<string, string>) {
   const obsazeno = await obsazenost(env)
+  const druheKoloOtevrene = prvniKoloVyprodane(obsazeno)
   return json({
+    // Druhé kolo se prodává až po vyprodání prvního — samoobsluha to říká
+    // rovnou, aby nikdo neobjednával plochu, která se nebude zobrazovat.
+    druheKoloOtevrene,
     // Samoobsluha se podle toho pozná, že nemá nabízet objednávkový
     // formulář — místo toho řekne pravdu a nabídne kontakt.
     prodejPozastaven: !lzeZaplatit(env),
@@ -339,7 +348,11 @@ async function dejSloty(env: Prostredi, cors: Record<string, string>) {
       stranka: p.stranka,
       cislo: p.cislo,
       kapacita: kapacitaPlochy(p),
-      volno: Math.max(0, kapacitaPlochy(p) - (obsazeno[p.id] ?? 0)),
+      prvniKolo: jePrvniKolo(p),
+      // Zavřené druhé kolo se tváří jako obsazené — objednat ho nejde.
+      volno: (!jePrvniKolo(p) && !druheKoloOtevrene)
+        ? 0
+        : Math.max(0, kapacitaPlochy(p) - (obsazeno[p.id] ?? 0)),
       ceny: Object.fromEntries(OBDOBI.map(o => [o.id, cena(p, o.id)])),
     })),
   }, {}, cors)
@@ -490,6 +503,21 @@ async function vytvorObjednavku(req: Request, env: Prostredi, cors: Record<strin
 
   const jizJe = await najdiPodleIdempotence(env, klicIdempotence)
   if (jizJe) return odpovedNaObjednavku(jizJe, env, cors)
+
+  // Druhé kolo se otevře až po vyprodání prvního — jinak by se kampaň
+  // překlápěla na prázdnou stranu a polovinu času nebyla vidět.
+  if (!jePrvniKolo(plocha)) {
+    const stav = await obsazenost(env)
+    if (!prvniKoloVyprodane(stav)) {
+      return chyba(
+        'Tahle plocha se zatím neprodává. Střídání dvou kampaní na jedné pozici '
+        + 'zapneme, až budou obsazená všechna místa prvního kola — do té doby by '
+        + 'se vaše reklama polovinu času překlápěla na prázdno. Vyberte prosím '
+        + 'plochu z prvního kola.',
+        409, cors,
+      )
+    }
+  }
 
   // Rychlá kontrola, ať zákazník dostane hezkou hlášku místo chyby databáze.
   // O skutečnou výlučnost se stará unikátní index — mezi tímhle čtením

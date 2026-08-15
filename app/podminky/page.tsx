@@ -98,6 +98,16 @@ export default function PodminkyStranka() {
             proklik — garantujeme místo po celou zaplacenou dobu.
           </li>
           <li>
+            <strong>Střídání se zapne až po vyprodání prvního kola.</strong>{' '}
+            Prodáváme nejdřív {POZIC} ploch prvního kola — ty jsou vidět
+            <strong> nepřetržitě</strong>, samy pro sebe, bez střídání. Druhá
+            strana každé pozice se otevře k prodeji teprve tehdy, až je první
+            kolo obsazené celé; od té chvíle se obě strany střídají po{' '}
+            {ROTACE_SLOUPCE_MS / 1000} sekundách. Kdo koupí dřív, má tedy plochu
+            po celou dobu jen pro sebe, a o zapnutí střídání se dozví předem —
+            nemůže se stát, že by kampaň začala mizet bez upozornění.
+          </li>
+          <li>
             <strong>Nic se neobnovuje automaticky.</strong> Na konci období kampaň
             sama zhasne a plocha se nabídne jako volná. Chcete-li pokračovat,
             objednáte si další období.

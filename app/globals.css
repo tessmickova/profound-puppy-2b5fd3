@@ -3369,10 +3369,15 @@ a:hover .ilustrace,
 @media (min-width: 760px) {
   .sekce-mrizka { grid-template-columns: 1fr 1fr; gap: 14px; }
 }
-.sekce-mrizka .sekce-sklo { margin-bottom: 0; }
+.sekce-mrizka .sekce-sklo { margin-bottom: 0; height: 100%; }
+.sekce-mrizka { align-items: stretch; }
 
 .sekce-sklo {
   position: relative;
+  /* Sloupec: mřížka jmen roste, tlačítko sedí na dně. Dva boxy vedle sebe
+     tak mají tlačítko ve stejné výšce i při různém počtu jmen. */
+  display: flex;
+  flex-direction: column;
   margin-bottom: 14px;
   border: 1px solid rgba(255, 255, 255, .85);
   border-radius: 22px;
@@ -3399,11 +3404,24 @@ a:hover .ilustrace,
 @media (prefers-reduced-motion: reduce) {
   .sekce-sklo, .sekce-sklo:hover { transform: none; transition: none; }
 }
+/* Hlavička sekce má pevnou výšku dvou řádků nadpisu.
+   Dřív se odkaz „zobrazit všechna" u dlouhého nadpisu zalomil pod něj
+   a karty v tom boxu začínaly níž než v sousedním — dva boxy vedle sebe
+   pak nesouhlasily ani jednou linkou. Odkaz proto drží svou šířku
+   a nadpis se láme uvnitř svého místa. */
 .sekce-sklo-hlava {
-  display: flex; align-items: baseline; justify-content: space-between;
-  gap: 12px; flex-wrap: wrap;
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 12px; flex-wrap: nowrap;
+  min-height: 44px;
+  margin-bottom: 10px;
 }
-.sekce-sklo-hlava .nadpis-sekce { font-size: 16.5px; }
+.sekce-sklo-hlava .nadpis-sekce {
+  font-size: 16.5px;
+  min-width: 0;
+  margin: 0;
+  align-self: center;
+}
+.sekce-sklo-hlava .odkaz-dal { flex: none; align-self: center; }
 .sekce-sklo-hlava .odkaz-dal {
   font-size: 12.5px; color: #8a7f71; text-decoration: underline;
   text-decoration-style: dotted; white-space: nowrap;
@@ -3895,7 +3913,7 @@ a:hover .ilustrace,
 .analyza-prazdno p { margin: 0; font-size: 13.5px; line-height: 1.55; }
 
 /* Rozbalení kategorie na úvodu — každý box roste zvlášť. */
-.sekce-dalsi { display: flex; justify-content: center; margin-top: 12px; }
+.sekce-dalsi { display: flex; justify-content: center; margin-top: auto; padding-top: 12px; }
 .sekce-dalsi .vyber-tlacitko { font-size: 12.5px; padding: 7px 14px; }
 
 /* ══════════════════════════════════════════════════════════════════════════════

@@ -5,6 +5,13 @@ name = "svetjmen-ads"
 main = "src/index.ts"
 compatibility_date = "2026-08-01"
 
+# Vlastní doména reklamní služby. Odkomentovat, až bude zóna svetjmen.cz
+# v Cloudflare ve stavu Active — wrangler doménu připojí a DNS záznam si
+# založí sám. Postup: ../docs/DOMENA.md
+# [[routes]]
+# pattern = "reklama.svetjmen.cz"
+# custom_domain = true
+
 # Denně po půlnoci zhasneme prošlé kampaně a uvolníme jejich sloty.
 [triggers]
 crons = ["10 0 * * *"]

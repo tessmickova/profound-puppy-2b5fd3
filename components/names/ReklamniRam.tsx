@@ -19,7 +19,7 @@
 // se dá tlačítkem v liště. Kdo má v systému vypnuté animace, uvidí prosté
 // prostřídání bez otáčení. Označení „reklama" je vidět vždycky.
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   Baby, Bone, Calendar, Cat, Dog, Globe, House, Languages, Pause, Play,
   ShieldCheck, Sparkles, Star, Type, Users, type LucideIcon,
@@ -93,14 +93,28 @@ export default function ReklamniRam() {
     return () => dotaz.removeEventListener('change', zmer)
   }, [])
 
+  /**
+   * Rotuje se, až když je co střídat.
+   *
+   * Každá pozice má dvě strany; druhá se prodává teprve po obsazení všech
+   * prvních. Dokud je prázdná, překlápění by ukazovalo „volné místo" místo
+   * zaplacené reklamy — inzerent by polovinu času platil za nic a
+   * návštěvník by koukal na prázdno. Rotace se proto sama zapne, jakmile
+   * je na druhé straně první kampaň.
+   */
+  const rotovat = useMemo(
+    () => PLOCHY.some((id, i) => i % 2 === 1 && (mapa[id]?.length ?? 0) > 0),
+    [mapa],
+  )
+
   // Jeden časovač pro všechny pozice — překlopí se naráz, ne jedna po druhé.
   useEffect(() => {
-    if (rezim !== 'sloupce' || stopnuto) return
+    if (rezim !== 'sloupce' || stopnuto || !rotovat) return
     const id = window.setInterval(() => {
       if (!pauza.current) setOtoceno(o => !o)
     }, INTERVAL_MS)
     return () => window.clearInterval(id)
-  }, [rezim, stopnuto])
+  }, [rezim, stopnuto, rotovat])
 
   const drz = useCallback((ano: boolean) => { pauza.current = ano }, [])
   // Klepnutí na pauzu je jasný pokyn — přidržení myší nebo prstem, které
@@ -118,7 +132,7 @@ export default function ReklamniRam() {
 
   if (rezim === 'lista') {
     return (
-      <ReklamniLista {...spolecne} kolik={dve ? 2 : 1} prepni={prepni} />
+      <ReklamniLista {...spolecne} kolik={dve ? 2 : 1} prepni={prepni} rotovat={rotovat} />
     )
   }
 
@@ -230,19 +244,28 @@ function Karta({ plocha, mapa, tvar }: { plocha: string; mapa: Mapa; tvar: 'pred
  * k oknu, jedna kampaň (na širším tabletu dvě) a po deseti sekundách další.
  */
 function ReklamniLista({
-  mapa, tise, pauza, stopnuto, drz, prepni, kolik,
-}: SpolecneVlastnosti & { kolik: number }) {
+  mapa, tise, pauza, stopnuto, drz, prepni, kolik, rotovat,
+}: SpolecneVlastnosti & { kolik: number; rotovat: boolean }) {
   const [od, setOd] = useState(0)
+
+  // Dokud se neprodalo první kolo, jezdí v liště jen první strany.
+  // Druhé strany jsou zatím prázdné a lišta by mezi reklamami ukazovala
+  // volná místa — tedy nic, za co někdo zaplatil.
+  const kolo = useMemo(
+    () => (rotovat ? PLOCHY : PLOCHY.filter((_, i) => i % 2 === 0)),
+    [rotovat],
+  )
 
   useEffect(() => {
     if (stopnuto) return
     const id = window.setInterval(() => {
-      if (!pauza.current) setOd(i => (i + kolik) % PLOCH)
+      if (!pauza.current) setOd(i => (i + kolik) % kolo.length)
     }, INTERVAL_LISTA_MS)
     return () => window.clearInterval(id)
-  }, [kolik, pauza, stopnuto])
+  }, [kolik, pauza, stopnuto, kolo.length])
 
-  const videt = Array.from({ length: kolik }, (_, i) => `plocha-${((od + i) % PLOCH) + 1}`)
+  const videt = Array.from({ length: Math.min(kolik, kolo.length) },
+    (_, i) => kolo[(od + i) % kolo.length])
 
   return (
     <aside

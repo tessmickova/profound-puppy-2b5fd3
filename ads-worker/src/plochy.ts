@@ -47,3 +47,15 @@ export const cena = (_plocha: Plocha, obdobi: ObdobiId): number => cenaKc(obdobi
 
 /** Kolik kampaní se na dané ploše střídá. */
 export const kapacitaPlochy = (_plocha: Plocha): number => KAPACITA
+
+/**
+ * Plochy prvního kola — to, co je na webu vidět hned.
+ *
+ * Každá pozice má dvě strany a střídají se. Dokud nejsou obsazené všechny
+ * první strany, druhé se neprodávají: reklama by se překlápěla na prázdno
+ * a inzerent by polovinu času platil za volné místo. Až se první kolo
+ * zaplní, rotace naskočí sama a druhé kolo se otevře k prodeji.
+ */
+export const jePrvniKolo = (plocha: Plocha): boolean => plocha.cislo % 2 === 1
+
+export const PLOCHY_PRVNI_KOLO = PLOCHY.filter(jePrvniKolo)
