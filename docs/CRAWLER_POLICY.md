@@ -42,13 +42,15 @@ se chovali podle vlastního výchozího nastavení, ne podle našeho.
 ## 2. Co je zavřené pro všechny
 
 ```
-/oblibene   osobní výběr návštěvníka
-/rodina     rodinný profil
-/admin      správa
-/docs       vývojářská dokumentace
-/aurora     nesouvisející část repozitáře
-/*?*        jakákoli adresa s parametrem
+/oblibene        osobní výběr návštěvníka
+/rodina          rodinný profil
+/analyza-vyberu  rozbor vlastního výběru
+/sprava          správa webu
+/*?*             jakákoli adresa s parametrem
 ```
+
+(Do 15. 8. 2026 tu byly i `/admin`, `/docs` a `/aurora` — patřily druhému
+projektu, který odsud odešel, viz `ODSTRANENI-AURORADOG.md`.)
 
 `/*?*` je nejdůležitější řádek celého souboru. Filtry katalogu běží přes
 parametry (`?kategorie=…&zeme=…&styl=…`) a jejich kombinací jsou desítky
