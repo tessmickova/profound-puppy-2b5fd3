@@ -24,8 +24,12 @@ zobrazilo se 24 karet se jmény, pásy jezdily, detail se otevřel, konzole čis
 | `/api/objednavka/:token` | GET | stav objednávky |
 | `/api/objednavka/:token/logo` | POST | nahrání loga (PNG/JPG/WEBP, max 200 kB) |
 | `/logo/:klic` | GET | výdej loga |
-| `/api/admin/potvrdit` | POST | potvrzení platby → kampaň se rozsvítí |
-| `/api/admin/prehled` | GET | posledních 200 objednávek |
+| `/api/platba/notifikace` | POST | zpráva z platební brány — jediná autorita o zaplacení |
+| `/api/platba/navrat` | GET | stránka po návratu z brány; jen čte stav |
+| `/api/admin/potvrdit` | POST | potvrzení platby převodem → objednávka je zaplacená |
+| `/api/admin/schvalit` | POST | schválení kreativy → **teprve teď je inzerát na webu** |
+| `/api/admin/zamitnout` | POST | zamítnutí kreativy i s důvodem pro inzerenta |
+| `/api/admin/prehled` | GET | posledních 200 objednávek i s obsahem kreativy |
 | `/api/admin/uklid` | POST | ruční spuštění úklidu |
 
 Admin routy chtějí hlavičku `Authorization: Bearer <ADMIN_TOKEN>`; token se
@@ -44,14 +48,76 @@ porovnává v konstantním čase.
    zaplacení nahrát logo.
 4. **Fakturační údaje.** Firma, nepovinné IČO, e-mail. Nic dalšího neevidujeme,
    účet nevzniká.
-5. **Odeslání.** Vrátí se variabilní symbol, částka a **token** — adresa
+5. **Odeslání.** Vrátí se částka a **token** — adresa
    `/api/objednavka/<token>` je zároveň přístup ke stavu kampaně a k nahrání
    loga. Objednávka je ve stavu `ceka_na_platbu` a drží slot.
-6. **Platba.** Po připsání zavoláme `/api/admin/potvrdit` s variabilním
-   symbolem; kampaň přejde do `aktivni`, doplní se `plati_od` a `plati_do`.
-7. **Konec.** Denní úklid (cron `10 0 * * *`) přepne prošlé kampaně na
+6. **Platba.** Se zapnutou bránou jde zákazník rovnou zaplatit kartou;
+   bez ní (nebo když brána neodpoví) dostane variabilní symbol a účet.
+   Zaplacená objednávka přejde do `aktivni`, doplní se `plati_od` a `plati_do`.
+7. **Schválení.** Kampaň je zaplacená, ale na webu ještě není nic vidět.
+   Kreativu čte majitelka na `/sprava` a schválí, nebo zamítne s důvodem.
+   Teprve schválením se inzerát dostane k návštěvníkům.
+8. **Konec.** Denní úklid (cron `10 0 * * *`) přepne prošlé kampaně na
    `vyprsela` a slot se hned objeví jako volný. Nezaplacené objednávky starší
    sedmi dnů se ruší, aby neblokovaly místo.
+
+## Schválení: zaplacení není zveřejnění
+
+Text i odkaz píše cizí firma, ale odpovědnost za to, co návštěvník uvidí,
+nese provozovatel — zákon o regulaci reklamy dělá ze šiřitele spoluodpovědnou
+osobu. Peníze proto kampaň nespouštějí, jen ji zaplatí.
+
+Stav `aktivni` znamená „je zaplaceno a slot běží". O tom, co se opravdu
+vykreslí, rozhoduje **jediná podmínka `i.schvaleno = 1`** ve dvou dotazech
+v `ads-worker/src/db.ts`. Je to schválně jedno místo: kdyby se schválení
+kontrolovalo někde v aplikaci nebo v komponentě, dalo by se to obejít druhou
+cestou k datům.
+
+Každá pozdější **úprava textu i výměna loga sráží schválení zpátky na nulu**.
+Bez toho by schvalování nemělo cenu — stačilo by nechat si schválit slušný
+inzerát a hned nato do něj napsat cokoli. Inzerent to ve svém účtu vidí:
+místo „Kampaň běží" mu svítí „Zaplaceno, čeká na schválení", a při zamítnutí
+i důvod, podle kterého text opraví. Zaplacené dny mu tím nepropadají.
+
+Po nasazení migrace `004-schvalovani.sql` mají **všechny kreativy `schvaleno
+= 0`**, tedy i ty, které do té chvíle běžely. Je to bezpečný směr — radši
+nic neukázat — ale znamená to, že běžící kampaně je potřeba v adminu jednou
+projít a schválit.
+
+## Platba kartou (ComGate)
+
+Brána je **nepovinná**. Bez `COMGATE_MERCHANT` nebo `COMGATE_SECRET` se
+nepoužije a služba prodává dál na převod s variabilním symbolem. Když brána
+je, ale zrovna neodpoví, objednávka se stejně uloží a zákazník dostane
+bankovní pokyny — výpadek cizí služby nesmí shodit prodej.
+
+Tok: samoobsluha založí platbu (`prepareOnly=true`), dostane adresu brány
+a zákazníka na ni pošle. Zaplatí, vrátí se na `/api/platba/navrat` — a ta
+stránka **nic neaktivuje**, jen přečte stav. O penězích rozhoduje výhradně
+notifikace, kterou brána posílá server-to-server na
+`/api/platba/notifikace`; zákazník se totiž vracet nemusí a okno může zavřít
+hned po zaplacení.
+
+Notifikace nemá admin token, protože ji volá cizí server. Místo něj se ověří:
+
+- `secret` brány, porovnáním v konstantním čase (stejná funkce jako u admin
+  tokenu — jedno porovnání, ne dvě, která by se dala pokazit každé zvlášť),
+- že `merchant` je náš,
+- že `refId` je skutečně naše objednávka,
+- že `curr` je CZK a `price` v haléřích sedí na cenu objednávky.
+
+Odpovídá se **vždycky** `code=0&message=OK`, i když zprávu odmítneme —
+cokoli jiného pro bránu znamená „nedoručeno" a notifikaci opakuje
+donekonečna. Důvod odmítnutí zůstává v logu (`npx wrangler tail`), tajemství
+brány se do logu nedostane nikdy.
+
+Opakovaná notifikace nic nezkazí: aktivace běží přes
+`UPDATE … WHERE stav = 'ceka_na_platbu'`, takže podruhé nezmění ani řádek,
+a unikátní index na `objednavky.transakce_id` je poslední pojistka proti
+tomu, aby se táž platba přiřadila dvěma objednávkám.
+
+Adresy notifikace a návratu se vyplňují v portálu ComGate — protokol je
+v požadavku na založení platby nenese, takže v kódu být nemůžou.
 
 ## Ceník
 

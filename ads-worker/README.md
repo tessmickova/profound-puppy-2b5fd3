@@ -60,18 +60,67 @@ npm run db:migrace:local    # lokální vývoj
 
 Endpointy: veřejné `GET /api/nastaveni` (web, cache 60 s); s tokenem
 `GET /api/admin/overeni`, `GET /api/admin/prehled`,
-`POST /api/admin/potvrdit`, `POST /api/admin/nastaveni`
-(`{"klic":"reklamy","hodnota":false}`), `POST /api/admin/uklid`.
+`POST /api/admin/potvrdit`, `POST /api/admin/schvalit` (`{"id":"…"}`),
+`POST /api/admin/zamitnout` (`{"id":"…","duvod":"…"}`),
+`POST /api/admin/nastaveni` (`{"klic":"reklamy","hodnota":false}`),
+`POST /api/admin/uklid`.
+
+## Schvalování kreativ
+
+**Zaplacení není zveřejnění.** Zaplacená objednávka přejde do stavu `aktivni`
+a drží plochu, ale inzerát se na webu neobjeví, dokud nemá `inzeraty.schvaleno
+= 1`. Rozhoduje o tom jediná podmínka ve dvou dotazech v `src/db.ts` — kdyby
+odtud vypadla, schvalování v adminu by bylo jen dekorace.
+
+Každá úprava textu (`PATCH /api/objednavka/:token`) i výměna loga sráží
+schválení zpátky na nulu. Bez toho by stačilo nechat si schválit slušný
+inzerát a hned nato do něj napsat cokoli.
+
+## Platby přes ComGate
+
+Brána je **nepovinná**. Bez `COMGATE_MERCHANT` nebo bez `COMGATE_SECRET` se
+vůbec nepoužije a služba prodává dál na převod s variabilním symbolem —
+stejně jako dřív. Když brána je a zrovna neodpoví, objednávka se přesto uloží
+a zákazník dostane bankovní pokyny.
+
+| Route | Metoda | K čemu |
+|---|---|---|
+| `/api/platba/notifikace` | POST | zpráva z brány (server→server), **jediná autorita o zaplacení** |
+| `/api/platba/navrat?refId=…` | GET | stránka pro zákazníka po návratu z brány; **nic neaktivuje** |
+
+Notifikace nemá admin token — volá ji cizí server. Ověřuje se místo něj
+`secret` brány (porovnáním v konstantním čase), obchodník, měna, že `refId`
+je naše objednávka a že `price` v haléřích sedí na cenu objednávky.
+Odpovídá se vždycky `code=0&message=OK`, i při odmítnutí: cokoli jiného pro
+bránu znamená „nedoručeno" a notifikaci opakuje donekonečna. Důvod odmítnutí
+zůstane v logu (`npx wrangler tail`), tajemství tam nikdy.
+
+Nastavení do `wrangler.toml` → `[vars]`: `COMGATE_MERCHANT`, `COMGATE_TEST`.
+Tajemství zvlášť: `npx wrangler secret put COMGATE_SECRET`. V portálu ComGate
+je ještě potřeba vyplnit adresy notifikace a návratu — v kódu být nemůžou.
+
+## Testy
+
+```bash
+npm test          # node:test přes tsx, bez sítě a bez databáze
+```
+
+Pokrývají to, co se dá pokazit potichu: parser urlencoded odpovědi brány,
+ověření notifikace (špatné tajemství, cizí `refId`, nesouhlasící částka,
+opakovaná notifikace) a pravidlo, že úprava inzerátu shodí schválení.
 
 ## Kde co je
 
 | Soubor | Obsah |
 |---|---|
-| `src/index.ts` | routy, CORS, validace, denní úklid |
+| `src/index.ts` | routy, CORS, validace, schvalování, notifikace, denní úklid |
 | `src/plochy.ts` | katalog 30 ploch, ceník, kapacita, seznam ikon |
 | `src/db.ts` | dotazy do databáze, obsazenost slotů, expirace |
-| `src/samoobsluha.ts` | objednávková stránka pro firmy |
+| `src/comgate.ts` | platební brána — založení platby, ověření notifikace |
+| `src/samoobsluha.ts` | objednávková stránka pro firmy + návrat z brány |
 | `schema.sql` | tři tabulky — inzerenti, objednávky, inzeráty |
+| `migrace/` | přírůstkové změny schématu pro už běžící databázi |
+| `testy/` | testy brány a schvalování (`npm test`) |
 | `wrangler.toml` | nastavení nasazení, cron, proměnné |
 
 Podrobný popis nákupního toku, ceníku a provozu: `../docs/REKLAMY.md`.

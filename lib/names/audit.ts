@@ -72,6 +72,36 @@ export const BEZPECNOST: PolozkaAuditu[] = [
       + 'ale o nasazení rozhodujete vy.',
   },
   {
+    stav: 'ceka-na-vas',
+    nazev: 'COMGATE_SECRET a COMGATE_MERCHANT zatím nejsou nastavené',
+    popis: 'Dokud chybí, platební brána se vůbec nepoužije a reklama se prodává '
+      + 'převodem s variabilním symbolem jako dosud — to je bezpečný stav, '
+      + 'jen ruční. Tajemství brány je stejně citlivé jako admin token: kdo ho '
+      + 'zná, umí poslat notifikaci „zaplaceno" a rozsvítit kampaň zadarmo.',
+    akce: 'Po podpisu smlouvy s ComGate v adresáři ads-worker spustit: '
+      + 'npx wrangler secret put COMGATE_SECRET, doplnit COMGATE_MERCHANT '
+      + 'do [vars] ve wrangler.toml a v portálu ComGate nastavit adresy '
+      + 'notifikace (/api/platba/notifikace) a návratu (/api/platba/navrat). '
+      + 'Nejdřív s COMGATE_TEST = "true", teprve po zkoušce přepnout na "false".',
+  },
+  {
+    stav: 'podchyceno',
+    nazev: 'Cizí kreativa se nezveřejní bez schválení',
+    popis: 'Zaplacení kampaň jen zaplatí — návštěvník uvidí inzerát až po '
+      + 'schválení na /sprava. Rozhoduje o tom jediná podmínka v dotazu, který '
+      + 'kreativy vydává, takže se to nedá obejít jinou cestou. Každá pozdější '
+      + 'úprava textu i výměna loga schválení shodí zpátky na nulu.',
+  },
+  {
+    stav: 'podchyceno',
+    nazev: 'Notifikace o platbě se ověřuje, ne věří',
+    popis: 'Zpráva z brány projde jen tehdy, když sedí tajemství (porovnané '
+      + 'v konstantním čase), obchodník, měna, částka v haléřích i to, že refId '
+      + 'je naše objednávka. Opakovaná notifikace nic nepřepíše. Návrat '
+      + 'zákazníka z brány nic neaktivuje — jinak by stačilo otevřít adresu '
+      + 's cizím refId a kampaň by běžela bez zaplacení.',
+  },
+  {
     stav: 'podchyceno',
     nazev: 'Admin API chráněné tokenem s porovnáním v konstantním čase',
     popis: 'Schvalování plateb, přehled objednávek a přepínače vyžadují Bearer '
@@ -134,6 +164,36 @@ export const PRAVO: PolozkaAuditu[] = [
       + 'a mít funkční kontaktní e-mail.',
   },
   {
+    stav: 'ceka-na-vas',
+    nazev: 'Za obsah cizí reklamy odpovídáte vy — proto ji schvalujete',
+    popis: 'Zákon o regulaci reklamy dělá ze šiřitele spoluodpovědnou osobu: '
+      + 'za klamavou reklamu nebo reklamu na zakázané zboží se ručí i tehdy, '
+      + 'když ji napsal někdo jiný. Služba proto nic nezveřejní bez schválení '
+      + '— ale to schválení musí někdo skutečně udělat, jinak zaplacené kampaně '
+      + 'jen čekají a nikdo o tom neví.',
+    akce: 'Po každé objednávce projít /sprava → „Čeká na schválení": přečíst '
+      + 'text a otevřít cílový odkaz. Zamítnutí vždycky s důvodem — inzerent ho '
+      + 'vidí ve svém účtu a může text opravit.',
+  },
+  {
+    stav: 'ceka-na-vas',
+    nazev: 'Podmínky zatím nepočítají s platbou kartou ani se schvalováním',
+    popis: 'Obchodní podmínky popisují převod na účet a nezmiňují, že si '
+      + 'provozovatel vyhrazuje právo kreativu neschválit. Obojí je teď v kódu '
+      + 'a mělo by být i v textu — jinak by zamítnutí vypadalo jako svévole.',
+    akce: 'Do /podminky doplnit dvě věty: že se platí i kartou přes bránu '
+      + 'ComGate a že se inzerát zveřejní až po schválení provozovatelem, '
+      + 'přičemž při zamítnutí se peníze vracejí (nebo se kreativa opraví).',
+  },
+  {
+    stav: 'podchyceno',
+    nazev: 'Placené odkazy nepředávají hodnocení vyhledávačům',
+    popis: 'Cílové odkazy inzerentů nesou rel="sponsored nofollow noopener" '
+      + 'na webu a "noopener noreferrer nofollow" v náhledu ke schválení. '
+      + 'Zaplacený odkaz tak nevypadá jako doporučení redakce — což je '
+      + 'i požadavek vyhledávačů.',
+  },
+  {
     stav: 'podchyceno',
     nazev: 'Reklama je označená',
     popis: 'Každý inzerát nese viditelný štítek REKLAMA — splňuje požadavek '
@@ -163,6 +223,35 @@ export const PROVOZ: PolozkaAuditu[] = [
     popis: 'Workers (web i reklamní služba), D1 databáze a R2 úložiště log '
       + 'jsou v rámci free tieru. Projekt nemá žádné placené API ani '
       + 'předplatné — bez vašeho zásahu se nemá kde utrácet.',
+  },
+  {
+    stav: 'ceka-na-vas',
+    nazev: 'Platební brána: první platba nanečisto',
+    popis: 'Brána je napsaná, ale dokud běží s COMGATE_TEST = "true", žádné '
+      + 'peníze nedorazí. Přepnutí na ostrý provoz je jednořádková změna — '
+      + 'a jediná věc, kterou se nedá otestovat jinak než skutečnou platbou.',
+    akce: 'S COMGATE_TEST = "true" projít celou objednávku od začátku do '
+      + 'konce a ověřit, že se objednávka sama přepnula na „aktivní". Pak '
+      + 'přepnout na "false", koupit si vlastní kampaň za pár korun (ceník se '
+      + 'dá na chvíli snížit) a totéž zopakovat naostro.',
+  },
+  {
+    stav: 'ceka-na-vas',
+    nazev: 'Platba kartou stojí provizi — ceník s ní nepočítá',
+    popis: 'ComGate si z každé platby bere procenta. U kampaně za 5 000 Kč to '
+      + 'jsou desítky až stovky korun, které dnes nikde nejsou započítané. '
+      + 'Převod na účet zůstává zadarmo a služba ho umí dál.',
+    akce: 'Po podpisu smlouvy si přečíst skutečné sazby a rozhodnout, jestli '
+      + 'je vstřebat do ceny (shared/reklama.ts, CENA_MESIC_KC), nebo nechat '
+      + 'být — u čtyř kampaní ročně to nemusí stát za zdražení.',
+  },
+  {
+    stav: 'podchyceno',
+    nazev: 'Platba nezveřejní kampaň sama',
+    popis: 'Notifikace z brány objednávku zaplatí a rezervuje slot, ale '
+      + 'kreativa jde na web až po schválení. Automat tedy nemůže vystavit '
+      + 'cizí text bez toho, aby ho někdo viděl — a to platí i v noci '
+      + 'a o víkendu, kdy platby chodí taky.',
   },
   {
     stav: 'ceka-na-vas',
