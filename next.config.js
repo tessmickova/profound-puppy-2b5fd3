@@ -39,11 +39,8 @@ if (process.env.NEXT_PUBLIC_PRODUKCE === '1') {
 }
 
 const nextConfig = {
-  images: {
-    remotePatterns: [
-      { protocol: 'https', hostname: '*.supabase.co' },
-    ],
-  },
+  // `images.remotePatterns` tu nic neřídí: web nepoužívá `next/image`,
+  // loga inzerentů se vykreslují prostým <img> a hlídá je CSP `img-src`.
   poweredByHeader: false,
   async headers() {
     // Reklamní službu pouštíme jen tam, kam web opravdu chodí. Bez adresy

@@ -1,17 +1,19 @@
-# Repozitář — Svět jmen + AuroraDog
+# Repozitář — Svět jmen
 
-V repozitáři jsou **dvě aplikace a jedna samostatná služba**:
+V repozitáři je **jedna aplikace a jedna samostatná služba**:
 
 | Co | Kde | K čemu |
 |---|---|---|
-| **Svět jmen** | kořen webu (`/`, `/deti`, `/zvirata`, `/rodina`, `/zeme/*`, …) | hlavní projekt — výběr jmen pro děti a zvířata |
-| **AuroraDog** | `/aurora` (+ `/admin`, `/docs`, `/api/*`) | starší projekt, sledování polární záře; běží dál beze změn |
+| **Svět jmen** | celý web (`/`, `/deti`, `/zvirata`, `/rodina`, `/zeme/*`, …) | výběr jmen pro děti a zvířata |
 | **Reklamní služba** | adresář `ads-worker/`, vlastní nasazení | prodej a výdej nativních reklam pro Svět jmen |
 
-Obě aplikace sdílejí jeden Next.js projekt (App Router, React 19, TypeScript,
-Tailwind). Reklamní služba je **záměrně oddělená** — vlastní kód, vlastní
-databáze, vlastní nasazení. Když spadne, web se jmény jede dál, jen se
-nevykreslí reklamní plochy.
+Web je Next.js projekt (App Router, React 19, TypeScript, Tailwind).
+Reklamní služba je **záměrně oddělená** — vlastní kód, vlastní databáze,
+vlastní nasazení. Když spadne, web se jmény jede dál, jen se nevykreslí
+reklamní plochy.
+
+Do 15. 8. 2026 tu bydlel i druhý projekt (AuroraDog). Je pryč — kdyby ho
+někdo hledal, postup na obnovení je v `docs/ODSTRANENI-AURORADOG.md`.
 
 ---
 
@@ -257,24 +259,6 @@ Ve zkratce: firma si v samoobsluze proklikne volnou plochu, délku
 (měsíc / 6 měsíců / rok), naklikáme inzerát s náhledem a odešle objednávku.
 Po připsání platby kampaň zapneme; **na konci období se sama vypne** a slot se
 nabídne jako volný. Nic se neobnovuje automaticky.
-
----
-
-# AuroraDog (`/aurora`)
-
-Starší projekt v tomtéž repozitáři, funguje beze změn. Sledování polární záře
-v ČR (50° s. š.) z dat NOAA SWPC, NASA DONKI a Open-Meteo s vlastním
-skórovacím systémem.
-
-- **Stránky:** `/aurora` (dashboard), `/admin` (diagnostika), `/docs` (glosář)
-- **API:** `/api/aurora-data`, `/api/cron/check-kp`, `/api/webhooks/telegram`,
-  `/api/sightings`, `/api/solar-imagery`, `/api/enlil-sequence`, `/api/aurora-news`
-- **Komponenty:** `components/` mimo `components/names/`
-- **Knihovny:** `lib/noaa.ts`, `lib/astronomy.ts`, `lib/supabase.ts`,
-  `lib/alerts.ts`, `lib/space-weather/*`
-- **Data:** Supabase (cache 60 s + odběratelé), alerty na Telegram a WhatsApp
-- **Prahy viditelnosti:** foto KP ≥ 4, horizont ≥ 5, oblouk ≥ 6, nad hlavou ≥ 7,
-  tanec ≥ 8 (podrobně v `docs/VISIBILITY_THRESHOLDS.md`)
 
 ---
 

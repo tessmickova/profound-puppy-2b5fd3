@@ -180,8 +180,7 @@ prostřídání bez otáčení. Označení „reklama" je na kartě i v liště 
 vždycky.
 
 Sloupce mají stejný papírový podklad jako zbytek webu: překrývají odsazení
-stránky a bez vlastního pozadí by po stranách prosvítalo tmavé pozadí
-dokumentu, které patří AuroraDogu (sdílí stejné `<body>`).
+stránky a bez vlastního pozadí by po stranách prosvítal jiný odstín.
 
 Volná plocha se nevykreslí jako díra — ukáže se jako nabídka **„Volné místo
 pro vaši reklamu"** s číslem plochy a tlačítkem *Rezervovat*. Odkaz míří

@@ -90,12 +90,6 @@ Než pustíte `deploy`, ve `wrangler.jsonc` vyplňte:
 - `NEXT_PUBLIC_PROVOZOVATEL`, `NEXT_PUBLIC_ICO`, `NEXT_PUBLIC_KONTAKT`,
   `NEXT_PUBLIC_KONTAKT_REKLAMA` — údaje do podmínek a ochrany údajů.
 
-Tajemství pro AuroraDog (Supabase, NASA, Telegram, WhatsApp, `CRON_SECRET`)
-nastavte jednotlivě:
-
-```bash
-npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY
-```
 
 Lokální ověření na stejném běhovém prostředí, jaké běží v produkci:
 
@@ -181,12 +175,11 @@ založení repozitáře (první commit se jmenuje „Initial commit via Netlify"
 a jen mátl: říkal, že se web publikuje ze složky `.next`, což na Cloudflare
 neplatí.
 
-`vercel.json` **zatím zůstává**, protože není jen kosmetický: plánuje
-každých pět minut `/api/cron/check-kp` pro AuroraDog. Ta cesta v repozitáři
-skutečně existuje, ale **na Cloudflare ji nikdo nespouští** — web worker
-žádný cron nemá (na rozdíl od reklamní služby). Buď je tedy AuroraDog
-zároveň nasazený na Vercelu a soubor tam něco řídí, nebo ta kontrola
-neběží nikde. Než se to potvrdí, soubor nemažeme.
+`vercel.json` je **taky pryč** (15. 8.). Plánoval každých pět minut
+`/api/cron/check-kp` pro AuroraDog — jenže na Cloudflare žádný cron pro web
+neběží (na rozdíl od reklamní služby), takže ta kontrola nebyla spouštěná
+nikde a adresa vracela chybu. Odešel spolu s celým AuroraDogem, viz
+[ODSTRANENI-AURORADOG.md](ODSTRANENI-AURORADOG.md).
 
 ## Proč se změny neobjeví na webu samy
 

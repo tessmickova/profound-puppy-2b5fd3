@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import Shell from '@/components/names/Shell'
 import Admin from '@/components/names/Admin'
 
-// Adresa /admin patří druhému projektu v repozitáři (AuroraDog diagnostika),
-// proto má správa Světa jmen vlastní českou adresu /sprava.
+// Správa má českou adresu /sprava, ne /admin — držíme jednotný jazyk adres
+// a `/admin` je navíc první, co zkoušejí roboti hledající cizí administrace.
 
 export const metadata: Metadata = {
   // Správcovská stránka — do vyhledávačů nepatří.

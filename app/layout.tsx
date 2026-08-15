@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { Orbitron, Baloo_2, Nunito, IBM_Plex_Mono } from 'next/font/google'
+import { Baloo_2, Nunito } from 'next/font/google'
 import { Toaster } from 'react-hot-toast'
 import { jsonLdProvozovatel, jsonLdWeb, WEB } from '@/lib/names/seo'
 import './globals.css'
@@ -23,10 +23,6 @@ const text = Nunito({
   weight: ['400', '600', '700'],
   display: 'swap',
 })
-
-// Zbytek patří AuroraDogu, který sdílí stejný layout.
-const orbitron = Orbitron({ subsets: ['latin'], variable: '--font-orbitron', weight: ['400','700','900'] })
-const ibm      = IBM_Plex_Mono({ subsets: ['latin'], variable: '--font-ibm-mono', weight: ['300','400','600'] })
 
 export const metadata: Metadata = {
   metadataBase: new URL(WEB.url),
@@ -56,19 +52,8 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="cs" className="dark" data-theme="dark" data-fontscale="normal" suppressHydrationWarning>
-      <body className={`${orbitron.variable} ${nadpis.variable} ${text.variable} ${ibm.variable}`}>
-        <script dangerouslySetInnerHTML={{ __html: `
-          (function(){
-            try {
-              var t = localStorage.getItem('auroradog_theme');
-              var f = localStorage.getItem('auroradog_fontscale');
-              var el = document.documentElement;
-              if (t === 'light') { el.setAttribute('data-theme','light'); el.classList.remove('dark'); }
-              if (f === 'large') el.setAttribute('data-fontscale','large');
-            } catch(e){}
-          })();
-        `}} />
+    <html lang="cs" suppressHydrationWarning>
+      <body className={`${nadpis.variable} ${text.variable}`}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWeb()) }}

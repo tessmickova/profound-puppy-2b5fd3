@@ -20,7 +20,9 @@ vlastní subdoménu, aby ji výpadek webu (ani naopak) nezasáhl.
 | `https://reklama.svetjmen.cz/api/…` | rozhraní reklam (volá ho web) | Worker `svetjmen-ads` |
 
 Žádný projekt Cloudflare Pages v tomhle repozitáři není — všechno jsou
-Workers. `vercel.json` je pozůstatek a nic neřídí (`netlify.toml` je pryč).
+Workers. Pozůstatky po jiných platformách (`netlify.toml`, `vercel.json`)
+jsou pryč, stejně jako druhý projekt, který tu kdysi bydlel — viz
+[ODSTRANENI-AURORADOG.md](ODSTRANENI-AURORADOG.md).
 
 ## Zapojení, krok za krokem
 

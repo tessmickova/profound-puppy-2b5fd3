@@ -1,4 +1,4 @@
-// Nasazení webu Svět jmen (a s ním i AuroraDog na /aurora).
+// Nasazení webu Svět jmen.
 //
 // Reklamy tady schválně nejsou — mají vlastní nasazení v ads-worker/,
 // aby jejich výpadek nikdy nepoložil web.
@@ -43,6 +43,6 @@
     "NEXT_PUBLIC_KONTAKT": "info@svetjmen.cz",
     "NEXT_PUBLIC_KONTAKT_REKLAMA": "reklama@svetjmen.cz"
   }
-  // Tajemství (Supabase, NASA, Telegram, WhatsApp, CRON_SECRET — všechno pro
-  // AuroraDog) se nastavují přes `wrangler secret put`, nikdy sem.
+  // Tajemství sem nikdy nepatří — jen přes `wrangler secret put`.
+  // Web sám zatím žádné nemá; reklamní služba ano (ADMIN_TOKEN, COMGATE_SECRET).
 }

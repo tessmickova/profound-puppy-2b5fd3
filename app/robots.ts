@@ -21,11 +21,7 @@ const AI_ROBOTI = [
  * crawler chodil donekonečna po `?zeme=…&styl=…` a katalog by se
  * v indexu množil sám ze sebe.
  */
-const ZAKAZANE = [
-  '/oblibene', '/rodina', '/analyza-vyberu',
-  '/sprava', '/aurora', '/admin', '/docs',
-  '/*?*',
-]
+const ZAKAZANE = ['/oblibene', '/rodina', '/analyza-vyberu', '/sprava', '/*?*']
 
 export default function robots(): MetadataRoute.Robots {
   // Náhled se neindexuje vůbec — jinak by na workers.dev vznikla druhá

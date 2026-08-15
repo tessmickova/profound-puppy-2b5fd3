@@ -56,3 +56,4 @@ Do repozitáře nikdy nepatří žádný token ani heslo.
 | [SPRAVA.md](docs/SPRAVA.md) | co umí `/sprava` |
 | [PRED-SPUSTENIM.md](docs/PRED-SPUSTENIM.md) | co musí být hotové před ostrým provozem |
 | [INCIDENT-2026-08-14.md](docs/INCIDENT-2026-08-14.md) | co se stalo a jaká pravidla z toho platí |
+| [ODSTRANENI-AURORADOG.md](docs/ODSTRANENI-AURORADOG.md) | druhý projekt, který odsud odešel, a jak ho vrátit |
